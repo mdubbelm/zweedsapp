@@ -1,0 +1,1377 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Zweeds B1">
+    <title>Zweeds Leren B1 - Met Accounts</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        
+        * {
+            -webkit-tap-highlight-color: transparent;
+            font-family: 'Inter', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-20px) scale(1.05); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .animate-fadeIn {
+            animation: fadeIn 0.3s ease-out;
+        }
+        
+        .animate-slideUp {
+            animation: slideUp 0.4s ease-out;
+        }
+        
+        .animate-bounce {
+            animation: bounce 1s infinite;
+        }
+        
+        .animate-pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        .card-shadow {
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:active {
+            transform: scale(0.98);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .progress-bar {
+            transition: width 0.5s ease;
+        }
+        
+        audio {
+            border-radius: 12px;
+            background: #f3f4f6;
+        }
+        
+        input {
+            transition: all 0.2s ease;
+        }
+        
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+    </style>
+</head>
+<body class="min-h-screen">
+    <div id="app"></div>
+
+    <script>
+        // ⚠️ BELANGRIJK: Vervang deze configuratie met je eigen Supabase project settings!
+        // Ga naar: https://supabase.com/dashboard
+        // 1. Maak een nieuw project (gratis!)
+        // 2. Ga naar Settings > API
+        // 3. Kopieer de "Project URL" en "anon/public" key hieronder
+        
+        const SUPABASE_URL = 'https://jouw-project.supabase.co';
+        const SUPABASE_ANON_KEY = 'jouw-anon-key-hier';
+
+        // Initialize Supabase
+        let supabase = null;
+        let supabaseEnabled = false;
+        
+        try {
+            if (SUPABASE_URL !== 'https://jouw-project.supabase.co') {
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                supabaseEnabled = true;
+            }
+        } catch (error) {
+            console.error("Supabase initialization error:", error);
+        }
+
+        const categories = {
+            greetings: {
+                name: 'Begroetingen',
+                icon: '❤️',
+                color: 'pink',
+                phrases: [
+                    { id: 'g1', swedish: 'Hur mår du?', dutch: 'Hoe gaat het met je?', pronunciation: 'Hoer mawr doe?', difficulty: 'easy' },
+                    { id: 'g2', swedish: 'Jag mår bra, tack', dutch: 'Het gaat goed met mij, bedankt', pronunciation: 'Jaag mawr braa, tak', difficulty: 'easy' },
+                    { id: 'g3', swedish: 'Vad heter du?', dutch: 'Hoe heet je?', pronunciation: 'Vad heeter doe?', difficulty: 'easy' },
+                    { id: 'g4', swedish: 'Trevligt att träffas', dutch: 'Leuk je te ontmoeten', pronunciation: 'Trevligt at treffas', difficulty: 'medium' },
+                    { id: 'g5', swedish: 'Jag hoppas du har en bra dag', dutch: 'Ik hoop dat je een fijne dag hebt', pronunciation: 'Jaag hoppas doe haar en braa daag', difficulty: 'medium' },
+                    { id: 'g6', swedish: 'Ha en trevlig kväll', dutch: 'Fijne avond', pronunciation: 'Haa en trevlig kvell', difficulty: 'easy' },
+                    { id: 'g7', swedish: 'Vi ses snart', dutch: 'Tot snel', pronunciation: 'Vee sees snart', difficulty: 'easy' }
+                ]
+            },
+            daily: {
+                name: 'Dagelijks',
+                icon: '☕',
+                color: 'amber',
+                phrases: [
+                    { id: 'd1', swedish: 'Jag brukar vakna klockan sju', dutch: 'Ik word meestal om zeven uur wakker', pronunciation: 'Jaag broekar vakna klockan sjoe', difficulty: 'medium' },
+                    { id: 'd2', swedish: 'Kan du hjälpa mig?', dutch: 'Kun je me helpen?', pronunciation: 'Kan doe jelpaa mei?', difficulty: 'easy' },
+                    { id: 'd3', swedish: 'Var ligger närmaste affär?', dutch: 'Waar is de dichtstbijzijnde winkel?', pronunciation: 'Vaar ligger nermaste affeer?', difficulty: 'medium' },
+                    { id: 'd4', swedish: 'Jag skulle vilja beställa mat', dutch: 'Ik zou graag eten willen bestellen', pronunciation: 'Jaag skoelee vilja bestella maat', difficulty: 'medium' },
+                    { id: 'd5', swedish: 'Hur mycket kostar det här?', dutch: 'Hoeveel kost dit?', pronunciation: 'Hoer myket kostar det heer?', difficulty: 'easy' },
+                    { id: 'd6', swedish: 'Jag gillar kaffe', dutch: 'Ik hou van koffie', pronunciation: 'Jaag gillar kaffee', difficulty: 'easy' },
+                    { id: 'd7', swedish: 'Vad ska vi göra idag?', dutch: 'Wat gaan we vandaag doen?', pronunciation: 'Vad skaa vee joera eedaag?', difficulty: 'medium' }
+                ]
+            },
+            work: {
+                name: 'Werk',
+                icon: '💼',
+                color: 'blue',
+                phrases: [
+                    { id: 'w1', swedish: 'Jag arbetar som lärare', dutch: 'Ik werk als leraar', pronunciation: 'Jaag arbeetar som leerare', difficulty: 'easy' },
+                    { id: 'w2', swedish: 'Vi har möte klockan tre', dutch: 'We hebben om drie uur een vergadering', pronunciation: 'Vee haar moete klockan tree', difficulty: 'medium' },
+                    { id: 'w3', swedish: 'Kan du skicka rapporten till mig?', dutch: 'Kun je het rapport naar mij sturen?', pronunciation: 'Kan doe skicka rapporten til mei?', difficulty: 'medium' },
+                    { id: 'w4', swedish: 'Jag studerar svenska på universitetet', dutch: 'Ik studeer Zweeds aan de universiteit', pronunciation: 'Jaag stoederar svenska paw oeniversiteetet', difficulty: 'hard' },
+                    { id: 'w5', swedish: 'Projektet går bra', dutch: 'Het project gaat goed', pronunciation: 'Projeket gawr braa', difficulty: 'easy' },
+                    { id: 'w6', swedish: 'Jag behöver mer tid', dutch: 'Ik heb meer tijd nodig', pronunciation: 'Jaag behoever meer teed', difficulty: 'easy' }
+                ]
+            },
+            travel: {
+                name: 'Reizen',
+                icon: '✈️',
+                color: 'indigo',
+                phrases: [
+                    { id: 't1', swedish: 'Var är tågstationen?', dutch: 'Waar is het treinstation?', pronunciation: 'Vaar er taagstasjoonen?', difficulty: 'easy' },
+                    { id: 't2', swedish: 'Jag behöver en biljett till Stockholm', dutch: 'Ik heb een kaartje naar Stockholm nodig', pronunciation: 'Jaag behoever en biljett til Stockholm', difficulty: 'medium' },
+                    { id: 't3', swedish: 'Hur lång tid tar det?', dutch: 'Hoe lang duurt het?', pronunciation: 'Hoer lawng teed taar det?', difficulty: 'easy' },
+                    { id: 't4', swedish: 'Kan jag få ett enkelrum för en natt?', dutch: 'Kan ik een eenpersoonskamer voor één nacht krijgen?', pronunciation: 'Kan jaag faw et enkelroem foer en nat?', difficulty: 'hard' },
+                    { id: 't5', swedish: 'När avgår nästa buss?', dutch: 'Wanneer vertrekt de volgende bus?', pronunciation: 'Neer avgawr nesta boes?', difficulty: 'medium' },
+                    { id: 't6', swedish: 'Jag är turist', dutch: 'Ik ben een toerist', pronunciation: 'Jaag er toerist', difficulty: 'easy' }
+                ]
+            },
+            conversation: {
+                name: 'Praten',
+                icon: '📖',
+                color: 'green',
+                phrases: [
+                    { id: 'c1', swedish: 'Vad tycker du om Sverige?', dutch: 'Wat vind je van Zweden?', pronunciation: 'Vad tyker doe om Sverije?', difficulty: 'easy' },
+                    { id: 'c2', swedish: 'Jag älskar att resa och upptäcka nya platser', dutch: 'Ik hou van reizen en nieuwe plekken ontdekken', pronunciation: 'Jaag elskar at reesa ok oeptekka nya platser', difficulty: 'hard' },
+                    { id: 'c3', swedish: 'Vilka hobbyer har du?', dutch: 'Welke hobbies heb je?', pronunciation: 'Vilka hobbyer haar doe?', difficulty: 'easy' },
+                    { id: 'c4', swedish: 'På helgerna brukar jag träffa mina vänner', dutch: 'In het weekend ontmoet ik meestal mijn vrienden', pronunciation: 'Paw helgerna broekar jaag trefa meena venner', difficulty: 'hard' },
+                    { id: 'c5', swedish: 'Har du några planer för sommaren?', dutch: 'Heb je plannen voor de zomer?', pronunciation: 'Haar doe nawgra planer foer sommaren?', difficulty: 'medium' },
+                    { id: 'c6', swedish: 'Det är jätteroligt', dutch: 'Het is heel leuk', pronunciation: 'Det er jetterolikt', difficulty: 'easy' }
+                ]
+            }
+        };
+
+        const badges = {
+            firstSteps: { id: 'firstSteps', name: 'Eerste Stappen', icon: '👣', description: 'Voltooi je eerste zin', requirement: 1, type: 'phrases' },
+            beginner: { id: 'beginner', name: 'Beginner', icon: '🌱', description: 'Voltooi 10 zinnen', requirement: 10, type: 'phrases' },
+            intermediate: { id: 'intermediate', name: 'Gevorderde', icon: '🌿', description: 'Voltooi 25 zinnen', requirement: 25, type: 'phrases' },
+            expert: { id: 'expert', name: 'Expert', icon: '🌳', description: 'Voltooi 50 zinnen', requirement: 50, type: 'phrases' },
+            perfectionist: { id: 'perfectionist', name: 'Perfectionist', icon: '💎', description: 'Haal 10 perfecte scores', requirement: 10, type: 'perfect' },
+            dedicated: { id: 'dedicated', name: 'Toegewijd', icon: '🔥', description: '5 dagen streak', requirement: 5, type: 'streak' },
+            onFire: { id: 'onFire', name: 'On Fire', icon: '🔥🔥', description: '10 dagen streak', requirement: 10, type: 'streak' },
+            unstoppable: { id: 'unstoppable', name: 'Onstuitbaar', icon: '⚡', description: '20 dagen streak', requirement: 20, type: 'streak' },
+            categoryMaster: { id: 'categoryMaster', name: 'Categorie Meester', icon: '🎯', description: 'Voltooi alle zinnen in een categorie', requirement: 1, type: 'category' },
+            allRounder: { id: 'allRounder', name: 'Allrounder', icon: '🌟', description: 'Voltooi alle categorieën', requirement: 5, type: 'allCategories' },
+            speedster: { id: 'speedster', name: 'Speedster', icon: '⚡', description: 'Voltooi 20 zinnen op één dag', requirement: 20, type: 'dailyPhrases' },
+            levelUp: { id: 'levelUp', name: 'Level Up', icon: '📈', description: 'Bereik level 5', requirement: 5, type: 'level' },
+            master: { id: 'master', name: 'Meester', icon: '🏆', description: 'Bereik level 10', requirement: 10, type: 'level' }
+        };
+
+        class SwedishApp {
+            constructor() {
+                this.state = {
+                    currentTab: 'login',
+                    currentCategory: 'greetings',
+                    currentPhraseIndex: 0,
+                    isRecording: false,
+                    audioURL: null,
+                    showAnswer: false,
+                    completedPhrases: [],
+                    newBadge: null,
+                    flashcardCategory: 'greetings',
+                    currentFlashcardIndex: 0,
+                    showFlashcardAnswer: false,
+                    user: null,
+                    leaderboard: [],
+                    stats: this.getDefaultStats()
+                };
+                
+                this.mediaRecorder = null;
+                this.audioChunks = [];
+                
+                this.checkAuth();
+            }
+
+            getDefaultStats() {
+                return {
+                    totalPoints: 0,
+                    level: 1,
+                    streak: 0,
+                    lastPlayedDate: null,
+                    phrasesCompleted: 0,
+                    perfectPhrases: 0,
+                    categoriesCompleted: [],
+                    dailyGoal: 0,
+                    dailyGoalTarget: 10,
+                    badges: [],
+                    displayName: ''
+                };
+            }
+
+            async checkAuth() {
+                if (!supabaseEnabled) {
+                    this.state.currentTab = 'setup';
+                    this.render();
+                    return;
+                }
+
+                const { data: { user } } = await supabase.auth.getUser();
+                
+                if (user) {
+                    this.state.user = user;
+                    await this.loadUserData();
+                    this.state.currentTab = 'home';
+                } else {
+                    this.state.currentTab = 'login';
+                }
+                
+                this.render();
+            }
+
+            async loadUserData() {
+                if (!this.state.user) return;
+
+                try {
+                    const { data, error } = await supabase
+                        .from('user_progress')
+                        .select('*')
+                        .eq('user_id', this.state.user.id)
+                        .single();
+
+                    if (data) {
+                        this.state.stats = data.stats || this.getDefaultStats();
+                        this.state.completedPhrases = data.completed_phrases || [];
+                        this.checkStreak();
+                    } else if (!error || error.code === 'PGRST116') {
+                        // Create new user record
+                        await this.saveUserData();
+                    }
+                } catch (error) {
+                    console.error('Error loading user data:', error);
+                }
+
+                await this.loadLeaderboard();
+            }
+
+            async saveUserData() {
+                if (!this.state.user) return;
+
+                try {
+                    const { error } = await supabase
+                        .from('user_progress')
+                        .upsert({
+                            user_id: this.state.user.id,
+                            stats: this.state.stats,
+                            completed_phrases: this.state.completedPhrases,
+                            updated_at: new Date().toISOString()
+                        });
+
+                    if (error) throw error;
+                } catch (error) {
+                    console.error('Error saving user data:', error);
+                }
+            }
+
+            async loadLeaderboard() {
+                try {
+                    const { data, error } = await supabase
+                        .from('user_progress')
+                        .select('stats')
+                        .order('stats->totalPoints', { ascending: false })
+                        .limit(10);
+
+                    if (data) {
+                        this.state.leaderboard = data.map(item => item.stats);
+                    }
+                } catch (error) {
+                    console.error('Error loading leaderboard:', error);
+                }
+            }
+
+            async signUp(email, password, displayName) {
+                try {
+                    const { data, error } = await supabase.auth.signUp({
+                        email: email,
+                        password: password,
+                    });
+
+                    if (error) throw error;
+
+                    if (data.user) {
+                        this.state.user = data.user;
+                        this.state.stats.displayName = displayName;
+                        await this.saveUserData();
+                        this.state.currentTab = 'home';
+                        this.render();
+                    }
+                } catch (error) {
+                    alert('Registratie mislukt: ' + error.message);
+                }
+            }
+
+            async signIn(email, password) {
+                try {
+                    const { data, error } = await supabase.auth.signInWithPassword({
+                        email: email,
+                        password: password,
+                    });
+
+                    if (error) throw error;
+
+                    if (data.user) {
+                        this.state.user = data.user;
+                        await this.loadUserData();
+                        this.state.currentTab = 'home';
+                        this.render();
+                    }
+                } catch (error) {
+                    alert('Inloggen mislukt: ' + error.message);
+                }
+            }
+
+            async signOut() {
+                try {
+                    await supabase.auth.signOut();
+                    this.state.user = null;
+                    this.state.stats = this.getDefaultStats();
+                    this.state.completedPhrases = [];
+                    this.state.currentTab = 'login';
+                    this.render();
+                } catch (error) {
+                    alert('Uitloggen mislukt: ' + error.message);
+                }
+            }
+
+            checkStreak() {
+                const today = new Date().toDateString();
+                if (this.state.stats.lastPlayedDate !== today) {
+                    const yesterday = new Date();
+                    yesterday.setDate(yesterday.getDate() - 1);
+                    const wasYesterday = this.state.stats.lastPlayedDate === yesterday.toDateString();
+                    
+                    this.state.stats.streak = wasYesterday ? this.state.stats.streak : 0;
+                    this.state.stats.dailyGoal = 0;
+                }
+            }
+
+            speakPhrase(text) {
+                if ('speechSynthesis' in window) {
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.lang = 'sv-SE';
+                    utterance.rate = 0.8;
+                    window.speechSynthesis.cancel();
+                    window.speechSynthesis.speak(utterance);
+                }
+            }
+
+            async startRecording() {
+                try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    this.mediaRecorder = new MediaRecorder(stream);
+                    this.audioChunks = [];
+
+                    this.mediaRecorder.ondataavailable = (event) => {
+                        this.audioChunks.push(event.data);
+                    };
+
+                    this.mediaRecorder.onstop = () => {
+                        const audioBlob = new Blob(this.audioChunks, { type: 'audio/wav' });
+                        const url = URL.createObjectURL(audioBlob);
+                        this.state.audioURL = url;
+                        this.render();
+                    };
+
+                    this.mediaRecorder.start();
+                    this.state.isRecording = true;
+                    this.render();
+                } catch (error) {
+                    alert('Kon geen toegang krijgen tot de microfoon');
+                }
+            }
+
+            stopRecording() {
+                if (this.mediaRecorder && this.state.isRecording) {
+                    this.mediaRecorder.stop();
+                    this.state.isRecording = false;
+                    this.mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                    this.render();
+                }
+            }
+
+            async markAsCompleted(isPerfect = false) {
+                const currentPhrase = categories[this.state.currentCategory].phrases[this.state.currentPhraseIndex];
+                const phraseId = `${this.state.currentCategory}-${currentPhrase.id}`;
+                
+                if (!this.state.completedPhrases.includes(phraseId)) {
+                    this.state.completedPhrases.push(phraseId);
+                    
+                    const points = currentPhrase.difficulty === 'easy' ? 10 : 
+                                 currentPhrase.difficulty === 'medium' ? 15 : 20;
+                    const bonusPoints = isPerfect ? 5 : 0;
+                    
+                    this.state.stats.totalPoints += points + bonusPoints;
+                    this.state.stats.phrasesCompleted += 1;
+                    if (isPerfect) this.state.stats.perfectPhrases += 1;
+                    this.state.stats.dailyGoal += 1;
+                    
+                    const today = new Date().toDateString();
+                    if (this.state.stats.lastPlayedDate !== today) {
+                        const yesterday = new Date();
+                        yesterday.setDate(yesterday.getDate() - 1);
+                        const wasYesterday = this.state.stats.lastPlayedDate === yesterday.toDateString();
+                        this.state.stats.streak = wasYesterday ? this.state.stats.streak + 1 : 1;
+                    }
+                    this.state.stats.lastPlayedDate = today;
+                    
+                    this.state.stats.level = Math.floor(this.state.stats.totalPoints / 100) + 1;
+                    
+                    const categoryPhrases = categories[this.state.currentCategory].phrases;
+                    const completedInCategory = categoryPhrases.filter(p => 
+                        this.state.completedPhrases.includes(`${this.state.currentCategory}-${p.id}`)
+                    ).length;
+                    
+                    if (completedInCategory === categoryPhrases.length && 
+                        !this.state.stats.categoriesCompleted.includes(this.state.currentCategory)) {
+                        this.state.stats.categoriesCompleted.push(this.state.currentCategory);
+                    }
+                    
+                    this.checkBadges();
+                    await this.saveUserData();
+                    await this.loadLeaderboard();
+                }
+                
+                this.state.audioURL = null;
+                this.render();
+            }
+
+            checkBadges() {
+                Object.values(badges).forEach(badge => {
+                    if (!this.state.stats.badges.includes(badge.id)) {
+                        let shouldAward = false;
+                        
+                        switch (badge.type) {
+                            case 'phrases':
+                                shouldAward = this.state.stats.phrasesCompleted >= badge.requirement;
+                                break;
+                            case 'perfect':
+                                shouldAward = this.state.stats.perfectPhrases >= badge.requirement;
+                                break;
+                            case 'streak':
+                                shouldAward = this.state.stats.streak >= badge.requirement;
+                                break;
+                            case 'category':
+                                shouldAward = this.state.stats.categoriesCompleted.length >= badge.requirement;
+                                break;
+                            case 'allCategories':
+                                shouldAward = this.state.stats.categoriesCompleted.length >= 5;
+                                break;
+                            case 'level':
+                                shouldAward = this.state.stats.level >= badge.requirement;
+                                break;
+                            case 'dailyPhrases':
+                                shouldAward = this.state.stats.dailyGoal >= badge.requirement;
+                                break;
+                        }
+                        
+                        if (shouldAward) {
+                            this.state.stats.badges.push(badge.id);
+                            this.state.newBadge = badge;
+                            setTimeout(() => {
+                                this.state.newBadge = null;
+                                this.render();
+                            }, 3000);
+                        }
+                    }
+                });
+            }
+
+            render() {
+                const app = document.getElementById('app');
+                
+                if (this.state.currentTab === 'setup') {
+                    app.innerHTML = this.renderSetup();
+                } else if (this.state.currentTab === 'login') {
+                    app.innerHTML = this.renderLogin();
+                } else {
+                    app.innerHTML = `
+                        ${this.state.newBadge ? this.renderNewBadge() : ''}
+                        ${this.renderHeader()}
+                        <div class="p-4 max-w-2xl mx-auto pb-28">
+                            ${this.state.currentTab === 'home' ? this.renderHome() : ''}
+                            ${this.state.currentTab === 'practice' ? this.renderPractice() : ''}
+                            ${this.state.currentTab === 'flashcards' ? this.renderFlashcards() : ''}
+                            ${this.state.currentTab === 'badges' ? this.renderBadges() : ''}
+                            ${this.state.currentTab === 'leaderboard' ? this.renderLeaderboard() : ''}
+                        </div>
+                        ${this.renderBottomNav()}
+                    `;
+                }
+                this.attachEventListeners();
+            }
+
+            renderSetup() {
+                return `
+                    <div class="min-h-screen flex items-center justify-center p-4">
+                        <div class="glass-effect rounded-2xl p-8 card-shadow max-w-md w-full">
+                            <div class="text-center mb-6">
+                                <h1 class="text-3xl font-bold gradient-text mb-2">Zweeds B1 🇸🇪</h1>
+                                <p class="text-gray-600">Setup vereist</p>
+                            </div>
+                            
+                            <div class="bg-yellow-50 border-2 border-yellow-400 rounded-xl p-4 mb-6">
+                                <h3 class="font-bold text-yellow-900 mb-2 flex items-center gap-2">
+                                    <i class="fas fa-exclamation-triangle"></i> Supabase configuratie nodig
+                                </h3>
+                                <p class="text-sm text-yellow-800 mb-3">
+                                    Om accounts te gebruiken, moet je eerst een gratis Supabase project aanmaken:
+                                </p>
+                                <ol class="text-sm text-yellow-800 space-y-2 list-decimal list-inside">
+                                    <li>Ga naar <strong>supabase.com</strong></li>
+                                    <li>Maak een gratis account</li>
+                                    <li>Maak een nieuw project</li>
+                                    <li>Ga naar Settings → API</li>
+                                    <li>Kopieer Project URL en anon key</li>
+                                    <li>Plak ze bovenin dit HTML bestand</li>
+                                </ol>
+                            </div>
+
+                            <div class="bg-blue-50 border-2 border-blue-400 rounded-xl p-4 mb-6">
+                                <h3 class="font-bold text-blue-900 mb-2 flex items-center gap-2">
+                                    <i class="fas fa-database"></i> Database tabel aanmaken
+                                </h3>
+                                <p class="text-sm text-blue-800 mb-2">
+                                    Run deze SQL in je Supabase SQL Editor:
+                                </p>
+                                <pre class="bg-gray-800 text-green-400 p-3 rounded text-xs overflow-x-auto">
+create table user_progress (
+  user_id uuid references auth.users primary key,
+  stats jsonb,
+  completed_phrases text[],
+  updated_at timestamp with time zone default now()
+);
+
+alter table user_progress enable row level security;
+
+create policy "Users can view own progress"
+  on user_progress for select
+  using (auth.uid() = user_id);
+
+create policy "Users can update own progress"
+  on user_progress for all
+  using (auth.uid() = user_id);
+                                </pre>
+                            </div>
+
+                            <button onclick="location.reload()" 
+                                    class="w-full py-4 rounded-xl font-bold text-white card-hover card-shadow"
+                                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                <i class="fas fa-redo mr-2"></i>Opnieuw laden na setup
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderLogin() {
+                return `
+                    <div class="min-h-screen flex items-center justify-center p-4">
+                        <div class="glass-effect rounded-2xl p-8 card-shadow max-w-md w-full animate-slideUp">
+                            <div class="text-center mb-8">
+                                <h1 class="text-4xl font-bold gradient-text mb-2">Zweeds B1 🇸🇪</h1>
+                                <p class="text-gray-600">Leer Zweeds met gamification</p>
+                            </div>
+                            
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Email</label>
+                                    <input type="email" id="email" placeholder="jouw@email.com"
+                                           class="w-full p-4 border-2 border-gray-200 rounded-xl font-medium">
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Wachtwoord</label>
+                                    <input type="password" id="password" placeholder="••••••••"
+                                           class="w-full p-4 border-2 border-gray-200 rounded-xl font-medium">
+                                </div>
+                                
+                                <div id="displayNameField" style="display: none;">
+                                    <label class="block text-sm font-semibold text-gray-700 mb-2">Naam (voor leaderboard)</label>
+                                    <input type="text" id="displayName" placeholder="Jouw naam"
+                                           class="w-full p-4 border-2 border-gray-200 rounded-xl font-medium">
+                                </div>
+                                
+                                <button onclick="app.handleLogin()" 
+                                        class="w-full py-4 rounded-xl font-bold text-white card-hover card-shadow"
+                                        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                    <i class="fas fa-sign-in-alt mr-2"></i>Inloggen
+                                </button>
+                                
+                                <button onclick="app.toggleSignUp()" 
+                                        class="w-full py-4 glass-effect rounded-xl font-bold text-gray-700 card-hover card-shadow">
+                                    <i class="fas fa-user-plus mr-2"></i>Nog geen account? Registreer
+                                </button>
+                            </div>
+                            
+                            <div class="mt-6 text-center text-sm text-gray-600">
+                                <p>✨ Sync tussen apparaten</p>
+                                <p>🏆 Leaderboard met vrienden</p>
+                                <p>📊 Cloud backup van je voortgang</p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            toggleSignUp() {
+                const displayNameField = document.getElementById('displayNameField');
+                const button = event.target;
+                
+                if (displayNameField.style.display === 'none') {
+                    displayNameField.style.display = 'block';
+                    button.innerHTML = '<i class="fas fa-arrow-left mr-2"></i>Terug naar inloggen';
+                    button.previousElementSibling.innerHTML = '<i class="fas fa-user-plus mr-2"></i>Registreren';
+                } else {
+                    displayNameField.style.display = 'none';
+                    button.innerHTML = '<i class="fas fa-user-plus mr-2"></i>Nog geen account? Registreer';
+                    button.previousElementSibling.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i>Inloggen';
+                }
+            }
+
+            async handleLogin() {
+                const email = document.getElementById('email').value;
+                const password = document.getElementById('password').value;
+                const displayNameField = document.getElementById('displayNameField');
+                
+                if (!email || !password) {
+                    alert('Vul email en wachtwoord in');
+                    return;
+                }
+                
+                if (displayNameField.style.display !== 'none') {
+                    const displayName = document.getElementById('displayName').value;
+                    if (!displayName) {
+                        alert('Vul een naam in');
+                        return;
+                    }
+                    await this.signUp(email, password, displayName);
+                } else {
+                    await this.signIn(email, password);
+                }
+            }
+
+            renderNewBadge() {
+                return `
+                    <div class="fixed top-20 left-1/2 transform -translate-x-1/2 rounded-2xl card-shadow p-6 z-50 animate-bounce" 
+                         style="margin-left: -120px; width: 240px; background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);">
+                        <div class="text-center">
+                            <div class="text-6xl mb-3">${this.state.newBadge.icon}</div>
+                            <h3 class="font-bold text-gray-800 text-lg mb-1">Nieuwe Badge!</h3>
+                            <p class="text-sm font-semibold text-gray-700">${this.state.newBadge.name}</p>
+                            <p class="text-xs text-gray-600 mt-2">${this.state.newBadge.description}</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderHeader() {
+                return `
+                    <div class="glass-effect shadow-xl sticky top-0 z-10" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px);">
+                        <div class="p-4">
+                            <div class="flex items-center justify-between mb-2">
+                                <h1 class="text-3xl font-bold gradient-text">Zweeds B1 🇸🇪</h1>
+                                <button onclick="app.signOut()" 
+                                        class="px-4 py-2 bg-red-100 text-red-600 rounded-lg font-semibold text-sm card-hover">
+                                    <i class="fas fa-sign-out-alt mr-1"></i>Uitloggen
+                                </button>
+                            </div>
+                            <div class="flex items-center gap-2 text-xs text-gray-600 mb-2">
+                                <i class="fas fa-user"></i>
+                                <span>${this.state.stats.displayName || this.state.user?.email || 'Gebruiker'}</span>
+                            </div>
+                            <div class="flex items-center gap-4 text-sm">
+                                <div class="flex items-center gap-1 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-3 py-1.5 rounded-full font-semibold">
+                                    <i class="fas fa-trophy"></i>
+                                    <span>Level ${this.state.stats.level}</span>
+                                </div>
+                                <div class="flex items-center gap-1 bg-gradient-to-r from-red-500 to-pink-500 text-white px-3 py-1.5 rounded-full font-semibold">
+                                    <i class="fas fa-fire"></i>
+                                    <span>${this.state.stats.streak}</span>
+                                </div>
+                                <div class="flex items-center gap-1 bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-3 py-1.5 rounded-full font-semibold">
+                                    <i class="fas fa-star"></i>
+                                    <span>${this.state.stats.totalPoints}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderHome() {
+                const levelProgress = (this.state.stats.totalPoints % 100);
+                const dailyProgress = (this.state.stats.dailyGoal / this.state.stats.dailyGoalTarget) * 100;
+                
+                return `
+                    <div class="space-y-4 animate-slideUp">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div class="card-shadow rounded-2xl p-5 text-white card-hover" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                <div class="flex items-center justify-between mb-3">
+                                    <i class="fas fa-trophy text-3xl"></i>
+                                    <span class="text-3xl font-bold">${this.state.stats.level}</span>
+                                </div>
+                                <p class="text-sm opacity-90 font-medium mb-2">Level</p>
+                                <div class="bg-white/20 rounded-full h-2.5 overflow-hidden">
+                                    <div class="bg-white rounded-full h-2.5 progress-bar" style="width: ${levelProgress}%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="card-shadow rounded-2xl p-5 text-white card-hover" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                                <div class="flex items-center justify-between mb-3">
+                                    <i class="fas fa-fire text-3xl"></i>
+                                    <span class="text-3xl font-bold">${this.state.stats.streak}</span>
+                                </div>
+                                <p class="text-sm opacity-90 font-medium">Dagen Streak</p>
+                                <p class="text-xs opacity-75 mt-1">Blijf leren! 🔥</p>
+                            </div>
+                            
+                            <div class="card-shadow rounded-2xl p-5 text-white card-hover" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                                <div class="flex items-center justify-between mb-3">
+                                    <i class="fas fa-bullseye text-3xl"></i>
+                                    <span class="text-2xl font-bold">${this.state.stats.dailyGoal}/${this.state.stats.dailyGoalTarget}</span>
+                                </div>
+                                <p class="text-sm opacity-90 font-medium mb-2">Dagelijks Doel</p>
+                                <div class="bg-white/20 rounded-full h-2.5 overflow-hidden">
+                                    <div class="bg-white rounded-full h-2.5 progress-bar" style="width: ${dailyProgress}%"></div>
+                                </div>
+                            </div>
+                            
+                            <div class="card-shadow rounded-2xl p-5 text-white card-hover" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+                                <div class="flex items-center justify-between mb-3">
+                                    <i class="fas fa-star text-3xl"></i>
+                                    <span class="text-3xl font-bold">${this.state.stats.totalPoints}</span>
+                                </div>
+                                <p class="text-sm opacity-90 font-medium">Totale Punten</p>
+                                <p class="text-xs opacity-75 mt-1">${this.state.stats.phrasesCompleted} zinnen ✨</p>
+                            </div>
+                        </div>
+                        
+                        ${this.state.stats.dailyGoal >= this.state.stats.dailyGoalTarget ? `
+                            <div class="glass-effect rounded-2xl p-4 card-shadow border-2 border-green-400">
+                                <div class="flex items-center gap-3">
+                                    <div class="bg-green-500 rounded-full p-3">
+                                        <i class="fas fa-check text-white text-xl"></i>
+                                    </div>
+                                    <div>
+                                        <h3 class="font-bold text-gray-800 text-lg">Dagelijks Doel Behaald!</h3>
+                                        <p class="text-sm text-gray-600">Geweldig werk vandaag! 🎉</p>
+                                    </div>
+                                </div>
+                            </div>
+                        ` : `
+                            <div class="glass-effect rounded-2xl p-4 card-shadow">
+                                <div class="flex items-center justify-between mb-2">
+                                    <h3 class="font-bold text-gray-800">Nog ${this.state.stats.dailyGoalTarget - this.state.stats.dailyGoal} zinnen vandaag!</h3>
+                                    <i class="fas fa-bolt text-yellow-500 text-xl"></i>
+                                </div>
+                                <p class="text-sm text-gray-600">Blijf oefenen om je doel te behalen ⚡</p>
+                            </div>
+                        `}
+                        
+                        <div class="glass-effect rounded-2xl p-5 card-shadow">
+                            <h3 class="font-bold text-gray-800 mb-4 text-lg">Kies een categorie</h3>
+                            <div class="grid grid-cols-2 gap-3">
+                                ${Object.entries(categories).map(([key, category]) => {
+                                    const totalPhrases = category.phrases.length;
+                                    const completed = category.phrases.filter(p => 
+                                        this.state.completedPhrases.includes(`${key}-${p.id}`)
+                                    ).length;
+                                    const isFullyCompleted = completed === totalPhrases;
+                                    const progress = (completed / totalPhrases) * 100;
+                                    
+                                    const gradients = {
+                                        pink: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+                                        amber: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+                                        blue: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+                                        indigo: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                                        green: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)'
+                                    };
+                                    
+                                    return `
+                                        <button onclick="app.selectCategory('${key}')" 
+                                                class="card-shadow rounded-xl p-4 text-white card-hover relative overflow-hidden"
+                                                style="background: ${gradients[category.color]};">
+                                            <div class="flex items-center justify-between mb-2">
+                                                <span class="text-3xl">${category.icon}</span>
+                                                ${isFullyCompleted ? '<i class="fas fa-crown text-yellow-300 text-xl"></i>' : ''}
+                                            </div>
+                                            <p class="text-sm font-bold text-left mb-1">${category.name}</p>
+                                            <p class="text-xs opacity-90 text-left mb-2">${completed}/${totalPhrases} voltooid</p>
+                                            <div class="bg-white/30 rounded-full h-1.5 overflow-hidden">
+                                                <div class="bg-white rounded-full h-1.5 progress-bar" style="width: ${progress}%"></div>
+                                            </div>
+                                        </button>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                        
+                        ${this.state.stats.badges.length > 0 ? `
+                            <div class="glass-effect rounded-2xl p-5 card-shadow">
+                                <div class="flex items-center justify-between mb-4">
+                                    <h3 class="font-bold text-gray-800 text-lg">Recente Badges</h3>
+                                    <i class="fas fa-medal text-yellow-500 text-xl"></i>
+                                </div>
+                                <div class="grid grid-cols-4 gap-2">
+                                    ${this.state.stats.badges.slice(-4).map(badgeId => {
+                                        const badge = badges[badgeId];
+                                        return `
+                                            <div class="card-shadow rounded-xl p-3 text-center" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);">
+                                                <div class="text-3xl mb-1">${badge.icon}</div>
+                                                <p class="text-xs font-semibold text-gray-800">${badge.name}</p>
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }
+
+            renderPractice() {
+                const currentPhrase = categories[this.state.currentCategory].phrases[this.state.currentPhraseIndex];
+                const phraseId = `${this.state.currentCategory}-${currentPhrase.id}`;
+                const isCompleted = this.state.completedPhrases.includes(phraseId);
+                const difficultyClass = this.getDifficultyClass(currentPhrase.difficulty);
+                const difficultyText = this.getDifficultyText(currentPhrase.difficulty);
+                
+                return `
+                    <div class="space-y-4 animate-slideUp">
+                        <div class="glass-effect rounded-2xl p-5 card-shadow">
+                            <div class="flex justify-between items-center mb-4">
+                                <div class="flex items-center gap-2">
+                                    <span class="text-2xl">${categories[this.state.currentCategory].icon}</span>
+                                    <span class="font-bold text-gray-800">${categories[this.state.currentCategory].name}</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-sm text-gray-600 font-medium">
+                                        ${this.state.currentPhraseIndex + 1}/${categories[this.state.currentCategory].phrases.length}
+                                    </span>
+                                    ${isCompleted ? '<i class="fas fa-check-circle text-green-500 text-xl"></i>' : ''}
+                                </div>
+                            </div>
+                            
+                            <span class="${difficultyClass} inline-block px-4 py-1.5 rounded-full text-xs font-bold mb-4">
+                                ${difficultyText}
+                            </span>
+                            
+                            <div class="rounded-2xl p-5 mb-4 card-shadow" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                <div class="flex items-start justify-between mb-3">
+                                    <div class="flex-1 text-white">
+                                        <p class="text-sm font-semibold mb-2 opacity-90">Zweeds:</p>
+                                        <p class="text-2xl font-bold mb-3">${currentPhrase.swedish}</p>
+                                        <p class="text-sm opacity-80 italic">💬 ${currentPhrase.pronunciation}</p>
+                                    </div>
+                                    <button onclick="app.speakPhrase('${currentPhrase.swedish.replace(/'/g, "\\'")}')" 
+                                            class="bg-white/20 hover:bg-white/30 text-white p-4 rounded-full flex-shrink-0 card-hover backdrop-blur-sm">
+                                        <i class="fas fa-volume-up text-xl"></i>
+                                    </button>
+                                </div>
+                                
+                                ${this.state.showAnswer ? `
+                                    <div class="border-t border-white/20 pt-3 animate-fadeIn">
+                                        <p class="text-sm font-semibold text-white opacity-90 mb-1">Nederlands:</p>
+                                        <p class="text-lg text-white font-medium">${currentPhrase.dutch}</p>
+                                    </div>
+                                ` : ''}
+                            </div>
+                            
+                            <div class="space-y-3 mb-4">
+                                <button onclick="app.toggleAnswer()" 
+                                        class="w-full py-4 glass-effect rounded-xl font-bold text-gray-700 card-hover card-shadow">
+                                    ${this.state.showAnswer ? '🙈 Verberg vertaling' : '👁️ Toon vertaling'}
+                                </button>
+                                
+                                ${!this.state.isRecording && !this.state.audioURL ? `
+                                    <button onclick="app.startRecording()" 
+                                            class="w-full py-5 rounded-xl font-bold text-white card-hover card-shadow text-lg"
+                                            style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                                        <i class="fas fa-microphone mr-2"></i>Start Opname
+                                    </button>
+                                ` : ''}
+                                
+                                ${this.state.isRecording ? `
+                                    <button onclick="app.stopRecording()" 
+                                            class="w-full py-5 rounded-xl font-bold text-white animate-pulse card-shadow text-lg"
+                                            style="background: linear-gradient(135deg, #f5576c 0%, #c44569 100%);">
+                                        <i class="fas fa-stop-circle mr-2"></i>Stop Opname
+                                    </button>
+                                ` : ''}
+                                
+                                ${this.state.audioURL ? `
+                                    <div class="space-y-3">
+                                        <audio src="${this.state.audioURL}" controls class="w-full card-shadow"></audio>
+                                        <div class="grid grid-cols-2 gap-3">
+                                            <button onclick="app.markAsCompleted(false)" 
+                                                    class="py-4 rounded-xl font-bold text-white card-hover card-shadow"
+                                                    style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);">
+                                                <i class="fas fa-star mr-1"></i> Goed!
+                                            </button>
+                                            <button onclick="app.markAsCompleted(true)" 
+                                                    class="py-4 rounded-xl font-bold text-white card-hover card-shadow"
+                                                    style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                                                <i class="fas fa-gem mr-1"></i> Perfect!
+                                            </button>
+                                        </div>
+                                        <button onclick="app.resetAudio()" 
+                                                class="w-full py-3 glass-effect rounded-xl text-gray-700 card-hover card-shadow font-semibold">
+                                            <i class="fas fa-redo mr-2"></i>Opnieuw opnemen
+                                        </button>
+                                    </div>
+                                ` : ''}
+                            </div>
+                            
+                            <div class="flex gap-3">
+                                <button onclick="app.previousPhrase()" 
+                                        class="flex-1 py-4 glass-effect rounded-xl text-gray-700 card-hover card-shadow font-bold">
+                                    <i class="fas fa-chevron-left mr-2"></i>Vorige
+                                </button>
+                                <button onclick="app.nextPhrase()" 
+                                        class="flex-1 py-4 rounded-xl text-white card-hover card-shadow font-bold"
+                                        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                    Volgende<i class="fas fa-chevron-right ml-2"></i>
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div class="glass-effect rounded-2xl p-4 card-shadow border-2 border-blue-200">
+                            <h4 class="font-bold text-blue-900 mb-2 flex items-center gap-2">
+                                <i class="fas fa-lightbulb text-yellow-500"></i> Tip
+                            </h4>
+                            <p class="text-sm text-blue-800">
+                                Luister eerst goed naar de uitspraak, neem jezelf op, en luister kritisch terug. 
+                                Kies "Perfect!" alleen als je echt tevreden bent! 🎯
+                            </p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderFlashcards() {
+                const allPhrases = categories[this.state.flashcardCategory].phrases;
+                const currentCard = allPhrases[this.state.currentFlashcardIndex];
+                
+                return `
+                    <div class="space-y-4 animate-slideUp">
+                        <div class="glass-effect rounded-2xl p-4 card-shadow">
+                            <h3 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                                <i class="fas fa-layer-group text-purple-600"></i> Kies categorie
+                            </h3>
+                            <select onchange="app.changeFlashcardCategory(this.value)" 
+                                    class="w-full p-4 border-2 border-gray-200 rounded-xl font-semibold text-gray-700 focus:border-purple-500 focus:outline-none">
+                                ${Object.entries(categories).map(([key, category]) => `
+                                    <option value="${key}" ${key === this.state.flashcardCategory ? 'selected' : ''}>
+                                        ${category.icon} ${category.name}
+                                    </option>
+                                `).join('')}
+                            </select>
+                        </div>
+                        
+                        <div onclick="app.toggleFlashcard()" 
+                             class="glass-effect rounded-2xl card-shadow overflow-hidden cursor-pointer min-h-[320px] flex flex-col card-hover">
+                            <div class="p-4 text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-sm font-bold">
+                                        <i class="fas fa-cards mr-1"></i> ${this.state.currentFlashcardIndex + 1} / ${allPhrases.length}
+                                    </span>
+                                    <span class="text-sm font-semibold">Tik om om te draaien 🔄</span>
+                                </div>
+                            </div>
+                            
+                            <div class="flex-1 flex items-center justify-center p-8">
+                                ${!this.state.showFlashcardAnswer ? `
+                                    <div class="text-center">
+                                        <p class="text-sm text-gray-500 mb-3 font-semibold uppercase tracking-wide">Zweeds</p>
+                                        <p class="text-3xl font-bold text-gray-900 mb-4">${currentCard.swedish}</p>
+                                        <button onclick="event.stopPropagation(); app.speakPhrase('${currentCard.swedish.replace(/'/g, "\\'")}')" 
+                                                class="px-6 py-3 rounded-full font-bold card-hover card-shadow"
+                                                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                                                <i class="fas fa-volume-up mr-2"></i>Luister
+                                        </button>
+                                    </div>
+                                ` : `
+                                    <div class="text-center">
+                                        <p class="text-sm text-gray-500 mb-3 font-semibold uppercase tracking-wide">Nederlands</p>
+                                        <p class="text-2xl font-bold text-gray-900 mb-3">${currentCard.dutch}</p>
+                                        <p class="text-sm text-gray-600 italic bg-gray-100 px-4 py-2 rounded-full inline-block">
+                                            💬 ${currentCard.pronunciation}
+                                        </p>
+                                    </div>
+                                `}
+                            </div>
+                        </div>
+                        
+                        <div class="flex gap-3">
+                            <button onclick="app.previousFlashcard()" 
+                                    class="flex-1 py-5 glass-effect rounded-xl text-gray-700 card-hover card-shadow font-bold text-xl">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button onclick="app.nextFlashcard()" 
+                                    class="flex-1 py-5 rounded-xl text-white card-hover card-shadow font-bold text-xl"
+                                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="glass-effect rounded-2xl p-4 card-shadow border-2 border-purple-200">
+                            <h4 class="font-bold text-purple-900 mb-2 flex items-center gap-2">
+                                <i class="fas fa-book text-purple-600"></i> Flashcard Tip
+                            </h4>
+                            <p class="text-sm text-purple-800">
+                                Probeer eerst zelf het antwoord te bedenken voordat je de kaart omdraait! 
+                                Spreek de Zweedse zin hardop uit voor betere memorisatie. 🧠
+                            </p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderBadges() {
+                return `
+                    <div class="space-y-4 animate-slideUp">
+                        <div class="glass-effect rounded-2xl p-5 card-shadow">
+                            <h3 class="text-2xl font-bold text-gray-800 mb-2 flex items-center gap-2">
+                                <i class="fas fa-trophy text-yellow-500"></i> Jouw Badges
+                            </h3>
+                            <p class="text-sm text-gray-600 mb-4">
+                                <span class="font-bold text-purple-600">${this.state.stats.badges.length}</span> van ${Object.keys(badges).length} badges behaald
+                            </p>
+                            
+                            <div class="grid grid-cols-2 gap-3">
+                                ${Object.values(badges).map(badge => {
+                                    const earned = this.state.stats.badges.includes(badge.id);
+                                    return `
+                                        <div class="p-4 rounded-xl border-2 card-hover ${earned ? 
+                                            'card-shadow border-yellow-400' : 
+                                            'bg-gray-50 border-gray-200 opacity-60'}"
+                                            style="${earned ? 'background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);' : ''}">
+                                            <div class="text-5xl mb-2 text-center">
+                                                ${earned ? badge.icon : '🔒'}
+                                            </div>
+                                            <h4 class="font-bold text-sm text-center mb-1 text-gray-800">
+                                                ${badge.name}
+                                            </h4>
+                                            <p class="text-xs text-center text-gray-600">
+                                                ${badge.description}
+                                            </p>
+                                            ${!earned ? `
+                                                <div class="mt-2 text-center">
+                                                    <span class="text-xs bg-gray-200 px-2 py-1 rounded-full font-semibold text-gray-600">
+                                                        ${badge.requirement} ${badge.type === 'phrases' ? 'zinnen' : 
+                                                          badge.type === 'perfect' ? 'perfect' : 
+                                                          badge.type === 'streak' ? 'dagen' : 
+                                                          badge.type === 'level' ? 'level' : ''}
+                                                    </span>
+                                                </div>
+                                            ` : ''}
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                        
+                        <div class="rounded-2xl p-5 card-shadow text-white"
+                             style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <h4 class="font-bold mb-4 text-lg flex items-center gap-2">
+                                <i class="fas fa-chart-line"></i> Jouw Progressie
+                            </h4>
+                            <div class="space-y-3 text-sm">
+                                <div class="flex justify-between items-center bg-white/10 rounded-lg p-3 backdrop-blur-sm">
+                                    <span class="font-medium">Zinnen voltooid:</span>
+                                    <span class="font-bold text-lg">${this.state.stats.phrasesCompleted}</span>
+                                </div>
+                                <div class="flex justify-between items-center bg-white/10 rounded-lg p-3 backdrop-blur-sm">
+                                    <span class="font-medium">Perfecte scores:</span>
+                                    <span class="font-bold text-lg">${this.state.stats.perfectPhrases}</span>
+                                </div>
+                                <div class="flex justify-between items-center bg-white/10 rounded-lg p-3 backdrop-blur-sm">
+                                    <span class="font-medium">Huidige streak:</span>
+                                    <span class="font-bold text-lg">${this.state.stats.streak} 🔥</span>
+                                </div>
+                                <div class="flex justify-between items-center bg-white/10 rounded-lg p-3 backdrop-blur-sm">
+                                    <span class="font-medium">Categorieën voltooid:</span>
+                                    <span class="font-bold text-lg">${this.state.stats.categoriesCompleted.length}/5</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderLeaderboard() {
+                return `
+                    <div class="space-y-4 animate-slideUp">
+                        <div class="glass-effect rounded-2xl p-5 card-shadow">
+                            <h3 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                <i class="fas fa-trophy text-yellow-500"></i> Leaderboard
+                            </h3>
+                            
+                            ${this.state.leaderboard.length === 0 ? `
+                                <div class="text-center py-8 text-gray-600">
+                                    <i class="fas fa-users text-4xl mb-3 text-gray-400"></i>
+                                    <p>Nog geen andere spelers!</p>
+                                    <p class="text-sm mt-2">Deel de app met vrienden 🚀</p>
+                                </div>
+                            ` : `
+                                <div class="space-y-2">
+                                    ${this.state.leaderboard.map((player, index) => {
+                                        const isCurrentUser = player.displayName === this.state.stats.displayName;
+                                        const medals = ['🥇', '🥈', '🥉'];
+                                        
+                                        return `
+                                            <div class="flex items-center gap-3 p-4 rounded-xl ${
+                                                isCurrentUser ? 'bg-gradient-to-r from-purple-100 to-pink-100 border-2 border-purple-400' : 'bg-gray-50'
+                                            }">
+                                                <div class="text-2xl font-bold w-8">
+                                                    ${index < 3 ? medals[index] : (index + 1)}
+                                                </div>
+                                                <div class="flex-1">
+                                                    <p class="font-bold text-gray-800">
+                                                        ${player.displayName || 'Anoniem'}
+                                                        ${isCurrentUser ? '<span class="text-xs text-purple-600 ml-2">(jij)</span>' : ''}
+                                                    </p>
+                                                    <p class="text-sm text-gray-600">
+                                                        Level ${player.level} • ${player.phrasesCompleted} zinnen
+                                                    </p>
+                                                </div>
+                                                <div class="text-right">
+                                                    <p class="font-bold text-purple-600 text-lg">${player.totalPoints}</p>
+                                                    <p class="text-xs text-gray-600">punten</p>
+                                                </div>
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            `}
+                        </div>
+                        
+                        <div class="glass-effect rounded-2xl p-4 card-shadow border-2 border-purple-200">
+                            <h4 class="font-bold text-purple-900 mb-2 flex items-center gap-2">
+                                <i class="fas fa-info-circle text-purple-600"></i> Info
+                            </h4>
+                            <p class="text-sm text-purple-800">
+                                De leaderboard toont de top 10 spelers op basis van totale punten. 
+                                Blijf oefenen om hoger te komen! 🚀
+                            </p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderBottomNav() {
+                return `
+                    <div class="fixed bottom-0 left-0 right-0 glass-effect shadow-2xl z-10 border-t border-gray-200">
+                        <div class="flex justify-around max-w-2xl mx-auto">
+                            <button onclick="app.switchTab('home')" 
+                                    class="flex-1 py-4 flex flex-col items-center gap-1 transition-all ${
+                                        this.state.currentTab === 'home' 
+                                            ? 'text-purple-600' 
+                                            : 'text-gray-400 hover:text-gray-600'
+                                    }">
+                                <i class="fas fa-home text-xl"></i>
+                                <span class="text-xs font-bold">Home</span>
+                            </button>
+                            <button onclick="app.switchTab('practice')" 
+                                    class="flex-1 py-4 flex flex-col items-center gap-1 transition-all ${
+                                        this.state.currentTab === 'practice' 
+                                            ? 'text-purple-600' 
+                                            : 'text-gray-400 hover:text-gray-600'
+                                    }">
+                                <i class="fas fa-microphone text-xl"></i>
+                                <span class="text-xs font-bold">Oefen</span>
+                            </button>
+                            <button onclick="app.switchTab('flashcards')" 
+                                    class="flex-1 py-4 flex flex-col items-center gap-1 transition-all ${
+                                        this.state.currentTab === 'flashcards' 
+                                            ? 'text-purple-600' 
+                                            : 'text-gray-400 hover:text-gray-600'
+                                    }">
+                                <i class="fas fa-layer-group text-xl"></i>
+                                <span class="text-xs font-bold">Cards</span>
+                            </button>
+                            <button onclick="app.switchTab('badges')" 
+                                    class="flex-1 py-4 flex flex-col items-center gap-1 relative transition-all ${
+                                        this.state.currentTab === 'badges' 
+                                            ? 'text-purple-600' 
+                                            : 'text-gray-400 hover:text-gray-600'
+                                    }">
+                                <i class="fas fa-trophy text-xl"></i>
+                                <span class="text-xs font-bold">Badges</span>
+                                ${this.state.stats.badges.length > 0 ? `
+                                    <span class="absolute top-2 right-1/4 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold text-white"
+                                          style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                                        ${this.state.stats.badges.length}
+                                    </span>
+                                ` : ''}
+                            </button>
+                            <button onclick="app.switchTab('leaderboard')" 
+                                    class="flex-1 py-4 flex flex-col items-center gap-1 transition-all ${
+                                        this.state.currentTab === 'leaderboard' 
+                                            ? 'text-purple-600' 
+                                            : 'text-gray-400 hover:text-gray-600'
+                                    }">
+                                <i class="fas fa-ranking-star text-xl"></i>
+                                <span class="text-xs font-bold">Rank</span>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            switchTab(tab) {
+                this.state.currentTab = tab;
+                this.render();
+            }
+
+            selectCategory(category) {
+                this.state.currentCategory = category;
+                this.state.currentPhraseIndex = 0;
+                this.state.currentTab = 'practice';
+                this.state.audioURL = null;
+                this.state.showAnswer = false;
+                this.render();
+            }
+
+            toggleAnswer() {
+                this.state.showAnswer = !this.state.showAnswer;
+                this.render();
+            }
+
+            nextPhrase() {
+                const phrases = categories[this.state.currentCategory].phrases;
+                this.state.currentPhraseIndex = (this.state.currentPhraseIndex + 1) % phrases.length;
+                this.state.audioURL = null;
+                this.state.showAnswer = false;
+                this.render();
+            }
+
+            previousPhrase() {
+                const phrases = categories[this.state.currentCategory].phrases;
+                this.state.currentPhraseIndex = this.state.currentPhraseIndex === 0 ? 
+                    phrases.length - 1 : this.state.currentPhraseIndex - 1;
+                this.state.audioURL = null;
+                this.state.showAnswer = false;
+                this.render();
+            }
+
+            resetAudio() {
+                this.state.audioURL = null;
+                this.render();
+            }
+
+            changeFlashcardCategory(category) {
+                this.state.flashcardCategory = category;
+                this.state.currentFlashcardIndex = 0;
+                this.state.showFlashcardAnswer = false;
+                this.render();
+            }
+
+            toggleFlashcard() {
+                this.state.showFlashcardAnswer = !this.state.showFlashcardAnswer;
+                this.render();
+            }
+
+            nextFlashcard() {
+                const phrases = categories[this.state.flashcardCategory].phrases;
+                this.state.currentFlashcardIndex = (this.state.currentFlashcardIndex + 1) % phrases.length;
+                this.state.showFlashcardAnswer = false;
+                this.render();
+            }
+
+            previousFlashcard() {
+                const phrases = categories[this.state.flashcardCategory].phrases;
+                this.state.currentFlashcardIndex = this.state.currentFlashcardIndex === 0 ? 
+                    phrases.length - 1 : this.state.currentFlashcardIndex - 1;
+                this.state.showFlashcardAnswer = false;
+                this.render();
+            }
+
+            getDifficultyClass(difficulty) {
+                const classes = {
+                    easy: 'bg-green-100 text-green-800',
+                    medium: 'bg-yellow-100 text-yellow-800',
+                    hard: 'bg-red-100 text-red-800'
+                };
+                return classes[difficulty] || classes.easy;
+            }
+
+            getDifficultyText(difficulty) {
+                const texts = {
+                    easy: 'Makkelijk',
+                    medium: 'Gemiddeld',
+                    hard: 'Moeilijk'
+                };
+                return texts[difficulty] || '';
+            }
+
+            attachEventListeners() {
+                // Event listeners are handled by onclick attributes
+            }
+        }
+
+        const app = new SwedishApp();
+    </script>
+</body>
+</html>

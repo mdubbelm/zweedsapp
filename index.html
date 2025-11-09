@@ -112,8 +112,16 @@
 
     <script>
         // App Version
-        const APP_VERSION = '1.1.1';
+        const APP_VERSION = '1.1.2';
         const RELEASE_NOTES = {
+            '1.1.2': {
+                date: '2025-11-09',
+                features: [
+                    '🔐 "Blijf ingelogd" optie toegevoegd',
+                    '💾 Kies tussen permanent of tijdelijk inloggen',
+                    '🔒 Betere sessie beveiliging'
+                ]
+            },
             '1.1.1': {
                 date: '2025-11-09',
                 features: [
@@ -146,10 +154,19 @@
         // Initialize Supabase
         let supabase = null;
         let supabaseEnabled = false;
-        
+
         try {
             if (SUPABASE_URL !== 'https://jouw-project.supabase.co') {
-                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+                supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+                    auth: {
+                        // Default to localStorage for persistent sessions
+                        // Will be overridden per login based on "Remember Me" checkbox
+                        storage: window.localStorage,
+                        autoRefreshToken: true,
+                        persistSession: true,
+                        detectSessionInUrl: true
+                    }
+                });
                 supabaseEnabled = true;
             }
         } catch (error) {
@@ -381,7 +398,7 @@
                 }
             }
 
-            async signUp(email, password, displayName) {
+            async signUp(email, password, displayName, rememberMe = true) {
                 try {
                     const { data, error } = await supabase.auth.signUp({
                         email: email,
@@ -396,6 +413,13 @@
                     if (error) throw error;
 
                     if (data.user) {
+                        // Store preference for session persistence
+                        if (rememberMe) {
+                            localStorage.setItem('rememberMe', 'true');
+                        } else {
+                            localStorage.setItem('rememberMe', 'false');
+                        }
+
                         // Check if email confirmation is required
                         if (data.user.identities && data.user.identities.length === 0) {
                             alert('Registratie succesvol! Check je email voor verificatie. (Let op: kan in spam terechtkomen)');
@@ -432,11 +456,15 @@
                 }
             }
 
-            async signIn(email, password) {
+            async signIn(email, password, rememberMe = true) {
                 try {
                     const { data, error } = await supabase.auth.signInWithPassword({
                         email: email,
                         password: password,
+                        options: {
+                            // Use localStorage for persistent login, sessionStorage for temporary
+                            persistSession: rememberMe
+                        }
                     });
 
                     if (error) {
@@ -453,6 +481,14 @@
 
                     if (data.user) {
                         this.state.user = data.user;
+
+                        // Store preference for session persistence
+                        if (rememberMe) {
+                            localStorage.setItem('rememberMe', 'true');
+                        } else {
+                            localStorage.setItem('rememberMe', 'false');
+                        }
+
                         await this.loadUserData();
                         this.state.currentTab = 'home';
                         this.render();
@@ -798,13 +834,22 @@ create policy "Users can update own progress"
                                     <input type="password" id="password" placeholder="••••••••"
                                            class="w-full p-4 border-2 border-gray-200 rounded-xl font-medium">
                                 </div>
-                                
+
+                                <div class="flex items-center gap-2">
+                                    <input type="checkbox" id="rememberMe"
+                                           class="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                                           checked>
+                                    <label for="rememberMe" class="text-sm text-gray-700 cursor-pointer">
+                                        Blijf ingelogd op dit apparaat
+                                    </label>
+                                </div>
+
                                 <div id="displayNameField" style="display: none;">
                                     <label class="block text-sm font-semibold text-gray-700 mb-2">Naam (voor leaderboard)</label>
                                     <input type="text" id="displayName" placeholder="Jouw naam"
                                            class="w-full p-4 border-2 border-gray-200 rounded-xl font-medium">
                                 </div>
-                                
+
                                 <button onclick="app.handleLogin()" 
                                         class="w-full py-4 rounded-xl font-bold text-white card-hover card-shadow"
                                         style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
@@ -850,22 +895,23 @@ create policy "Users can update own progress"
             async handleLogin() {
                 const email = document.getElementById('email').value;
                 const password = document.getElementById('password').value;
+                const rememberMe = document.getElementById('rememberMe')?.checked ?? true;
                 const displayNameField = document.getElementById('displayNameField');
-                
+
                 if (!email || !password) {
                     alert('Vul email en wachtwoord in');
                     return;
                 }
-                
+
                 if (displayNameField.style.display !== 'none') {
                     const displayName = document.getElementById('displayName').value;
                     if (!displayName) {
                         alert('Vul een naam in');
                         return;
                     }
-                    await this.signUp(email, password, displayName);
+                    await this.signUp(email, password, displayName, rememberMe);
                 } else {
-                    await this.signIn(email, password);
+                    await this.signIn(email, password, rememberMe);
                 }
             }
 

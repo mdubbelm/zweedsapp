@@ -111,12 +111,26 @@
     <div id="app"></div>
 
     <script>
+        // App Version
+        const APP_VERSION = '1.1.0';
+        const RELEASE_NOTES = {
+            '1.1.0': {
+                date: '2025-11-09',
+                features: [
+                    '✨ Account instellingen toegevoegd',
+                    '🔧 Audio opname playback gefixed',
+                    '📢 Update notificaties',
+                    '🎨 Verbeterde gebruikerservaring'
+                ]
+            }
+        };
+
         // ⚠️ BELANGRIJK: Vervang deze configuratie met je eigen Supabase project settings!
         // Ga naar: https://supabase.com/dashboard
         // 1. Maak een nieuw project (gratis!)
         // 2. Ga naar Settings > API
         // 3. Kopieer de "Project URL" en "anon/public" key hieronder
-        
+
         const SUPABASE_URL = 'https://mpmggbczhgbdxsgbjrld.supabase.co';
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1wbWdnYmN6aGdiZHhzZ2JqcmxkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI2OTIzMjMsImV4cCI6MjA3ODI2ODMyM30.SR_crJHXUnh7fV47-7jPjH64h3J5HUNcDRp-o-_Clhk';
 
@@ -227,6 +241,7 @@
                     currentPhraseIndex: 0,
                     isRecording: false,
                     audioURL: null,
+                    audioBlob: null,
                     showAnswer: false,
                     completedPhrases: [],
                     newBadge: null,
@@ -235,13 +250,16 @@
                     showFlashcardAnswer: false,
                     user: null,
                     leaderboard: [],
-                    stats: this.getDefaultStats()
+                    stats: this.getDefaultStats(),
+                    showUpdateNotification: false,
+                    lastSeenVersion: localStorage.getItem('lastSeenVersion') || '1.0.0'
                 };
-                
+
                 this.mediaRecorder = null;
                 this.audioChunks = [];
-                
+
                 this.checkAuth();
+                this.checkForUpdates();
             }
 
             getDefaultStats() {
@@ -277,6 +295,19 @@
                     this.state.currentTab = 'login';
                 }
                 
+                this.render();
+            }
+
+            checkForUpdates() {
+                if (this.state.lastSeenVersion !== APP_VERSION && this.state.user) {
+                    this.state.showUpdateNotification = true;
+                }
+            }
+
+            dismissUpdate() {
+                this.state.showUpdateNotification = false;
+                this.state.lastSeenVersion = APP_VERSION;
+                localStorage.setItem('lastSeenVersion', APP_VERSION);
                 this.render();
             }
 
@@ -394,6 +425,54 @@
                 }
             }
 
+            async updateDisplayName() {
+                const newName = prompt('Nieuwe naam:', this.state.stats.displayName);
+                if (newName && newName.trim()) {
+                    this.state.stats.displayName = newName.trim();
+                    await this.saveUserData();
+                    this.render();
+                    alert('Naam succesvol gewijzigd!');
+                }
+            }
+
+            async changePassword() {
+                const newPassword = prompt('Nieuw wachtwoord (minimaal 6 tekens):');
+                if (newPassword && newPassword.length >= 6) {
+                    try {
+                        const { error } = await supabase.auth.updateUser({
+                            password: newPassword
+                        });
+                        if (error) throw error;
+                        alert('Wachtwoord succesvol gewijzigd!');
+                    } catch (error) {
+                        alert('Wachtwoord wijzigen mislukt: ' + error.message);
+                    }
+                } else if (newPassword !== null) {
+                    alert('Wachtwoord moet minimaal 6 tekens zijn');
+                }
+            }
+
+            async deleteAccount() {
+                if (confirm('Weet je zeker dat je je account wilt verwijderen? Dit kan niet ongedaan worden!')) {
+                    if (confirm('Laatste waarschuwing! Alle voortgang wordt permanent verwijderd.')) {
+                        try {
+                            // Delete user progress first
+                            await supabase
+                                .from('user_progress')
+                                .delete()
+                                .eq('user_id', this.state.user.id);
+
+                            // Note: Supabase free tier doesn't allow deleting auth users from client
+                            // User needs to contact admin or use Supabase dashboard
+                            alert('Voortgang verwijderd. Neem contact op met support om je account volledig te verwijderen.');
+                            await this.signOut();
+                        } catch (error) {
+                            alert('Account verwijderen mislukt: ' + error.message);
+                        }
+                    }
+                }
+            }
+
             checkStreak() {
                 const today = new Date().toDateString();
                 if (this.state.stats.lastPlayedDate !== today) {
@@ -427,8 +506,9 @@
                     };
 
                     this.mediaRecorder.onstop = () => {
-                        const audioBlob = new Blob(this.audioChunks, { type: 'audio/wav' });
+                        const audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
                         const url = URL.createObjectURL(audioBlob);
+                        this.state.audioBlob = audioBlob;
                         this.state.audioURL = url;
                         this.render();
                     };
@@ -546,6 +626,7 @@
                     app.innerHTML = this.renderLogin();
                 } else {
                     app.innerHTML = `
+                        ${this.state.showUpdateNotification ? this.renderUpdateNotification() : ''}
                         ${this.state.newBadge ? this.renderNewBadge() : ''}
                         ${this.renderHeader()}
                         <div class="p-4 max-w-2xl mx-auto pb-28">
@@ -554,6 +635,7 @@
                             ${this.state.currentTab === 'flashcards' ? this.renderFlashcards() : ''}
                             ${this.state.currentTab === 'badges' ? this.renderBadges() : ''}
                             ${this.state.currentTab === 'leaderboard' ? this.renderLeaderboard() : ''}
+                            ${this.state.currentTab === 'settings' ? this.renderSettings() : ''}
                         </div>
                         ${this.renderBottomNav()}
                     `;
@@ -1220,6 +1302,113 @@ create policy "Users can update own progress"
                 `;
             }
 
+            renderUpdateNotification() {
+                const latestVersion = Object.keys(RELEASE_NOTES)[0];
+                const notes = RELEASE_NOTES[latestVersion];
+
+                return `
+                    <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4 animate-fadeIn">
+                        <div class="glass-effect rounded-2xl p-6 card-shadow max-w-md w-full animate-slideUp">
+                            <div class="text-center mb-4">
+                                <div class="text-5xl mb-3">🎉</div>
+                                <h2 class="text-2xl font-bold gradient-text mb-1">Nieuwe Versie!</h2>
+                                <p class="text-sm text-gray-600">Versie ${latestVersion}</p>
+                            </div>
+
+                            <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 mb-4">
+                                <h3 class="font-bold text-gray-800 mb-2">Wat is er nieuw:</h3>
+                                <ul class="space-y-2">
+                                    ${notes.features.map(feature => `
+                                        <li class="text-sm text-gray-700">${feature}</li>
+                                    `).join('')}
+                                </ul>
+                            </div>
+
+                            <button onclick="app.dismissUpdate()"
+                                    class="w-full py-4 rounded-xl font-bold text-white card-hover card-shadow"
+                                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                <i class="fas fa-check mr-2"></i>Begrepen!
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderSettings() {
+                return `
+                    <div class="space-y-4 animate-slideUp">
+                        <div class="glass-effect rounded-2xl p-5 card-shadow">
+                            <h3 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+                                <i class="fas fa-cog text-purple-600"></i> Instellingen
+                            </h3>
+
+                            <div class="space-y-3">
+                                <div class="bg-gray-50 rounded-xl p-4">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div>
+                                            <p class="font-semibold text-gray-800">Account Email</p>
+                                            <p class="text-sm text-gray-600">${this.state.user?.email || 'Geen email'}</p>
+                                        </div>
+                                        <i class="fas fa-envelope text-2xl text-gray-400"></i>
+                                    </div>
+                                </div>
+
+                                <div class="bg-gray-50 rounded-xl p-4">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div>
+                                            <p class="font-semibold text-gray-800">Weergavenaam</p>
+                                            <p class="text-sm text-gray-600">${this.state.stats.displayName || 'Niet ingesteld'}</p>
+                                        </div>
+                                        <i class="fas fa-user text-2xl text-gray-400"></i>
+                                    </div>
+                                    <button onclick="app.updateDisplayName()"
+                                            class="w-full mt-2 py-2 bg-white rounded-lg font-semibold text-gray-700 card-hover border-2 border-gray-200">
+                                        <i class="fas fa-edit mr-2"></i>Naam wijzigen
+                                    </button>
+                                </div>
+
+                                <div class="bg-gray-50 rounded-xl p-4">
+                                    <div class="flex items-center justify-between mb-2">
+                                        <div>
+                                            <p class="font-semibold text-gray-800">Wachtwoord</p>
+                                            <p class="text-sm text-gray-600">••••••••</p>
+                                        </div>
+                                        <i class="fas fa-lock text-2xl text-gray-400"></i>
+                                    </div>
+                                    <button onclick="app.changePassword()"
+                                            class="w-full mt-2 py-2 bg-white rounded-lg font-semibold text-gray-700 card-hover border-2 border-gray-200">
+                                        <i class="fas fa-key mr-2"></i>Wachtwoord wijzigen
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-effect rounded-2xl p-5 card-shadow">
+                            <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                                <i class="fas fa-info-circle text-blue-500"></i> App Informatie
+                            </h4>
+                            <div class="space-y-2 text-sm text-gray-600">
+                                <p><strong>Versie:</strong> ${APP_VERSION}</p>
+                                <p><strong>Account aangemaakt:</strong> ${new Date(this.state.user?.created_at).toLocaleDateString('nl-NL')}</p>
+                            </div>
+                        </div>
+
+                        <div class="glass-effect rounded-2xl p-4 card-shadow border-2 border-red-200">
+                            <h4 class="font-bold text-red-900 mb-2 flex items-center gap-2">
+                                <i class="fas fa-exclamation-triangle text-red-600"></i> Gevaarlijke Zone
+                            </h4>
+                            <p class="text-sm text-red-800 mb-3">
+                                Let op! Deze actie kan niet ongedaan gemaakt worden.
+                            </p>
+                            <button onclick="app.deleteAccount()"
+                                    class="w-full py-3 bg-red-500 hover:bg-red-600 rounded-xl font-bold text-white card-hover card-shadow">
+                                <i class="fas fa-trash mr-2"></i>Account Verwijderen
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
             renderBottomNav() {
                 return `
                     <div class="fixed bottom-0 left-0 right-0 glass-effect shadow-2xl z-10 border-t border-gray-200">
@@ -1266,14 +1455,23 @@ create policy "Users can update own progress"
                                     </span>
                                 ` : ''}
                             </button>
-                            <button onclick="app.switchTab('leaderboard')" 
+                            <button onclick="app.switchTab('leaderboard')"
                                     class="flex-1 py-4 flex flex-col items-center gap-1 transition-all ${
-                                        this.state.currentTab === 'leaderboard' 
-                                            ? 'text-purple-600' 
+                                        this.state.currentTab === 'leaderboard'
+                                            ? 'text-purple-600'
                                             : 'text-gray-400 hover:text-gray-600'
                                     }">
                                 <i class="fas fa-ranking-star text-xl"></i>
                                 <span class="text-xs font-bold">Rank</span>
+                            </button>
+                            <button onclick="app.switchTab('settings')"
+                                    class="flex-1 py-4 flex flex-col items-center gap-1 transition-all ${
+                                        this.state.currentTab === 'settings'
+                                            ? 'text-purple-600'
+                                            : 'text-gray-400 hover:text-gray-600'
+                                    }">
+                                <i class="fas fa-cog text-xl"></i>
+                                <span class="text-xs font-bold">Setup</span>
                             </button>
                         </div>
                     </div>
@@ -1317,7 +1515,11 @@ create policy "Users can update own progress"
             }
 
             resetAudio() {
+                if (this.state.audioURL) {
+                    URL.revokeObjectURL(this.state.audioURL);
+                }
                 this.state.audioURL = null;
+                this.state.audioBlob = null;
                 this.render();
             }
 

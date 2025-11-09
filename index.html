@@ -112,8 +112,17 @@
 
     <script>
         // App Version
-        const APP_VERSION = '1.1.0';
+        const APP_VERSION = '1.1.1';
         const RELEASE_NOTES = {
+            '1.1.1': {
+                date: '2025-11-09',
+                features: [
+                    '🔧 Audio playback definitief gefixed',
+                    '🔑 Wachtwoord reset functie toegevoegd',
+                    '📧 Betere login error messages',
+                    '✅ Email verificatie support'
+                ]
+            },
             '1.1.0': {
                 date: '2025-11-09',
                 features: [
@@ -242,6 +251,7 @@
                     isRecording: false,
                     audioURL: null,
                     audioBlob: null,
+                    audioMimeType: null,
                     showAnswer: false,
                     completedPhrases: [],
                     newBadge: null,
@@ -376,19 +386,49 @@
                     const { data, error } = await supabase.auth.signUp({
                         email: email,
                         password: password,
+                        options: {
+                            data: {
+                                display_name: displayName
+                            }
+                        }
                     });
 
                     if (error) throw error;
 
                     if (data.user) {
-                        this.state.user = data.user;
-                        this.state.stats.displayName = displayName;
-                        await this.saveUserData();
-                        this.state.currentTab = 'home';
-                        this.render();
+                        // Check if email confirmation is required
+                        if (data.user.identities && data.user.identities.length === 0) {
+                            alert('Registratie succesvol! Check je email voor verificatie. (Let op: kan in spam terechtkomen)');
+                            this.state.currentTab = 'login';
+                            this.render();
+                        } else {
+                            this.state.user = data.user;
+                            this.state.stats.displayName = displayName;
+                            await this.saveUserData();
+                            this.state.currentTab = 'home';
+                            alert('Account succesvol aangemaakt! Welkom bij Zweeds B1 🎉');
+                            this.render();
+                        }
                     }
                 } catch (error) {
+                    console.error('SignUp error:', error);
                     alert('Registratie mislukt: ' + error.message);
+                }
+            }
+
+            async resetPassword() {
+                const email = prompt('Voer je email adres in voor wachtwoord reset:');
+                if (email && email.trim()) {
+                    try {
+                        const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
+                            redirectTo: window.location.origin
+                        });
+                        if (error) throw error;
+                        alert('Reset link verstuurd! Check je email (ook spam folder).');
+                    } catch (error) {
+                        console.error('Password reset error:', error);
+                        alert('Wachtwoord reset mislukt: ' + error.message);
+                    }
                 }
             }
 
@@ -399,15 +439,28 @@
                         password: password,
                     });
 
-                    if (error) throw error;
+                    if (error) {
+                        console.error('Login error:', error);
+                        if (error.message.includes('Email not confirmed')) {
+                            alert('Email nog niet bevestigd. Check je inbox voor de verificatie email.');
+                        } else if (error.message.includes('Invalid login credentials')) {
+                            alert('Verkeerde email of wachtwoord. Probeer het opnieuw.');
+                        } else {
+                            alert('Inloggen mislukt: ' + error.message);
+                        }
+                        return;
+                    }
 
                     if (data.user) {
                         this.state.user = data.user;
                         await this.loadUserData();
                         this.state.currentTab = 'home';
                         this.render();
+                    } else {
+                        alert('Inloggen mislukt: geen gebruiker geretourneerd');
                     }
                 } catch (error) {
+                    console.error('Login exception:', error);
                     alert('Inloggen mislukt: ' + error.message);
                 }
             }
@@ -498,18 +551,35 @@
             async startRecording() {
                 try {
                     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    this.mediaRecorder = new MediaRecorder(stream);
+
+                    // Detect supported MIME type
+                    let options = { mimeType: 'audio/webm' };
+                    if (!MediaRecorder.isTypeSupported('audio/webm')) {
+                        if (MediaRecorder.isTypeSupported('audio/mp4')) {
+                            options = { mimeType: 'audio/mp4' };
+                        } else if (MediaRecorder.isTypeSupported('audio/ogg')) {
+                            options = { mimeType: 'audio/ogg' };
+                        } else {
+                            options = {}; // Use browser default
+                        }
+                    }
+
+                    this.mediaRecorder = new MediaRecorder(stream, options);
                     this.audioChunks = [];
+                    this.recordedMimeType = this.mediaRecorder.mimeType;
 
                     this.mediaRecorder.ondataavailable = (event) => {
-                        this.audioChunks.push(event.data);
+                        if (event.data.size > 0) {
+                            this.audioChunks.push(event.data);
+                        }
                     };
 
                     this.mediaRecorder.onstop = () => {
-                        const audioBlob = new Blob(this.audioChunks, { type: 'audio/webm' });
+                        const audioBlob = new Blob(this.audioChunks, { type: this.recordedMimeType });
                         const url = URL.createObjectURL(audioBlob);
                         this.state.audioBlob = audioBlob;
                         this.state.audioURL = url;
+                        this.state.audioMimeType = this.recordedMimeType;
                         this.render();
                     };
 
@@ -517,7 +587,8 @@
                     this.state.isRecording = true;
                     this.render();
                 } catch (error) {
-                    alert('Kon geen toegang krijgen tot de microfoon');
+                    console.error('Recording error:', error);
+                    alert('Kon geen toegang krijgen tot de microfoon: ' + error.message);
                 }
             }
 
@@ -740,12 +811,17 @@ create policy "Users can update own progress"
                                     <i class="fas fa-sign-in-alt mr-2"></i>Inloggen
                                 </button>
                                 
-                                <button onclick="app.toggleSignUp()" 
+                                <button onclick="app.toggleSignUp()"
                                         class="w-full py-4 glass-effect rounded-xl font-bold text-gray-700 card-hover card-shadow">
                                     <i class="fas fa-user-plus mr-2"></i>Nog geen account? Registreer
                                 </button>
+
+                                <button onclick="app.resetPassword()"
+                                        class="w-full py-2 text-sm text-gray-600 hover:text-purple-600 font-semibold">
+                                    <i class="fas fa-key mr-1"></i>Wachtwoord vergeten?
+                                </button>
                             </div>
-                            
+
                             <div class="mt-6 text-center text-sm text-gray-600">
                                 <p>✨ Sync tussen apparaten</p>
                                 <p>🏆 Leaderboard met vrienden</p>
@@ -1520,6 +1596,7 @@ create policy "Users can update own progress"
                 }
                 this.state.audioURL = null;
                 this.state.audioBlob = null;
+                this.state.audioMimeType = null;
                 this.render();
             }
 

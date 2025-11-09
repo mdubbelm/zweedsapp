@@ -20,10 +20,19 @@
             -webkit-tap-highlight-color: transparent;
             font-family: 'Inter', sans-serif;
         }
-        
+
+        html {
+            position: relative;
+            overflow-x: hidden;
+        }
+
         body {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            /* iOS Safari specific fixes */
+            -webkit-overflow-scrolling: touch;
         }
         
         @keyframes fadeIn {
@@ -112,8 +121,17 @@
 
     <script>
         // App Version
-        const APP_VERSION = '1.1.2';
+        const APP_VERSION = '1.1.3';
         const RELEASE_NOTES = {
+            '1.1.3': {
+                date: '2025-11-09',
+                features: [
+                    '📱 iOS audio playback gefixed',
+                    '🎤 Microfoon permissie wordt niet meer herhaaldelijk gevraagd',
+                    '🔧 Betere audio cleanup en resource management',
+                    '📍 Bottom navigation blijft nu correct onderaan'
+                ]
+            },
             '1.1.2': {
                 date: '2025-11-09',
                 features: [
@@ -284,6 +302,7 @@
 
                 this.mediaRecorder = null;
                 this.audioChunks = [];
+                this.audioStream = null;
 
                 this.checkAuth();
                 this.checkForUpdates();
@@ -586,39 +605,69 @@
 
             async startRecording() {
                 try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-                    // Detect supported MIME type
-                    let options = { mimeType: 'audio/webm' };
-                    if (!MediaRecorder.isTypeSupported('audio/webm')) {
-                        if (MediaRecorder.isTypeSupported('audio/mp4')) {
-                            options = { mimeType: 'audio/mp4' };
-                        } else if (MediaRecorder.isTypeSupported('audio/ogg')) {
-                            options = { mimeType: 'audio/ogg' };
-                        } else {
-                            options = {}; // Use browser default
+                    // Request microphone access
+                    this.audioStream = await navigator.mediaDevices.getUserMedia({
+                        audio: {
+                            echoCancellation: true,
+                            noiseSuppression: true,
+                            sampleRate: 44100
                         }
+                    });
+
+                    // Detect supported MIME type for iOS Safari compatibility
+                    let options = {};
+                    let mimeType = '';
+
+                    // Try different formats in order of preference
+                    if (MediaRecorder.isTypeSupported('audio/mp4')) {
+                        mimeType = 'audio/mp4';
+                        options = { mimeType };
+                    } else if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) {
+                        mimeType = 'audio/webm;codecs=opus';
+                        options = { mimeType };
+                    } else if (MediaRecorder.isTypeSupported('audio/webm')) {
+                        mimeType = 'audio/webm';
+                        options = { mimeType };
+                    } else if (MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')) {
+                        mimeType = 'audio/ogg;codecs=opus';
+                        options = { mimeType };
                     }
 
-                    this.mediaRecorder = new MediaRecorder(stream, options);
+                    this.mediaRecorder = new MediaRecorder(this.audioStream, options);
                     this.audioChunks = [];
                     this.recordedMimeType = this.mediaRecorder.mimeType;
 
+                    console.log('Recording with MIME type:', this.recordedMimeType);
+
                     this.mediaRecorder.ondataavailable = (event) => {
-                        if (event.data.size > 0) {
+                        if (event.data && event.data.size > 0) {
                             this.audioChunks.push(event.data);
                         }
                     };
 
                     this.mediaRecorder.onstop = () => {
+                        // Create blob with proper MIME type
                         const audioBlob = new Blob(this.audioChunks, { type: this.recordedMimeType });
                         const url = URL.createObjectURL(audioBlob);
+
                         this.state.audioBlob = audioBlob;
                         this.state.audioURL = url;
                         this.state.audioMimeType = this.recordedMimeType;
+
+                        console.log('Recording stopped, blob size:', audioBlob.size, 'type:', this.recordedMimeType);
+
                         this.render();
+
+                        // Ensure audio element loads properly on iOS
+                        setTimeout(() => {
+                            const audioElement = document.getElementById('recordingPlayer');
+                            if (audioElement) {
+                                audioElement.load();
+                            }
+                        }, 100);
                     };
 
+                    // Start recording
                     this.mediaRecorder.start();
                     this.state.isRecording = true;
                     this.render();
@@ -630,9 +679,18 @@
 
             stopRecording() {
                 if (this.mediaRecorder && this.state.isRecording) {
-                    this.mediaRecorder.stop();
                     this.state.isRecording = false;
-                    this.mediaRecorder.stream.getTracks().forEach(track => track.stop());
+                    this.mediaRecorder.stop();
+
+                    // Stop all tracks to release the microphone
+                    if (this.audioStream) {
+                        this.audioStream.getTracks().forEach(track => {
+                            track.stop();
+                            console.log('Track stopped:', track.kind);
+                        });
+                        this.audioStream = null;
+                    }
+
                     this.render();
                 }
             }
@@ -1166,14 +1224,19 @@ create policy "Users can update own progress"
                                 
                                 ${this.state.audioURL ? `
                                     <div class="space-y-3">
-                                        <audio src="${this.state.audioURL}" controls class="w-full card-shadow"></audio>
+                                        <div class="glass-effect rounded-xl p-4">
+                                            <audio id="recordingPlayer" src="${this.state.audioURL}" controls
+                                                   class="w-full"
+                                                   controlsList="nodownload"
+                                                   preload="auto"></audio>
+                                        </div>
                                         <div class="grid grid-cols-2 gap-3">
-                                            <button onclick="app.markAsCompleted(false)" 
+                                            <button onclick="app.markAsCompleted(false)"
                                                     class="py-4 rounded-xl font-bold text-white card-hover card-shadow"
                                                     style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);">
                                                 <i class="fas fa-star mr-1"></i> Goed!
                                             </button>
-                                            <button onclick="app.markAsCompleted(true)" 
+                                            <button onclick="app.markAsCompleted(true)"
                                                     class="py-4 rounded-xl font-bold text-white card-hover card-shadow"
                                                     style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
                                                 <i class="fas fa-gem mr-1"></i> Perfect!
@@ -1533,7 +1596,7 @@ create policy "Users can update own progress"
 
             renderBottomNav() {
                 return `
-                    <div class="fixed bottom-0 left-0 right-0 glass-effect shadow-2xl z-10 border-t border-gray-200">
+                    <div class="fixed bottom-0 left-0 right-0 glass-effect shadow-2xl border-t border-gray-200" style="z-index: 1000;">
                         <div class="flex justify-around max-w-2xl mx-auto">
                             <button onclick="app.switchTab('home')" 
                                     class="flex-1 py-4 flex flex-col items-center gap-1 transition-all ${
@@ -1606,10 +1669,22 @@ create policy "Users can update own progress"
             }
 
             selectCategory(category) {
+                // Clean up audio when switching categories
+                if (this.state.audioURL) {
+                    URL.revokeObjectURL(this.state.audioURL);
+                }
+                if (this.audioStream) {
+                    this.audioStream.getTracks().forEach(track => track.stop());
+                    this.audioStream = null;
+                }
+
                 this.state.currentCategory = category;
                 this.state.currentPhraseIndex = 0;
                 this.state.currentTab = 'practice';
                 this.state.audioURL = null;
+                this.state.audioBlob = null;
+                this.state.audioMimeType = null;
+                this.state.isRecording = false;
                 this.state.showAnswer = false;
                 this.render();
             }
@@ -1620,26 +1695,59 @@ create policy "Users can update own progress"
             }
 
             nextPhrase() {
+                // Clean up audio before moving to next phrase
+                if (this.state.audioURL) {
+                    URL.revokeObjectURL(this.state.audioURL);
+                }
+                if (this.audioStream) {
+                    this.audioStream.getTracks().forEach(track => track.stop());
+                    this.audioStream = null;
+                }
+
                 const phrases = categories[this.state.currentCategory].phrases;
                 this.state.currentPhraseIndex = (this.state.currentPhraseIndex + 1) % phrases.length;
                 this.state.audioURL = null;
+                this.state.audioBlob = null;
+                this.state.audioMimeType = null;
+                this.state.isRecording = false;
                 this.state.showAnswer = false;
                 this.render();
             }
 
             previousPhrase() {
+                // Clean up audio before moving to previous phrase
+                if (this.state.audioURL) {
+                    URL.revokeObjectURL(this.state.audioURL);
+                }
+                if (this.audioStream) {
+                    this.audioStream.getTracks().forEach(track => track.stop());
+                    this.audioStream = null;
+                }
+
                 const phrases = categories[this.state.currentCategory].phrases;
-                this.state.currentPhraseIndex = this.state.currentPhraseIndex === 0 ? 
+                this.state.currentPhraseIndex = this.state.currentPhraseIndex === 0 ?
                     phrases.length - 1 : this.state.currentPhraseIndex - 1;
                 this.state.audioURL = null;
+                this.state.audioBlob = null;
+                this.state.audioMimeType = null;
+                this.state.isRecording = false;
                 this.state.showAnswer = false;
                 this.render();
             }
 
             resetAudio() {
+                // Clean up audio URL
                 if (this.state.audioURL) {
                     URL.revokeObjectURL(this.state.audioURL);
                 }
+
+                // Stop any active recording
+                if (this.state.isRecording && this.audioStream) {
+                    this.audioStream.getTracks().forEach(track => track.stop());
+                    this.audioStream = null;
+                    this.state.isRecording = false;
+                }
+
                 this.state.audioURL = null;
                 this.state.audioBlob = null;
                 this.state.audioMimeType = null;

@@ -5,6 +5,36 @@ All notable changes to Svenska Kat (formerly Zweeds B1) Language Learning App wi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2025-11-18
+
+### Added
+- **New Category: August Avonturen** 🎒 - 30 new Swedish phrases featuring August
+  - School adventures (10 phrases): Going to school, friends, learning, reading, art, playing
+  - Food & drinks (10 phrases): Breakfast, lunch, dinner, helping in kitchen, favorite foods
+  - Forest adventures (10 phrases): Walking with mama, mushroom picking (kantareller), animals, nature
+- **Category Personalization System** ⚙️
+  - Users can toggle categories on/off in Settings
+  - Beautiful toggle switches with smooth animations
+  - Shows phrase count for each category
+  - Real-time preview of preferences
+- **Smart Filtering**
+  - Only enabled categories appear in home page
+  - Daily program respects category preferences
+  - Practice sessions only include selected categories
+
+### Changed
+- Total phrases increased: 72 → 102 phrases
+- Allrounder badge now requires 7 categories (was 6)
+- Category grid dynamically filters based on user preferences
+- Daily program generation now category-aware
+
+### Technical
+- Added `categoryPreferences` array to user stats (defaults to all categories enabled)
+- Implemented `toggleCategory(categoryId)` method with auto-save
+- Filter logic in `generateDailyProgram()` checks categoryPreferences
+- Home page `renderHome()` filters categories display
+- Database schema updated to store categoryPreferences in user stats JSON
+
 ## [1.3.5] - 2025-11-18
 
 ### Added
@@ -278,7 +308,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version Support
 
-- **Current Version**: 1.3.5
+- **Current Version**: 1.4.0
 - **Minimum Browser Requirements**:
   - Chrome 60+
   - Safari 14+ (iOS 14+)

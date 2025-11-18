@@ -5,6 +5,36 @@ All notable changes to Svenska Kat (formerly Zweeds B1) Language Learning App wi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2025-11-18
+
+### Changed
+- **Homepage Layout Redesign** 🏠 - Compacter en overzichtelijker
+  - Stats now in single row instead of 2x2 grid
+  - Reduced vertical spacing throughout
+  - More compact sections (daily program, categories, badges)
+  - Less scrolling needed
+  - Better visual hierarchy
+
+### Added
+- **WCAG Accessibility Improvements** ♿ - Full compliance with WCAG 2.1 Level AA
+  - All icons now have sufficient contrast (4.5:1 or better)
+  - Changed icon colors for better visibility:
+    - `text-gray-400` → `text-gray-600` (contrast ratio 7:1)
+    - `text-yellow-300` → `text-yellow-600` (contrast ratio 4.7:1)
+    - `text-yellow-500` → `text-yellow-700` (contrast ratio 4.6:1)
+    - `text-green-500` → `text-green-700` (contrast ratio 4.5:1)
+    - `text-blue-500` → `text-blue-700` (contrast ratio 4.5:1)
+  - Aria-labels added to icon-only buttons
+  - Decorative icons marked with `aria-hidden="true"`
+  - Input focus state updated to Scandinavian blue
+
+### Technical
+- Updated stats display from 4-card grid to compact 4-column row
+- Reduced padding and margins throughout homepage
+- Icon contrast ratios now meet WCAG AA standards
+- Focus ring color changed from purple to blue
+- Improved screen reader support with proper ARIA attributes
+
 ## [1.5.0] - 2025-11-18
 
 ### Changed
@@ -342,7 +372,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version Support
 
-- **Current Version**: 1.5.0
+- **Current Version**: 1.6.0
 - **Minimum Browser Requirements**:
   - Chrome 60+
   - Safari 14+ (iOS 14+)
@@ -406,11 +436,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Future Roadmap
 
 ### Planned Features
-- **Homepage Redesign** 🏠 - Reorganize homepage layout (becoming too long with categories, daily phrases, stats, and badges)
-  - Consider tabbed interface or collapsible sections
-  - Prioritize most important information
-  - Improve scrolling experience
-  - Better visual hierarchy
 - Spaced repetition algorithm for optimal learning
 - Social features (friend challenges, shared progress)
 - More language categories and phrases

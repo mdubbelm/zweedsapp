@@ -372,6 +372,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Future Roadmap
 
 ### Planned Features
+- **Homepage Redesign** 🏠 - Reorganize homepage layout (becoming too long with categories, daily phrases, stats, and badges)
+  - Consider tabbed interface or collapsible sections
+  - Prioritize most important information
+  - Improve scrolling experience
+  - Better visual hierarchy
 - Spaced repetition algorithm for optimal learning
 - Social features (friend challenges, shared progress)
 - More language categories and phrases

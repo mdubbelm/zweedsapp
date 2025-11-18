@@ -1615,9 +1615,12 @@ create policy "Users can update own progress"
             }
 
             renderHome() {
+                // TODO: Homepage redesign needed - page is becoming too long with all sections
+                // Consider: tabbed interface, collapsible sections, better visual hierarchy
+                // Sections to reorganize: stats, daily program, categories, badges
                 const levelProgress = (this.state.stats.totalPoints % 100);
                 const dailyProgress = (this.state.stats.dailyGoal / this.state.stats.dailyGoalTarget) * 100;
-                
+
                 return `
                     <div class="space-y-4 animate-slideUp">
                         <div id="progress-card" class="grid grid-cols-2 gap-3">

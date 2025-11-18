@@ -141,8 +141,27 @@
 
     <script>
         // App Version
-        const APP_VERSION = '1.6.0';
+        const APP_VERSION = '1.6.2';
         const RELEASE_NOTES = {
+            '1.6.2': {
+                date: '2025-11-18',
+                features: [
+                    '🎨 Alle iconen nu volledig flat design',
+                    '♿ WCAG AA compliance: alle kleuren geoptimaliseerd',
+                    '🔍 Betere zichtbaarheid: text-blue-700, text-green-700',
+                    '📱 Aria-hidden toegevoegd aan decoratieve iconen',
+                    '✨ Consistente icon grootte door hele app'
+                ]
+            },
+            '1.6.1': {
+                date: '2025-11-18',
+                features: [
+                    '🏆 Badge iconen vervangen door Font Awesome',
+                    '🎨 Flat design iconen met WCAG-conforme kleuren',
+                    '✨ Consistente icon stijl door hele app',
+                    '📝 "Programma voor vandaag" (was: Vandaag\'s Programma)'
+                ]
+            },
             '1.6.0': {
                 date: '2025-11-18',
                 features: [
@@ -452,19 +471,19 @@
         };
 
         const badges = {
-            firstSteps: { id: 'firstSteps', name: 'Eerste Stappen', icon: '👣', description: 'Voltooi je eerste zin', requirement: 1, type: 'phrases' },
-            beginner: { id: 'beginner', name: 'Beginner', icon: '🌱', description: 'Voltooi 10 zinnen', requirement: 10, type: 'phrases' },
-            intermediate: { id: 'intermediate', name: 'Gevorderde', icon: '🌿', description: 'Voltooi 25 zinnen', requirement: 25, type: 'phrases' },
-            expert: { id: 'expert', name: 'Expert', icon: '🌳', description: 'Voltooi 50 zinnen', requirement: 50, type: 'phrases' },
-            perfectionist: { id: 'perfectionist', name: 'Perfectionist', icon: '💎', description: 'Haal 10 perfecte scores', requirement: 10, type: 'perfect' },
-            dedicated: { id: 'dedicated', name: 'Toegewijd', icon: '🔥', description: '5 dagen streak', requirement: 5, type: 'streak' },
-            onFire: { id: 'onFire', name: 'On Fire', icon: '🔥🔥', description: '10 dagen streak', requirement: 10, type: 'streak' },
-            unstoppable: { id: 'unstoppable', name: 'Onstuitbaar', icon: '⚡', description: '20 dagen streak', requirement: 20, type: 'streak' },
-            categoryMaster: { id: 'categoryMaster', name: 'Categorie Meester', icon: '🎯', description: 'Voltooi alle zinnen in een categorie', requirement: 1, type: 'category' },
-            allRounder: { id: 'allRounder', name: 'Allrounder', icon: '🌟', description: 'Voltooi alle categorieën', requirement: 7, type: 'allCategories' },
-            speedster: { id: 'speedster', name: 'Speedster', icon: '⚡', description: 'Voltooi 20 zinnen op één dag', requirement: 20, type: 'dailyPhrases' },
-            levelUp: { id: 'levelUp', name: 'Level Up', icon: '📈', description: 'Bereik level 5', requirement: 5, type: 'level' },
-            master: { id: 'master', name: 'Meester', icon: '🏆', description: 'Bereik level 10', requirement: 10, type: 'level' }
+            firstSteps: { id: 'firstSteps', name: 'Eerste Stappen', icon: 'fa-shoe-prints', color: 'text-blue-700', description: 'Voltooi je eerste zin', requirement: 1, type: 'phrases' },
+            beginner: { id: 'beginner', name: 'Beginner', icon: 'fa-seedling', color: 'text-green-700', description: 'Voltooi 10 zinnen', requirement: 10, type: 'phrases' },
+            intermediate: { id: 'intermediate', name: 'Gevorderde', icon: 'fa-leaf', color: 'text-green-700', description: 'Voltooi 25 zinnen', requirement: 25, type: 'phrases' },
+            expert: { id: 'expert', name: 'Expert', icon: 'fa-tree', color: 'text-green-700', description: 'Voltooi 50 zinnen', requirement: 50, type: 'phrases' },
+            perfectionist: { id: 'perfectionist', name: 'Perfectionist', icon: 'fa-gem', color: 'text-blue-700', description: 'Haal 10 perfecte scores', requirement: 10, type: 'perfect' },
+            dedicated: { id: 'dedicated', name: 'Toegewijd', icon: 'fa-fire', color: 'text-red-600', description: '5 dagen streak', requirement: 5, type: 'streak' },
+            onFire: { id: 'onFire', name: 'On Fire', icon: 'fa-fire-flame-curved', color: 'text-red-600', description: '10 dagen streak', requirement: 10, type: 'streak' },
+            unstoppable: { id: 'unstoppable', name: 'Onstuitbaar', icon: 'fa-bolt', color: 'text-amber-600', description: '20 dagen streak', requirement: 20, type: 'streak' },
+            categoryMaster: { id: 'categoryMaster', name: 'Categorie Meester', icon: 'fa-bullseye', color: 'text-blue-700', description: 'Voltooi alle zinnen in een categorie', requirement: 1, type: 'category' },
+            allRounder: { id: 'allRounder', name: 'Allrounder', icon: 'fa-star', color: 'text-amber-600', description: 'Voltooi alle categorieën', requirement: 7, type: 'allCategories' },
+            speedster: { id: 'speedster', name: 'Speedster', icon: 'fa-rocket', color: 'text-blue-700', description: 'Voltooi 20 zinnen op één dag', requirement: 20, type: 'dailyPhrases' },
+            levelUp: { id: 'levelUp', name: 'Level Up', icon: 'fa-chart-line', color: 'text-green-700', description: 'Bereik level 5', requirement: 5, type: 'level' },
+            master: { id: 'master', name: 'Meester', icon: 'fa-trophy', color: 'text-amber-600', description: 'Bereik level 10', requirement: 10, type: 'level' }
         };
 
         class SwedishApp {
@@ -1635,14 +1654,15 @@ create policy "Users can update own progress"
             }
 
             renderNewBadge() {
+                const badge = this.state.newBadge;
                 return `
-                    <div class="fixed top-20 left-1/2 transform -translate-x-1/2 rounded-2xl card-shadow p-6 z-50 animate-bounce"
-                         style="margin-left: -120px; width: 240px; background: var(--scandi-amber);">
+                    <div class="fixed top-20 left-1/2 transform -translate-x-1/2 rounded-2xl card-shadow p-6 z-50 animate-bounce bg-white border-2 border-yellow-600"
+                         style="margin-left: -120px; width: 240px;">
                         <div class="text-center">
-                            <div class="text-6xl mb-3">${this.state.newBadge.icon}</div>
-                            <h3 class="font-bold text-white text-lg mb-1">Nieuwe Badge!</h3>
-                            <p class="text-sm font-semibold text-white">${this.state.newBadge.name}</p>
-                            <p class="text-xs text-white opacity-90 mt-2">${this.state.newBadge.description}</p>
+                            <i class="fas ${badge.icon} ${badge.color} text-6xl mb-3" aria-hidden="true"></i>
+                            <h3 class="font-bold text-gray-800 text-lg mb-1">Nieuwe Badge!</h3>
+                            <p class="text-sm font-semibold text-gray-700">${badge.name}</p>
+                            <p class="text-xs text-gray-600 mt-2">${badge.description}</p>
                         </div>
                     </div>
                 `;
@@ -1654,26 +1674,26 @@ create policy "Users can update own progress"
                         <div class="p-4">
                             <div class="flex items-center justify-between mb-2">
                                 <h1 class="text-3xl font-bold gradient-text">Svenska Kat 🐱</h1>
-                                <button onclick="app.signOut()" 
+                                <button onclick="app.signOut()"
                                         class="px-4 py-2 bg-red-100 text-red-600 rounded-lg font-semibold text-sm card-hover">
-                                    <i class="fas fa-sign-out-alt mr-1"></i>Uitloggen
+                                    <i class="fas fa-sign-out-alt mr-1" aria-hidden="true"></i>Uitloggen
                                 </button>
                             </div>
                             <div class="flex items-center gap-2 text-xs text-gray-600 mb-2">
-                                <i class="fas fa-user"></i>
+                                <i class="fas fa-user" aria-hidden="true"></i>
                                 <span>${this.state.stats.displayName || this.state.user?.email || 'Gebruiker'}</span>
                             </div>
                             <div class="flex items-center gap-4 text-sm">
                                 <div class="flex items-center gap-1 text-white px-3 py-1.5 rounded-full font-semibold" style="background: var(--scandi-amber);">
-                                    <i class="fas fa-trophy"></i>
+                                    <i class="fas fa-trophy" aria-hidden="true"></i>
                                     <span>Level ${this.state.stats.level}</span>
                                 </div>
                                 <div class="flex items-center gap-1 text-white px-3 py-1.5 rounded-full font-semibold" style="background: var(--scandi-red);">
-                                    <i class="fas fa-fire"></i>
+                                    <i class="fas fa-fire" aria-hidden="true"></i>
                                     <span>${this.state.stats.streak}</span>
                                 </div>
                                 <div class="flex items-center gap-1 text-white px-3 py-1.5 rounded-full font-semibold" style="background: var(--scandi-blue);">
-                                    <i class="fas fa-star"></i>
+                                    <i class="fas fa-star" aria-hidden="true"></i>
                                     <span>${this.state.stats.totalPoints}</span>
                                 </div>
                             </div>
@@ -1692,22 +1712,22 @@ create policy "Users can update own progress"
                         <div id="progress-card" class="glass-effect rounded-2xl p-4 card-shadow">
                             <div class="grid grid-cols-4 gap-3">
                                 <div class="text-center">
-                                    <i class="fas fa-trophy text-blue-600 text-2xl mb-2"></i>
+                                    <i class="fas fa-trophy text-blue-700 text-2xl mb-2" aria-hidden="true"></i>
                                     <p class="text-2xl font-bold text-gray-800">${this.state.stats.level}</p>
                                     <p class="text-xs text-gray-600 mt-1">Level</p>
                                 </div>
                                 <div class="text-center">
-                                    <i class="fas fa-fire text-red-600 text-2xl mb-2"></i>
+                                    <i class="fas fa-fire text-red-600 text-2xl mb-2" aria-hidden="true"></i>
                                     <p class="text-2xl font-bold text-gray-800">${this.state.stats.streak}</p>
                                     <p class="text-xs text-gray-600 mt-1">Streak</p>
                                 </div>
                                 <div class="text-center">
-                                    <i class="fas fa-bullseye text-green-600 text-2xl mb-2"></i>
+                                    <i class="fas fa-bullseye text-green-700 text-2xl mb-2" aria-hidden="true"></i>
                                     <p class="text-2xl font-bold text-gray-800">${this.state.stats.dailyGoal}/${this.state.stats.dailyGoalTarget}</p>
                                     <p class="text-xs text-gray-600 mt-1">Vandaag</p>
                                 </div>
                                 <div class="text-center">
-                                    <i class="fas fa-star text-amber-600 text-2xl mb-2"></i>
+                                    <i class="fas fa-star text-amber-600 text-2xl mb-2" aria-hidden="true"></i>
                                     <p class="text-2xl font-bold text-gray-800">${this.state.stats.totalPoints}</p>
                                     <p class="text-xs text-gray-600 mt-1">Punten</p>
                                 </div>
@@ -1719,7 +1739,7 @@ create policy "Users can update own progress"
                             <div class="flex items-center justify-between mb-3">
                                 <div class="flex items-center gap-2">
                                     <i class="fas fa-calendar-day text-blue-700 text-lg" aria-hidden="true"></i>
-                                    <h3 class="font-bold text-gray-800">Vandaag's Programma</h3>
+                                    <h3 class="font-bold text-gray-800">Programma voor vandaag</h3>
                                 </div>
                                 <button onclick="app.generateDailyProgram(); app.render();"
                                         class="p-2 bg-blue-100 hover:bg-blue-200 rounded-lg text-blue-700 transition-colors"
@@ -1799,7 +1819,7 @@ create policy "Users can update own progress"
                                                 style="background: ${colors[category.color]};">
                                             <div class="flex items-center justify-between mb-2">
                                                 <span class="text-3xl">${category.icon}</span>
-                                                ${isFullyCompleted ? '<i class="fas fa-crown text-yellow-600 text-xl"></i>' : ''}
+                                                ${isFullyCompleted ? '<i class="fas fa-crown text-yellow-700 text-xl" aria-hidden="true"></i>' : ''}
                                             </div>
                                             <p class="text-sm font-bold text-left mb-1">${category.name}</p>
                                             <p class="text-xs opacity-90 text-left mb-2">${completed}/${totalPhrases} voltooid</p>
@@ -1815,16 +1835,16 @@ create policy "Users can update own progress"
                         ${this.state.stats.badges.length > 0 ? `
                             <div class="glass-effect rounded-2xl p-4 card-shadow">
                                 <div class="flex items-center gap-2 mb-3">
-                                    <i class="fas fa-medal text-amber-600" aria-hidden="true"></i>
+                                    <i class="fas fa-medal text-amber-600 text-lg" aria-hidden="true"></i>
                                     <h3 class="font-bold text-gray-800">Recente Badges</h3>
                                 </div>
                                 <div class="grid grid-cols-4 gap-2">
                                     ${this.state.stats.badges.slice(-4).map(badgeId => {
                                         const badge = badges[badgeId];
                                         return `
-                                            <div class="card-shadow rounded-xl p-3 text-center" style="background: var(--scandi-amber);">
-                                                <div class="text-3xl mb-1">${badge.icon}</div>
-                                                <p class="text-xs font-semibold text-white">${badge.name}</p>
+                                            <div class="card-shadow rounded-xl p-3 text-center bg-white">
+                                                <i class="fas ${badge.icon} ${badge.color} text-3xl mb-2" aria-hidden="true"></i>
+                                                <p class="text-xs font-semibold text-gray-800">${badge.name}</p>
                                             </div>
                                         `;
                                     }).join('')}
@@ -1967,7 +1987,7 @@ create policy "Users can update own progress"
                     <div class="space-y-4 animate-slideUp">
                         <div class="glass-effect rounded-2xl p-4 card-shadow">
                             <h3 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
-                                <i class="fas fa-layer-group text-blue-600"></i> Kies categorie
+                                <i class="fas fa-layer-group text-blue-700" aria-hidden="true"></i> Kies categorie
                             </h3>
                             <select onchange="app.changeFlashcardCategory(this.value)" 
                                     class="w-full p-4 border-2 border-gray-200 rounded-xl font-semibold text-gray-700 focus:border-blue-500 focus:outline-none">
@@ -2027,7 +2047,7 @@ create policy "Users can update own progress"
                         
                         <div class="glass-effect rounded-2xl p-4 card-shadow border-2 border-blue-200">
                             <h4 class="font-bold text-blue-900 mb-2 flex items-center gap-2">
-                                <i class="fas fa-book text-blue-600"></i> Flashcard Tip
+                                <i class="fas fa-book text-blue-700" aria-hidden="true"></i> Flashcard Tip
                             </h4>
                             <p class="text-sm text-blue-800">
                                 Probeer eerst zelf het antwoord te bedenken voordat je de kaart omdraait! 
@@ -2043,10 +2063,10 @@ create policy "Users can update own progress"
                     <div class="space-y-4 animate-slideUp">
                         <div class="glass-effect rounded-2xl p-5 card-shadow">
                             <h3 class="text-2xl font-bold text-gray-800 mb-2 flex items-center gap-2">
-                                <i class="fas fa-trophy text-yellow-700"></i> Jouw Badges
+                                <i class="fas fa-trophy text-yellow-700 text-xl" aria-hidden="true"></i> Jouw Badges
                             </h3>
                             <p class="text-sm text-gray-600 mb-4">
-                                <span class="font-bold text-blue-600">${this.state.stats.badges.length}</span> van ${Object.keys(badges).length} badges behaald
+                                <span class="font-bold text-blue-700">${this.state.stats.badges.length}</span> van ${Object.keys(badges).length} badges behaald
                             </p>
                             
                             <div class="grid grid-cols-2 gap-3">
@@ -2054,11 +2074,10 @@ create policy "Users can update own progress"
                                     const earned = this.state.stats.badges.includes(badge.id);
                                     return `
                                         <div class="p-4 rounded-xl border-2 card-hover ${earned ?
-                                            'card-shadow border-yellow-400' :
-                                            'bg-gray-50 border-gray-200 opacity-60'}"
-                                            style="${earned ? 'background: var(--scandi-amber);' : ''}">
+                                            'card-shadow border-yellow-600 bg-white' :
+                                            'bg-gray-50 border-gray-200 opacity-60'}">
                                             <div class="text-5xl mb-2 text-center">
-                                                ${earned ? badge.icon : '🔒'}
+                                                ${earned ? `<i class="fas ${badge.icon} ${badge.color}" aria-hidden="true"></i>` : '<i class="fas fa-lock text-gray-600" aria-hidden="true"></i>'}
                                             </div>
                                             <h4 class="font-bold text-sm text-center mb-1 text-gray-800">
                                                 ${badge.name}
@@ -2085,7 +2104,7 @@ create policy "Users can update own progress"
                         <div class="rounded-2xl p-5 card-shadow text-white"
                              style="background: var(--scandi-blue);">
                             <h4 class="font-bold mb-4 text-lg flex items-center gap-2">
-                                <i class="fas fa-chart-line"></i> Jouw Progressie
+                                <i class="fas fa-chart-line text-xl" aria-hidden="true"></i> Jouw Progressie
                             </h4>
                             <div class="space-y-3 text-sm">
                                 <div class="flex justify-between items-center bg-white/10 rounded-lg p-3 backdrop-blur-sm">
@@ -2115,12 +2134,12 @@ create policy "Users can update own progress"
                     <div class="space-y-4 animate-slideUp">
                         <div class="glass-effect rounded-2xl p-5 card-shadow">
                             <h3 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                                <i class="fas fa-trophy text-yellow-700"></i> Leaderboard
+                                <i class="fas fa-trophy text-yellow-700 text-xl" aria-hidden="true"></i> Leaderboard
                             </h3>
-                            
+
                             ${this.state.leaderboard.length === 0 ? `
                                 <div class="text-center py-8 text-gray-600">
-                                    <i class="fas fa-users text-4xl mb-3 text-gray-600"></i>
+                                    <i class="fas fa-users text-4xl mb-3 text-gray-600" aria-hidden="true"></i>
                                     <p>Nog geen andere spelers!</p>
                                     <p class="text-sm mt-2">Deel de app met vrienden 🚀</p>
                                 </div>
@@ -2140,14 +2159,14 @@ create policy "Users can update own progress"
                                                 <div class="flex-1">
                                                     <p class="font-bold text-gray-800">
                                                         ${player.displayName || 'Anoniem'}
-                                                        ${isCurrentUser ? '<span class="text-xs text-blue-600 ml-2">(jij)</span>' : ''}
+                                                        ${isCurrentUser ? '<span class="text-xs text-blue-700 ml-2">(jij)</span>' : ''}
                                                     </p>
                                                     <p class="text-sm text-gray-600">
                                                         Level ${player.level} • ${player.phrasesCompleted} zinnen
                                                     </p>
                                                 </div>
                                                 <div class="text-right">
-                                                    <p class="font-bold text-blue-600 text-lg">${player.totalPoints}</p>
+                                                    <p class="font-bold text-blue-700 text-lg">${player.totalPoints}</p>
                                                     <p class="text-xs text-gray-600">punten</p>
                                                 </div>
                                             </div>
@@ -2159,10 +2178,10 @@ create policy "Users can update own progress"
                         
                         <div class="glass-effect rounded-2xl p-4 card-shadow border-2 border-blue-200">
                             <h4 class="font-bold text-blue-900 mb-2 flex items-center gap-2">
-                                <i class="fas fa-info-circle text-blue-600"></i> Info
+                                <i class="fas fa-info-circle text-blue-700" aria-hidden="true"></i> Info
                             </h4>
                             <p class="text-sm text-blue-800">
-                                De leaderboard toont de top 10 spelers op basis van totale punten. 
+                                De leaderboard toont de top 10 spelers op basis van totale punten.
                                 Blijf oefenen om hoger te komen! 🚀
                             </p>
                         </div>
@@ -2195,7 +2214,7 @@ create policy "Users can update own progress"
                             <button onclick="app.dismissUpdate()"
                                     class="w-full py-4 rounded-xl font-bold text-white card-hover card-shadow"
                                     style="background: var(--scandi-blue);">
-                                <i class="fas fa-check mr-2"></i>Begrepen!
+                                <i class="fas fa-check mr-2" aria-hidden="true"></i>Begrepen!
                             </button>
                         </div>
                     </div>
@@ -2207,7 +2226,7 @@ create policy "Users can update own progress"
                     <div class="space-y-4 animate-slideUp">
                         <div class="glass-effect rounded-2xl p-5 card-shadow">
                             <h3 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                                <i class="fas fa-cog text-blue-600"></i> Instellingen
+                                <i class="fas fa-cog text-blue-700" aria-hidden="true"></i> Instellingen
                             </h3>
 
                             <div class="space-y-3">
@@ -2217,7 +2236,7 @@ create policy "Users can update own progress"
                                             <p class="font-semibold text-gray-800">Account Email</p>
                                             <p class="text-sm text-gray-600">${this.state.user?.email || 'Geen email'}</p>
                                         </div>
-                                        <i class="fas fa-envelope text-2xl text-gray-600"></i>
+                                        <i class="fas fa-envelope text-2xl text-gray-600" aria-hidden="true"></i>
                                     </div>
                                 </div>
 
@@ -2227,11 +2246,11 @@ create policy "Users can update own progress"
                                             <p class="font-semibold text-gray-800">Weergavenaam</p>
                                             <p class="text-sm text-gray-600">${this.state.stats.displayName || 'Niet ingesteld'}</p>
                                         </div>
-                                        <i class="fas fa-user text-2xl text-gray-600"></i>
+                                        <i class="fas fa-user text-2xl text-gray-600" aria-hidden="true"></i>
                                     </div>
                                     <button onclick="app.updateDisplayName()"
                                             class="w-full mt-2 py-2 bg-white rounded-lg font-semibold text-gray-700 card-hover border-2 border-gray-200">
-                                        <i class="fas fa-edit mr-2"></i>Naam wijzigen
+                                        <i class="fas fa-edit mr-2" aria-hidden="true"></i>Naam wijzigen
                                     </button>
                                 </div>
 
@@ -2241,11 +2260,11 @@ create policy "Users can update own progress"
                                             <p class="font-semibold text-gray-800">Wachtwoord</p>
                                             <p class="text-sm text-gray-600">••••••••</p>
                                         </div>
-                                        <i class="fas fa-lock text-2xl text-gray-600"></i>
+                                        <i class="fas fa-lock text-2xl text-gray-600" aria-hidden="true"></i>
                                     </div>
                                     <button onclick="app.changePassword()"
                                             class="w-full mt-2 py-2 bg-white rounded-lg font-semibold text-gray-700 card-hover border-2 border-gray-200">
-                                        <i class="fas fa-key mr-2"></i>Wachtwoord wijzigen
+                                        <i class="fas fa-key mr-2" aria-hidden="true"></i>Wachtwoord wijzigen
                                     </button>
                                 </div>
                             </div>
@@ -2253,7 +2272,7 @@ create policy "Users can update own progress"
 
                         <div class="glass-effect rounded-2xl p-5 card-shadow">
                             <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
-                                <i class="fas fa-sliders-h text-green-700"></i> Categorie Voorkeuren
+                                <i class="fas fa-sliders-h text-green-700 text-lg" aria-hidden="true"></i> Categorie Voorkeuren
                             </h4>
                             <p class="text-sm text-gray-600 mb-4">
                                 Kies welke categorieën je wilt oefenen. Uitgeschakelde categorieën verschijnen niet in je dagelijks programma.
@@ -2285,7 +2304,7 @@ create policy "Users can update own progress"
 
                         <div class="glass-effect rounded-2xl p-5 card-shadow">
                             <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
-                                <i class="fas fa-info-circle text-blue-700"></i> App Informatie
+                                <i class="fas fa-info-circle text-blue-700 text-lg" aria-hidden="true"></i> App Informatie
                             </h4>
                             <div class="space-y-2 text-sm text-gray-600">
                                 <p><strong>Versie:</strong> ${APP_VERSION}</p>
@@ -2295,7 +2314,7 @@ create policy "Users can update own progress"
 
                         <div class="glass-effect rounded-2xl p-5 card-shadow">
                             <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
-                                <i class="fas fa-history text-blue-700"></i> Versiegeschiedenis
+                                <i class="fas fa-history text-blue-700 text-lg" aria-hidden="true"></i> Versiegeschiedenis
                             </h4>
                             <div class="space-y-3 max-h-96 overflow-y-auto">
                                 ${Object.entries(RELEASE_NOTES).map(([version, notes]) => `
@@ -2322,27 +2341,27 @@ create policy "Users can update own progress"
 
                         <div class="glass-effect rounded-2xl p-5 card-shadow">
                             <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
-                                <i class="fas fa-route text-green-700"></i> Tour & Hulp
+                                <i class="fas fa-route text-green-700 text-lg" aria-hidden="true"></i> Tour & Hulp
                             </h4>
                             <p class="text-sm text-gray-600 mb-3">
                                 Wil je een rondleiding door de app? Start de interactieve tour opnieuw!
                             </p>
                             <button onclick="app.startTour()"
                                     class="w-full py-3 bg-green-500 hover:bg-green-600 rounded-xl font-bold text-white card-hover card-shadow">
-                                <i class="fas fa-play-circle mr-2"></i>Start Tour
+                                <i class="fas fa-play-circle mr-2" aria-hidden="true"></i>Start Tour
                             </button>
                         </div>
 
                         <div class="glass-effect rounded-2xl p-4 card-shadow border-2 border-red-200">
                             <h4 class="font-bold text-red-900 mb-2 flex items-center gap-2">
-                                <i class="fas fa-exclamation-triangle text-red-600"></i> Gevaarlijke Zone
+                                <i class="fas fa-exclamation-triangle text-red-600 text-lg" aria-hidden="true"></i> Gevaarlijke Zone
                             </h4>
                             <p class="text-sm text-red-800 mb-3">
                                 Let op! Deze actie kan niet ongedaan gemaakt worden.
                             </p>
                             <button onclick="app.deleteAccount()"
                                     class="w-full py-3 bg-red-500 hover:bg-red-600 rounded-xl font-bold text-white card-hover card-shadow">
-                                <i class="fas fa-trash mr-2"></i>Account Verwijderen
+                                <i class="fas fa-trash mr-2" aria-hidden="true"></i>Account Verwijderen
                             </button>
                         </div>
                     </div>
@@ -2356,37 +2375,37 @@ create policy "Users can update own progress"
                             <button id="nav-home" onclick="app.switchTab('home')"
                                     class="flex-1 py-4 flex flex-col items-center gap-1 transition-all ${
                                         this.state.currentTab === 'home'
-                                            ? 'text-blue-600'
+                                            ? 'text-blue-700'
                                             : 'text-gray-600 hover:text-gray-600'
                                     }">
-                                <i class="fas fa-home text-xl"></i>
+                                <i class="fas fa-home text-xl" aria-hidden="true"></i>
                                 <span class="text-xs font-bold">Home</span>
                             </button>
                             <button id="nav-practice" onclick="app.switchTab('practice')"
                                     class="flex-1 py-4 flex flex-col items-center gap-1 transition-all ${
                                         this.state.currentTab === 'practice'
-                                            ? 'text-blue-600'
+                                            ? 'text-blue-700'
                                             : 'text-gray-600 hover:text-gray-600'
                                     }">
-                                <i class="fas fa-microphone text-xl"></i>
+                                <i class="fas fa-microphone text-xl" aria-hidden="true"></i>
                                 <span class="text-xs font-bold">Oefen</span>
                             </button>
                             <button id="nav-flashcards" onclick="app.switchTab('flashcards')"
                                     class="flex-1 py-4 flex flex-col items-center gap-1 transition-all ${
-                                        this.state.currentTab === 'flashcards' 
-                                            ? 'text-blue-600' 
+                                        this.state.currentTab === 'flashcards'
+                                            ? 'text-blue-700'
                                             : 'text-gray-600 hover:text-gray-600'
                                     }">
-                                <i class="fas fa-layer-group text-xl"></i>
+                                <i class="fas fa-layer-group text-xl" aria-hidden="true"></i>
                                 <span class="text-xs font-bold">Cards</span>
                             </button>
                             <button id="nav-badges" onclick="app.switchTab('badges')"
                                     class="flex-1 py-4 flex flex-col items-center gap-1 relative transition-all ${
                                         this.state.currentTab === 'badges'
-                                            ? 'text-blue-600'
+                                            ? 'text-blue-700'
                                             : 'text-gray-600 hover:text-gray-600'
                                     }">
-                                <i class="fas fa-trophy text-xl"></i>
+                                <i class="fas fa-trophy text-xl" aria-hidden="true"></i>
                                 <span class="text-xs font-bold">Badges</span>
                                 ${this.state.stats.badges.length > 0 ? `
                                     <span class="absolute top-2 right-1/4 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold text-white"
@@ -2398,19 +2417,19 @@ create policy "Users can update own progress"
                             <button id="nav-leaderboard" onclick="app.switchTab('leaderboard')"
                                     class="flex-1 py-4 flex flex-col items-center gap-1 transition-all ${
                                         this.state.currentTab === 'leaderboard'
-                                            ? 'text-blue-600'
+                                            ? 'text-blue-700'
                                             : 'text-gray-600 hover:text-gray-600'
                                     }">
-                                <i class="fas fa-ranking-star text-xl"></i>
+                                <i class="fas fa-ranking-star text-xl" aria-hidden="true"></i>
                                 <span class="text-xs font-bold">Rank</span>
                             </button>
                             <button id="nav-settings" onclick="app.switchTab('settings')"
                                     class="flex-1 py-4 flex flex-col items-center gap-1 transition-all ${
                                         this.state.currentTab === 'settings'
-                                            ? 'text-blue-600'
+                                            ? 'text-blue-700'
                                             : 'text-gray-600 hover:text-gray-600'
                                     }">
-                                <i class="fas fa-cog text-xl"></i>
+                                <i class="fas fa-cog text-xl" aria-hidden="true"></i>
                                 <span class="text-xs font-bold">Setup</span>
                             </button>
                         </div>

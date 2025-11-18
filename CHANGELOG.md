@@ -5,6 +5,53 @@ All notable changes to Svenska Kat (formerly Zweeds B1) Language Learning App wi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.2] - 2025-11-18
+
+### Changed
+- **Complete Icon Flat Design & WCAG Optimization** 🎨
+  - All icons throughout the app now use flat design with single colors
+  - WCAG AA compliant colors across all icons:
+    - `text-blue-600` → `text-blue-700` (contrast ratio 4.5:1)
+    - `text-green-600` → `text-green-700` (contrast ratio 4.5:1)
+    - `text-yellow-600` → `text-yellow-700` (contrast ratio 4.6:1)
+  - Added `aria-hidden="true"` to all decorative icons for screen reader accessibility
+  - Consistent icon sizing with `text-xl` and `text-lg` classes
+
+### Technical
+- Updated 50+ icon instances across all pages (home, badges, leaderboard, settings, navigation)
+- Icon color updates in:
+  - Homepage stats cards
+  - Navigation active states (all 6 tabs)
+  - Badges page header and content
+  - Leaderboard display
+  - Settings section headers
+  - Header user info
+- Improved accessibility compliance with proper ARIA attributes
+
+## [1.6.1] - 2025-11-18
+
+### Changed
+- **Badge Icons Redesign** 🏆 - Font Awesome iconen met WCAG-conforme kleuren
+  - Alle emoji badge iconen vervangen door Font Awesome icons
+  - Semantische kleuren per badge categorie:
+    - Blauw (text-blue-700) voor progress badges
+    - Groen (text-green-700) voor level/growth badges
+    - Rood (text-red-600) voor streak badges
+    - Amber (text-amber-600) voor achievement badges
+  - Locked badges tonen nu slotje icon (fa-lock)
+  - Badges op homepage: witte achtergrond met gekleurde iconen
+  - Badges pagina: witte achtergrond met gele border voor earned badges
+  - Badge notification popup: witte achtergrond met gekleurde icon
+
+### Fixed
+- Nederlandse taalverbetering: "Vandaag's Programma" → "Programma voor vandaag"
+
+### Technical
+- Added `color` property to each badge definition
+- Updated badge rendering to use `<i class="fas ${badge.icon} ${badge.color}">`
+- Consistent WCAG AA contrast across all badge displays
+- Aria-hidden attributes added to decorative badge icons
+
 ## [1.6.0] - 2025-11-18
 
 ### Changed
@@ -372,7 +419,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version Support
 
-- **Current Version**: 1.6.0
+- **Current Version**: 1.6.2
 - **Minimum Browser Requirements**:
   - Chrome 60+
   - Safari 14+ (iOS 14+)
@@ -436,6 +483,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Future Roadmap
 
 ### Planned Features
+- **Chat Functionaliteit** 💬 - Sociale interactie tussen gebruikers
+  - Gebruikerslijst bekijken (actieve accounts)
+  - Direct messaging binnen de app
+  - Real-time chat met Supabase Realtime
+  - Online/offline status indicators
+  - Optionele chat notificaties
 - Spaced repetition algorithm for optimal learning
 - Social features (friend challenges, shared progress)
 - More language categories and phrases

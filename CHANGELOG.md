@@ -5,6 +5,24 @@ All notable changes to Zweeds B1 Language Learning App will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.1] - 2025-11-18
+
+### Fixed
+- Safari iPhone password manager not saving credentials properly
+- Login form now properly recognized by iOS Safari autofill
+- Password field autocomplete correctly switches between login/signup modes
+
+### Changed
+- Added `action` and `method` attributes to login form for better Safari support
+- Added `required` attributes to email and password fields
+- Added `for` attributes to all form labels for improved accessibility
+- Email field autocomplete switches between `username` and `email` for login/signup
+- Display name field now required during signup
+
+### Technical
+- Improved `toggleSignUp()` function to properly manage form field attributes
+- Enhanced form structure for better iOS Safari password manager integration
+
 ## [1.2.0] - 2025-11-18
 
 ### Added
@@ -152,7 +170,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version Support
 
-- **Current Version**: 1.2.0
+- **Current Version**: 1.2.1
 - **Minimum Browser Requirements**:
   - Chrome 60+
   - Safari 14+ (iOS 14+)

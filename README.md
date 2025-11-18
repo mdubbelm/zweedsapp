@@ -2,7 +2,7 @@
 
 A gamified web application for learning Swedish at B1 level, featuring audio recording for pronunciation practice, flashcards, achievements, and competitive leaderboards.
 
-![Version](https://img.shields.io/badge/version-1.6.2-blue)
+![Version](https://img.shields.io/badge/version-1.6.3-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 ## Features
@@ -283,12 +283,12 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 See [CHANGELOG.md](CHANGELOG.md) for detailed version history.
 
-**Current Version**: 1.6.2 (November 18, 2025)
-- Complete flat design for all icons throughout the app
-- WCAG AA compliant colors for optimal accessibility
-- Improved visibility with darker icon colors (blue-700, green-700)
-- Added aria-hidden to all decorative icons
-- Consistent icon sizing across all pages
+**Current Version**: 1.6.3 (November 18, 2025)
+- All category icons now Font Awesome flat design
+- Consistent icon style across entire app (UI + categories)
+- Replaced 7 emoji category icons with Font Awesome equivalents
+- Improved visual cohesion and professional appearance
+- Better accessibility with proper ARIA attributes
 
 ## License
 

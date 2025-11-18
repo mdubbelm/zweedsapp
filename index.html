@@ -141,8 +141,21 @@
 
     <script>
         // App Version
-        const APP_VERSION = '1.6.2';
+        const APP_VERSION = '1.6.3';
         const RELEASE_NOTES = {
+            '1.6.3': {
+                date: '2025-11-18',
+                features: [
+                    '🎨 Categorie iconen nu Font Awesome flat design',
+                    '❤️ Begroetingen: fa-heart',
+                    '☕ Dagelijks: fa-mug-hot',
+                    '💼 Werk: fa-briefcase',
+                    '✈️ Reizen: fa-plane',
+                    '💬 Praten: fa-comments',
+                    '🐱 Katten: fa-cat',
+                    '🎒 August: fa-backpack'
+                ]
+            },
             '1.6.2': {
                 date: '2025-11-18',
                 features: [
@@ -342,7 +355,7 @@
         const categories = {
             greetings: {
                 name: 'Begroetingen',
-                icon: '❤️',
+                icon: 'fa-heart',
                 color: 'pink',
                 phrases: [
                     { id: 'g1', swedish: 'Hur mår du?', dutch: 'Hoe gaat het met je?', pronunciation: 'Hoer mawr doe?', difficulty: 'easy' },
@@ -356,7 +369,7 @@
             },
             daily: {
                 name: 'Dagelijks',
-                icon: '☕',
+                icon: 'fa-mug-hot',
                 color: 'amber',
                 phrases: [
                     { id: 'd1', swedish: 'Jag brukar vakna klockan sju', dutch: 'Ik word meestal om zeven uur wakker', pronunciation: 'Jaag broekar vakna klockan sjoe', difficulty: 'medium' },
@@ -370,7 +383,7 @@
             },
             work: {
                 name: 'Werk',
-                icon: '💼',
+                icon: 'fa-briefcase',
                 color: 'blue',
                 phrases: [
                     { id: 'w1', swedish: 'Jag arbetar som lärare', dutch: 'Ik werk als leraar', pronunciation: 'Jaag arbeetar som leerare', difficulty: 'easy' },
@@ -383,7 +396,7 @@
             },
             travel: {
                 name: 'Reizen',
-                icon: '✈️',
+                icon: 'fa-plane',
                 color: 'indigo',
                 phrases: [
                     { id: 't1', swedish: 'Var är tågstationen?', dutch: 'Waar is het treinstation?', pronunciation: 'Vaar er taagstasjoonen?', difficulty: 'easy' },
@@ -396,7 +409,7 @@
             },
             conversation: {
                 name: 'Praten',
-                icon: '📖',
+                icon: 'fa-comments',
                 color: 'green',
                 phrases: [
                     { id: 'c1', swedish: 'Vad tycker du om Sverige?', dutch: 'Wat vind je van Zweden?', pronunciation: 'Vad tyker doe om Sverije?', difficulty: 'easy' },
@@ -409,7 +422,7 @@
             },
             cats: {
                 name: 'Katten',
-                icon: '🐱',
+                icon: 'fa-cat',
                 color: 'purple',
                 phrases: [
                     { id: 'k1', swedish: 'Jag har två katter', dutch: 'Ik heb twee katten', pronunciation: 'Jaag haar tvaw katter', difficulty: 'easy' },
@@ -430,7 +443,7 @@
             },
             august: {
                 name: 'August Avonturen',
-                icon: '🎒',
+                icon: 'fa-backpack',
                 color: 'orange',
                 phrases: [
                     // School (a1-a10)
@@ -1818,7 +1831,7 @@ create policy "Users can update own progress"
                                                 class="card-shadow rounded-xl p-4 text-white card-hover relative overflow-hidden"
                                                 style="background: ${colors[category.color]};">
                                             <div class="flex items-center justify-between mb-2">
-                                                <span class="text-3xl">${category.icon}</span>
+                                                <i class="fas ${category.icon} text-3xl" aria-hidden="true"></i>
                                                 ${isFullyCompleted ? '<i class="fas fa-crown text-yellow-700 text-xl" aria-hidden="true"></i>' : ''}
                                             </div>
                                             <p class="text-sm font-bold text-left mb-1">${category.name}</p>
@@ -1993,7 +2006,7 @@ create policy "Users can update own progress"
                                     class="w-full p-4 border-2 border-gray-200 rounded-xl font-semibold text-gray-700 focus:border-blue-500 focus:outline-none">
                                 ${Object.entries(categories).map(([key, category]) => `
                                     <option value="${key}" ${key === this.state.flashcardCategory ? 'selected' : ''}>
-                                        ${category.icon} ${category.name}
+                                        ${category.name}
                                     </option>
                                 `).join('')}
                             </select>
@@ -2283,7 +2296,7 @@ create policy "Users can update own progress"
                                     return `
                                         <div class="flex items-center justify-between bg-gray-50 rounded-xl p-3">
                                             <div class="flex items-center gap-3">
-                                                <span class="text-2xl">${category.icon}</span>
+                                                <i class="fas ${category.icon} text-2xl text-gray-700" aria-hidden="true"></i>
                                                 <div>
                                                     <p class="font-semibold text-gray-800">${category.name}</p>
                                                     <p class="text-xs text-gray-500">${category.phrases.length} zinnen</p>

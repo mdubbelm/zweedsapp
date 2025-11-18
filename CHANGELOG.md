@@ -5,6 +5,25 @@ All notable changes to Svenska Kat (formerly Zweeds B1) Language Learning App wi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.3] - 2025-11-18
+
+### Changed
+- **Category Icons Flat Design** 🎨 - All category emoji icons replaced with Font Awesome
+  - Begroetingen: ❤️ → `fa-heart`
+  - Dagelijks: ☕ → `fa-mug-hot`
+  - Werk: 💼 → `fa-briefcase`
+  - Reizen: ✈️ → `fa-plane`
+  - Praten: 📖 → `fa-comments`
+  - Katten: 🐱 → `fa-cat`
+  - August Avonturen: 🎒 → `fa-backpack`
+
+### Technical
+- Updated category icon definitions from emoji strings to Font Awesome class names
+- Changed rendering from `<span>${category.icon}</span>` to `<i class="fas ${category.icon}">`
+- Updated 3 locations: homepage category cards, settings preferences, flashcard dropdown
+- Added `text-gray-700` color and `aria-hidden="true"` to category icons
+- Removed icons from select dropdown options (HTML not supported)
+
 ## [1.6.2] - 2025-11-18
 
 ### Changed
@@ -419,7 +438,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version Support
 
-- **Current Version**: 1.6.2
+- **Current Version**: 1.6.3
 - **Minimum Browser Requirements**:
   - Chrome 60+
   - Safari 14+ (iOS 14+)

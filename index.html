@@ -72,7 +72,12 @@
             0%, 100% { opacity: 1; }
             50% { opacity: 0.7; }
         }
-        
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translate(-50%, -20px); }
+            to { opacity: 1; transform: translate(-50%, 0); }
+        }
+
         .animate-fadeIn {
             animation: fadeIn 0.3s ease-out;
         }
@@ -80,7 +85,11 @@
         .animate-slideUp {
             animation: slideUp 0.4s ease-out;
         }
-        
+
+        .animate-slideDown {
+            animation: slideDown 0.4s ease-out;
+        }
+
         .animate-bounce {
             animation: bounce 1s infinite;
         }
@@ -141,8 +150,18 @@
 
     <script>
         // App Version
-        const APP_VERSION = '1.6.3';
+        const APP_VERSION = '1.6.4';
         const RELEASE_NOTES = {
+            '1.6.4': {
+                date: '2025-11-18',
+                features: [
+                    '🔄 PWA Auto-Update: Geen handmatige herinstallatie meer nodig!',
+                    '⚡ Service Worker: Automatische detectie van nieuwe versies',
+                    '🔔 Update notificatie: Word gewaarschuwd bij updates',
+                    '📱 Automatisch herladen: Nieuwe versie direct beschikbaar',
+                    '💾 Offline support: App werkt ook zonder internet'
+                ]
+            },
             '1.6.3': {
                 date: '2025-11-18',
                 features: [
@@ -2589,6 +2608,89 @@ create policy "Users can update own progress"
             attachEventListeners() {
                 // Event listeners are handled by onclick attributes
             }
+        }
+
+        // Service Worker Registration & Update Management
+        let updateAvailable = false;
+        let registration = null;
+
+        // Show update notification
+        function showUpdateNotification() {
+            const notification = document.createElement('div');
+            notification.id = 'update-notification';
+            notification.className = 'fixed top-4 left-1/2 transform -translate-x-1/2 z-[9999] animate-slideDown';
+            notification.innerHTML = `
+                <div class="bg-blue-700 text-white px-6 py-4 rounded-2xl shadow-2xl flex items-center gap-4 max-w-md mx-4">
+                    <i class="fas fa-sync-alt text-2xl" aria-hidden="true"></i>
+                    <div class="flex-1">
+                        <p class="font-bold text-sm">Nieuwe versie beschikbaar!</p>
+                        <p class="text-xs opacity-90">Versie ${APP_VERSION} is klaar om te gebruiken</p>
+                    </div>
+                    <button onclick="applyUpdate()" class="bg-white text-blue-700 px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-50 transition-colors">
+                        Update Nu
+                    </button>
+                    <button onclick="dismissUpdate()" class="text-white hover:text-blue-200 transition-colors">
+                        <i class="fas fa-times" aria-hidden="true"></i>
+                    </button>
+                </div>
+            `;
+            document.body.appendChild(notification);
+        }
+
+        // Apply update and reload
+        window.applyUpdate = function() {
+            if (registration && registration.waiting) {
+                registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+            }
+            window.location.reload();
+        };
+
+        // Dismiss update notification
+        window.dismissUpdate = function() {
+            const notification = document.getElementById('update-notification');
+            if (notification) {
+                notification.remove();
+            }
+        };
+
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((reg) => {
+                        console.log('[App] Service Worker registered:', reg.scope);
+                        registration = reg;
+
+                        // Check for updates every 60 seconds
+                        setInterval(() => {
+                            reg.update();
+                        }, 60000);
+
+                        // Listen for updates
+                        reg.addEventListener('updatefound', () => {
+                            const newWorker = reg.installing;
+
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // New service worker installed, update available
+                                    console.log('[App] Update available!');
+                                    updateAvailable = true;
+                                    showUpdateNotification();
+                                }
+                            });
+                        });
+
+                        // Listen for controller change (update applied)
+                        navigator.serviceWorker.addEventListener('controllerchange', () => {
+                            if (updateAvailable) {
+                                window.location.reload();
+                            }
+                        });
+                    })
+                    .catch((error) => {
+                        console.log('[App] Service Worker registration failed:', error);
+                    });
+            });
         }
 
         const app = new SwedishApp();

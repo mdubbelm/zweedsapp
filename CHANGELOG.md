@@ -5,6 +5,43 @@ All notable changes to Svenska Kat (formerly Zweeds B1) Language Learning App wi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.4] - 2025-11-18
+
+### Added
+- **PWA Auto-Update System** 🔄 - No more manual reinstallation required!
+  - Service Worker implementation for automatic cache management
+  - Version-based caching strategy (cache names include version number)
+  - Automatic update detection when new version is deployed
+  - Update notification banner with "Update Nu" button
+  - Automatic cleanup of old cache versions
+  - Offline support - app works without internet connection
+  - Update check every 60 seconds for quick deployment
+  - User-friendly update flow: detect → notify → apply → reload
+
+### Technical
+- **New file:** `sw.js` - Service Worker for PWA functionality
+  - Network-first strategy with cache fallback
+  - Automatic cache invalidation on version change
+  - Service Worker lifecycle management (install, activate, fetch)
+  - Message handling for skip waiting functionality
+- **index.html updates:**
+  - Service Worker registration on page load
+  - Update detection and notification system
+  - `showUpdateNotification()` function with animated banner
+  - `applyUpdate()` function for user-triggered update
+  - `dismissUpdate()` function to hide notification
+  - New CSS animation: `@keyframes slideDown` for notification
+  - Event listeners for updatefound and controllerchange events
+- **Cache strategy:**
+  - Cache name: `svenska-kat-v{version}`
+  - Caches: index.html, manifest.json, root path
+  - External CDN resources handled by browser cache
+  - Old caches automatically deleted on activation
+
+### Fixed
+- **PWA Update Issue** - Resolved user pain point where PWA had to be manually deleted and reinstalled to see updates
+- **Seamless Updates** - Users now get notified and can update with a single click
+
 ## [1.6.3] - 2025-11-18
 
 ### Changed

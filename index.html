@@ -533,6 +533,17 @@
                     }
                 ];
 
+                // Initialize speech synthesis voices
+                // Voices need to be loaded before use, this ensures they're available
+                if ('speechSynthesis' in window) {
+                    // Load voices on page load
+                    window.speechSynthesis.getVoices();
+                    // Also listen for voiceschanged event (needed on some browsers)
+                    window.speechSynthesis.onvoiceschanged = () => {
+                        window.speechSynthesis.getVoices();
+                    };
+                }
+
                 this.checkAuth();
             }
 
@@ -1152,6 +1163,23 @@
                     const utterance = new SpeechSynthesisUtterance(text);
                     utterance.lang = 'sv-SE';
                     utterance.rate = 0.8;
+
+                    // Try to explicitly select a Swedish voice
+                    const voices = window.speechSynthesis.getVoices();
+
+                    // Look for Swedish voices in order of preference
+                    const swedishVoice = voices.find(voice =>
+                        voice.lang === 'sv-SE' ||
+                        voice.lang.startsWith('sv-') ||
+                        voice.name.toLowerCase().includes('swedish') ||
+                        voice.name.toLowerCase().includes('alva') || // Swedish voice on Mac
+                        voice.name.toLowerCase().includes('klara')   // Swedish voice on some systems
+                    );
+
+                    if (swedishVoice) {
+                        utterance.voice = swedishVoice;
+                    }
+
                     window.speechSynthesis.cancel();
                     window.speechSynthesis.speak(utterance);
                 }

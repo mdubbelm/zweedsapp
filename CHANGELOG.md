@@ -5,6 +5,23 @@ All notable changes to Svenska Kat (formerly Zweeds B1) Language Learning App wi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.4] - 2025-11-18
+
+### Added
+- **7 New Cat Phrases:** Expanded Katten category from 7 to 14 phrases
+- **Introduced Cleo:** Jacob and Monique's cat now featured in multiple phrases
+- **Owner Relationships:** Phrases mentioning Kehrana as owner of Sok and Winnie
+- **Cat Interactions:** Phrases about all three cats playing together
+
+### Changed
+- Total phrases in Katten category: 7 → 14 (k1-k14)
+- More personal and relatable cat-themed learning content
+
+### Technical
+- Added phrase IDs k8-k14 to cats category
+- Maintained consistent Swedish/Dutch/pronunciation format
+- Varied difficulty levels across new phrases
+
 ## [1.3.3] - 2025-11-18
 
 ### Fixed
@@ -243,7 +260,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version Support
 
-- **Current Version**: 1.3.3
+- **Current Version**: 1.3.4
 - **Minimum Browser Requirements**:
   - Chrome 60+
   - Safari 14+ (iOS 14+)

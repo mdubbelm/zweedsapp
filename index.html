@@ -123,8 +123,17 @@
 
     <script>
         // App Version
-        const APP_VERSION = '1.3.5';
+        const APP_VERSION = '1.4.0';
         const RELEASE_NOTES = {
+            '1.4.0': {
+                date: '2025-11-18',
+                features: [
+                    '🎒 Nieuwe categorie: August Avonturen! (30 zinnen)',
+                    '⚙️ Personalisatie: Kies welke categorieën je wilt oefenen',
+                    '🎯 Settings: Toggle categorieën aan/uit',
+                    '📚 School, eten en bos-avonturen met August'
+                ]
+            },
             '1.3.5': {
                 date: '2025-11-18',
                 features: [
@@ -361,6 +370,46 @@
                     { id: 'k13', swedish: 'Cleo är en mysig katt', dutch: 'Cleo is een gezellige kat', pronunciation: 'Cleo er en mysig kat', difficulty: 'easy' },
                     { id: 'k14', swedish: 'Vi älskar alla våra katter', dutch: 'We houden van al onze katten', pronunciation: 'Vee elskar alla vawra katter', difficulty: 'medium' }
                 ]
+            },
+            august: {
+                name: 'August Avonturen',
+                icon: '🎒',
+                color: 'orange',
+                phrases: [
+                    // School (a1-a10)
+                    { id: 'a1', swedish: 'August går till skolan', dutch: 'August gaat naar school', pronunciation: 'August gawr til skoolan', difficulty: 'easy' },
+                    { id: 'a2', swedish: 'August har många vänner i skolan', dutch: 'August heeft veel vrienden op school', pronunciation: 'August haar mawnga venner ee skoolan', difficulty: 'medium' },
+                    { id: 'a3', swedish: 'August älskar att lära sig nya saker', dutch: 'August houdt van nieuwe dingen leren', pronunciation: 'August elskar at leera sei nya saaker', difficulty: 'hard' },
+                    { id: 'a4', swedish: 'August läser böcker varje dag', dutch: 'August leest elke dag boeken', pronunciation: 'August leeser boeker varje daag', difficulty: 'medium' },
+                    { id: 'a5', swedish: 'August skriver i sin bok', dutch: 'August schrijft in zijn boek', pronunciation: 'August skreever ee seen book', difficulty: 'easy' },
+                    { id: 'a6', swedish: 'August målar i konst', dutch: 'August schildert bij tekenen', pronunciation: 'August mawlar ee konst', difficulty: 'medium' },
+                    { id: 'a7', swedish: 'August spelar med vännerna på rast', dutch: 'August speelt met vrienden in de pauze', pronunciation: 'August speelar med vennerna paw rast', difficulty: 'hard' },
+                    { id: 'a8', swedish: 'August äter lunch i skolan', dutch: 'August eet lunch op school', pronunciation: 'August eter lunch ee skoolan', difficulty: 'easy' },
+                    { id: 'a9', swedish: 'August lyssnar på läraren', dutch: 'August luistert naar de leraar', pronunciation: 'August lyssnar paw leeraren', difficulty: 'medium' },
+                    { id: 'a10', swedish: 'August går hem från skolan', dutch: 'August loopt naar huis vanaf school', pronunciation: 'August gawr hem frawn skoolan', difficulty: 'easy' },
+                    // Eten en drinken (a11-a20)
+                    { id: 'a11', swedish: 'August äter frukost varje morgon', dutch: 'August eet elke ochtend ontbijt', pronunciation: 'August eter frukost varje morgon', difficulty: 'medium' },
+                    { id: 'a12', swedish: 'August dricker mjölk', dutch: 'August drinkt melk', pronunciation: 'August dricker mjoelk', difficulty: 'easy' },
+                    { id: 'a13', swedish: 'August gillar pannkakor med sylt', dutch: 'August houdt van pannenkoeken met jam', pronunciation: 'August gillar pannkakor med sylt', difficulty: 'medium' },
+                    { id: 'a14', swedish: 'August äter frukt varje dag', dutch: 'August eet elke dag fruit', pronunciation: 'August eter frukt varje daag', difficulty: 'easy' },
+                    { id: 'a15', swedish: 'August dricker vatten när han är törstig', dutch: 'August drinkt water als hij dorst heeft', pronunciation: 'August dricker vatten neer han er toerstig', difficulty: 'hard' },
+                    { id: 'a16', swedish: 'August äter smörgås till lunch', dutch: 'August eet een boterham voor lunch', pronunciation: 'August eter smuergaws til lunch', difficulty: 'medium' },
+                    { id: 'a17', swedish: 'August älskar glass på sommaren', dutch: 'August houdt van ijs in de zomer', pronunciation: 'August elskar glass paw sommaren', difficulty: 'medium' },
+                    { id: 'a18', swedish: 'August äter middag med familjen', dutch: 'August eet avondeten met het gezin', pronunciation: 'August eter middag med familjen', difficulty: 'hard' },
+                    { id: 'a19', swedish: 'August hjälper till i köket', dutch: 'August helpt in de keuken', pronunciation: 'August jelpeer til ee choeket', difficulty: 'medium' },
+                    { id: 'a20', swedish: 'August diskar efter maten', dutch: 'August doet de afwas na het eten', pronunciation: 'August diskar efter maaten', difficulty: 'hard' },
+                    // Bos/paddenstoelen (a21-a30)
+                    { id: 'a21', swedish: 'August går till skogen med mamma', dutch: 'August gaat naar het bos met mama', pronunciation: 'August gawr til skoogen med mamma', difficulty: 'medium' },
+                    { id: 'a22', swedish: 'August håller mammas hand', dutch: 'August houdt mama\'s hand vast', pronunciation: 'August hawller mammas hand', difficulty: 'easy' },
+                    { id: 'a23', swedish: 'August ser många svampar i skogen', dutch: 'August ziet veel paddenstoelen in het bos', pronunciation: 'August seer mawnga svampar ee skoogen', difficulty: 'hard' },
+                    { id: 'a24', swedish: 'August plockar kantareller försiktigt', dutch: 'August plukt voorzichtig hanekammen', pronunciation: 'August plockar kantareller foersiktigt', difficulty: 'hard' },
+                    { id: 'a25', swedish: 'August är försiktig med svamparna', dutch: 'August is voorzichtig met de paddenstoelen', pronunciation: 'August er foersiktig med svamparna', difficulty: 'medium' },
+                    { id: 'a26', swedish: 'August ser djur i skogen', dutch: 'August ziet dieren in het bos', pronunciation: 'August seer djuer ee skoogen', difficulty: 'easy' },
+                    { id: 'a27', swedish: 'August hör fåglarna sjunga', dutch: 'August hoort de vogels zingen', pronunciation: 'August hoer fawglarna sjunga', difficulty: 'medium' },
+                    { id: 'a28', swedish: 'August samlar kottar och löv', dutch: 'August verzamelt dennenappels en bladeren', pronunciation: 'August samlar kottar ok loev', difficulty: 'hard' },
+                    { id: 'a29', swedish: 'August är trött efter vandringen', dutch: 'August is moe na de wandeling', pronunciation: 'August er troet efter vandringen', difficulty: 'medium' },
+                    { id: 'a30', swedish: 'August kommer hem med full korg', dutch: 'August komt thuis met een volle mand', pronunciation: 'August kommer hem med full korg', difficulty: 'medium' }
+                ]
             }
         };
 
@@ -374,7 +423,7 @@
             onFire: { id: 'onFire', name: 'On Fire', icon: '🔥🔥', description: '10 dagen streak', requirement: 10, type: 'streak' },
             unstoppable: { id: 'unstoppable', name: 'Onstuitbaar', icon: '⚡', description: '20 dagen streak', requirement: 20, type: 'streak' },
             categoryMaster: { id: 'categoryMaster', name: 'Categorie Meester', icon: '🎯', description: 'Voltooi alle zinnen in een categorie', requirement: 1, type: 'category' },
-            allRounder: { id: 'allRounder', name: 'Allrounder', icon: '🌟', description: 'Voltooi alle categorieën', requirement: 6, type: 'allCategories' },
+            allRounder: { id: 'allRounder', name: 'Allrounder', icon: '🌟', description: 'Voltooi alle categorieën', requirement: 7, type: 'allCategories' },
             speedster: { id: 'speedster', name: 'Speedster', icon: '⚡', description: 'Voltooi 20 zinnen op één dag', requirement: 20, type: 'dailyPhrases' },
             levelUp: { id: 'levelUp', name: 'Level Up', icon: '📈', description: 'Bereik level 5', requirement: 5, type: 'level' },
             master: { id: 'master', name: 'Meester', icon: '🏆', description: 'Bereik level 10', requirement: 10, type: 'level' }
@@ -492,7 +541,8 @@
                     dailyGoal: 0,
                     dailyGoalTarget: 10,
                     badges: [],
-                    displayName: ''
+                    displayName: '',
+                    categoryPreferences: ['greetings', 'daily', 'work', 'travel', 'conversation', 'cats', 'august'] // All enabled by default
                 };
             }
 
@@ -741,6 +791,31 @@
                 }
             }
 
+            async toggleCategory(categoryId) {
+                // Initialize categoryPreferences if it doesn't exist
+                if (!this.state.stats.categoryPreferences) {
+                    this.state.stats.categoryPreferences = ['greetings', 'daily', 'work', 'travel', 'conversation', 'cats', 'august'];
+                }
+
+                const index = this.state.stats.categoryPreferences.indexOf(categoryId);
+                if (index > -1) {
+                    // Category is enabled, disable it
+                    this.state.stats.categoryPreferences.splice(index, 1);
+                } else {
+                    // Category is disabled, enable it
+                    this.state.stats.categoryPreferences.push(categoryId);
+                }
+
+                // Regenerate daily program with new preferences
+                this.generateDailyProgram();
+
+                // Save to database
+                await this.saveUserData();
+
+                // Re-render
+                this.render();
+            }
+
             async deleteAccount() {
                 if (confirm('Weet je zeker dat je je account wilt verwijderen? Dit kan niet ongedaan worden!')) {
                     if (confirm('Laatste waarschuwing! Alle voortgang wordt permanent verwijderd.')) {
@@ -841,17 +916,25 @@
                 }
 
                 // Generate new daily program
+                // Initialize categoryPreferences if it doesn't exist
+                if (!this.state.stats.categoryPreferences) {
+                    this.state.stats.categoryPreferences = ['greetings', 'daily', 'work', 'travel', 'conversation', 'cats', 'august'];
+                }
+
                 const allPhrases = [];
                 Object.entries(categories).forEach(([catId, category]) => {
-                    category.phrases.forEach(phrase => {
-                        allPhrases.push({
-                            ...phrase,
-                            categoryId: catId,
-                            categoryName: category.name,
-                            categoryIcon: category.icon,
-                            categoryColor: category.color
+                    // Only include phrases from enabled categories
+                    if (this.state.stats.categoryPreferences.includes(catId)) {
+                        category.phrases.forEach(phrase => {
+                            allPhrases.push({
+                                ...phrase,
+                                categoryId: catId,
+                                categoryName: category.name,
+                                categoryIcon: category.icon,
+                                categoryColor: category.color
+                            });
                         });
-                    });
+                    }
                 });
 
                 // Shuffle and select 10 phrases
@@ -1660,7 +1743,11 @@ create policy "Users can update own progress"
                         <div id="categories" class="glass-effect rounded-2xl p-5 card-shadow">
                             <h3 class="font-bold text-gray-800 mb-4 text-lg">Kies een categorie</h3>
                             <div class="grid grid-cols-2 gap-3">
-                                ${Object.entries(categories).map(([key, category]) => {
+                                ${Object.entries(categories).filter(([key]) => {
+                                    // Filter out disabled categories
+                                    if (!this.state.stats.categoryPreferences) return true;
+                                    return this.state.stats.categoryPreferences.includes(key);
+                                }).map(([key, category]) => {
                                     const totalPhrases = category.phrases.length;
                                     const completed = category.phrases.filter(p => 
                                         this.state.completedPhrases.includes(`${key}-${p.id}`)
@@ -2132,6 +2219,38 @@ create policy "Users can update own progress"
                                         <i class="fas fa-key mr-2"></i>Wachtwoord wijzigen
                                     </button>
                                 </div>
+                            </div>
+                        </div>
+
+                        <div class="glass-effect rounded-2xl p-5 card-shadow">
+                            <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                                <i class="fas fa-sliders-h text-green-500"></i> Categorie Voorkeuren
+                            </h4>
+                            <p class="text-sm text-gray-600 mb-4">
+                                Kies welke categorieën je wilt oefenen. Uitgeschakelde categorieën verschijnen niet in je dagelijks programma.
+                            </p>
+                            <div class="space-y-2">
+                                ${Object.entries(categories).map(([categoryId, category]) => {
+                                    const isEnabled = this.state.stats.categoryPreferences?.includes(categoryId) ?? true;
+                                    return `
+                                        <div class="flex items-center justify-between bg-gray-50 rounded-xl p-3">
+                                            <div class="flex items-center gap-3">
+                                                <span class="text-2xl">${category.icon}</span>
+                                                <div>
+                                                    <p class="font-semibold text-gray-800">${category.name}</p>
+                                                    <p class="text-xs text-gray-500">${category.phrases.length} zinnen</p>
+                                                </div>
+                                            </div>
+                                            <label class="relative inline-flex items-center cursor-pointer">
+                                                <input type="checkbox"
+                                                       ${isEnabled ? 'checked' : ''}
+                                                       onchange="app.toggleCategory('${categoryId}')"
+                                                       class="sr-only peer">
+                                                <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                                            </label>
+                                        </div>
+                                    `;
+                                }).join('')}
                             </div>
                         </div>
 

@@ -6,6 +6,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Svenska Kat">
+    <meta name="theme-color" content="#8b5cf6">
+    <link rel="manifest" href="/manifest.json">
     <title>Svenska Kat - Leer Zweeds</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -121,8 +123,18 @@
 
     <script>
         // App Version
-        const APP_VERSION = '1.3.0';
+        const APP_VERSION = '1.3.1';
         const RELEASE_NOTES = {
+            '1.3.1': {
+                date: '2025-11-18',
+                features: [
+                    '✨ Tour verbeterd met spotlight effect',
+                    '🎯 Elementen worden nu gemarkeerd tijdens tour',
+                    '📱 PWA manifest toegevoegd voor betere app ervaring',
+                    '🔧 Safari PWA verbeteringen',
+                    '💡 Tour popup nu onderaan (beter zichtbaar)'
+                ]
+            },
             '1.3.0': {
                 date: '2025-11-18',
                 features: [
@@ -914,10 +926,26 @@
                 const step = this.tourSteps[this.state.onboardingStep];
                 const progress = ((this.state.onboardingStep + 1) / this.tourSteps.length) * 100;
 
+                // Determine if we should show spotlight
+                const showSpotlight = step.target !== 'home' && step.position !== 'center';
+
                 return `
-                    <div class="fixed inset-0 z-50" style="background: rgba(0,0,0,0.7);">
-                        <!-- Tour Popup -->
-                        <div class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md p-4 animate-slideUp">
+                    <div class="fixed inset-0 z-50" style="background: rgba(0,0,0,0.85); backdrop-filter: blur(2px);">
+                        <!-- Spotlight Effect (if needed) -->
+                        ${showSpotlight ? `
+                            <div id="tour-spotlight-${step.target}"
+                                 style="position: absolute;
+                                        border: 3px solid #8b5cf6;
+                                        border-radius: 12px;
+                                        box-shadow: 0 0 0 9999px rgba(0,0,0,0.85), 0 0 30px rgba(139, 92, 246, 0.8);
+                                        pointer-events: none;
+                                        transition: all 0.3s ease;
+                                        z-index: 51;">
+                            </div>
+                        ` : ''}
+
+                        <!-- Tour Popup - Bottom Center -->
+                        <div class="fixed bottom-24 left-1/2 transform -translate-x-1/2 w-full max-w-md p-4 animate-slideUp" style="z-index: 52;">
                             <div class="bg-white rounded-2xl p-6 card-shadow">
                                 <!-- Progress Bar -->
                                 <div class="mb-4">
@@ -957,12 +985,24 @@
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Highlight target element (if not center) -->
-                        ${step.target !== 'home' && step.position !== 'center' ? `
-                            <div class="tour-highlight" data-target="${step.target}"></div>
-                        ` : ''}
                     </div>
+
+                    <script>
+                        // Position spotlight on target element
+                        setTimeout(() => {
+                            ${showSpotlight ? `
+                                const targetEl = document.getElementById('${step.target}');
+                                const spotlightEl = document.getElementById('tour-spotlight-${step.target}');
+                                if (targetEl && spotlightEl) {
+                                    const rect = targetEl.getBoundingClientRect();
+                                    spotlightEl.style.left = (rect.left - 10) + 'px';
+                                    spotlightEl.style.top = (rect.top - 10) + 'px';
+                                    spotlightEl.style.width = (rect.width + 20) + 'px';
+                                    spotlightEl.style.height = (rect.height + 20) + 'px';
+                                }
+                            ` : ''}
+                        }, 50);
+                    </script>
                 `;
             }
 
@@ -1458,7 +1498,7 @@ create policy "Users can update own progress"
                 
                 return `
                     <div class="space-y-4 animate-slideUp">
-                        <div class="grid grid-cols-2 gap-3">
+                        <div id="progress-card" class="grid grid-cols-2 gap-3">
                             <div class="card-shadow rounded-2xl p-5 text-white card-hover" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
                                 <div class="flex items-center justify-between mb-3">
                                     <i class="fas fa-trophy text-3xl"></i>
@@ -2099,25 +2139,25 @@ create policy "Users can update own progress"
                 return `
                     <div class="fixed bottom-0 left-0 right-0 glass-effect shadow-2xl border-t border-gray-200" style="z-index: 1000;">
                         <div class="flex justify-around max-w-2xl mx-auto">
-                            <button onclick="app.switchTab('home')" 
+                            <button id="nav-home" onclick="app.switchTab('home')"
                                     class="flex-1 py-4 flex flex-col items-center gap-1 transition-all ${
-                                        this.state.currentTab === 'home' 
-                                            ? 'text-purple-600' 
+                                        this.state.currentTab === 'home'
+                                            ? 'text-purple-600'
                                             : 'text-gray-400 hover:text-gray-600'
                                     }">
                                 <i class="fas fa-home text-xl"></i>
                                 <span class="text-xs font-bold">Home</span>
                             </button>
-                            <button onclick="app.switchTab('practice')" 
+                            <button id="nav-practice" onclick="app.switchTab('practice')"
                                     class="flex-1 py-4 flex flex-col items-center gap-1 transition-all ${
-                                        this.state.currentTab === 'practice' 
-                                            ? 'text-purple-600' 
+                                        this.state.currentTab === 'practice'
+                                            ? 'text-purple-600'
                                             : 'text-gray-400 hover:text-gray-600'
                                     }">
                                 <i class="fas fa-microphone text-xl"></i>
                                 <span class="text-xs font-bold">Oefen</span>
                             </button>
-                            <button onclick="app.switchTab('flashcards')" 
+                            <button id="nav-flashcards" onclick="app.switchTab('flashcards')"
                                     class="flex-1 py-4 flex flex-col items-center gap-1 transition-all ${
                                         this.state.currentTab === 'flashcards' 
                                             ? 'text-purple-600' 
@@ -2126,10 +2166,10 @@ create policy "Users can update own progress"
                                 <i class="fas fa-layer-group text-xl"></i>
                                 <span class="text-xs font-bold">Cards</span>
                             </button>
-                            <button onclick="app.switchTab('badges')" 
+                            <button id="nav-badges" onclick="app.switchTab('badges')"
                                     class="flex-1 py-4 flex flex-col items-center gap-1 relative transition-all ${
-                                        this.state.currentTab === 'badges' 
-                                            ? 'text-purple-600' 
+                                        this.state.currentTab === 'badges'
+                                            ? 'text-purple-600'
                                             : 'text-gray-400 hover:text-gray-600'
                                     }">
                                 <i class="fas fa-trophy text-xl"></i>
@@ -2141,7 +2181,7 @@ create policy "Users can update own progress"
                                     </span>
                                 ` : ''}
                             </button>
-                            <button onclick="app.switchTab('leaderboard')"
+                            <button id="nav-leaderboard" onclick="app.switchTab('leaderboard')"
                                     class="flex-1 py-4 flex flex-col items-center gap-1 transition-all ${
                                         this.state.currentTab === 'leaderboard'
                                             ? 'text-purple-600'
@@ -2150,7 +2190,7 @@ create policy "Users can update own progress"
                                 <i class="fas fa-ranking-star text-xl"></i>
                                 <span class="text-xs font-bold">Rank</span>
                             </button>
-                            <button onclick="app.switchTab('settings')"
+                            <button id="nav-settings" onclick="app.switchTab('settings')"
                                     class="flex-1 py-4 flex flex-col items-center gap-1 transition-all ${
                                         this.state.currentTab === 'settings'
                                             ? 'text-purple-600'

@@ -5,6 +5,31 @@ All notable changes to Svenska Kat (formerly Zweeds B1) Language Learning App wi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] - 2025-11-18
+
+### Added
+- **PWA Manifest:** Added manifest.json for proper Progressive Web App configuration
+- **Spotlight Effect:** Tour now highlights specific UI elements with purple border and shadow
+- **Element IDs:** Added IDs to all tour-targetable elements (progress-card, daily-program, categories, nav buttons)
+
+### Changed
+- Tour popup now positioned at bottom center (above navigation) instead of screen center
+- Dark overlay improved with blur effect (backdrop-filter)
+- Spotlight uses box-shadow technique for better visual separation
+- Tour is now fullscreen with highlighted elements "cut out" from dark overlay
+
+### Fixed
+- Tour UX improved - no more jumping from corner to center
+- PWA display mode set to "standalone" for app-like experience
+- Better viewport handling in Safari PWA mode
+- Theme color meta tag added for proper status bar coloring
+
+### Technical
+- Spotlight positioning uses getBoundingClientRect() for precise element location
+- Dynamic script execution positions spotlight after DOM render
+- Purple theme (#8b5cf6) used for tour highlights
+- manifest.json includes SVG emoji icons (🐱) for all sizes
+
 ## [1.3.0] - 2025-11-18
 
 ### Added
@@ -194,7 +219,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version Support
 
-- **Current Version**: 1.3.0
+- **Current Version**: 1.3.1
 - **Minimum Browser Requirements**:
   - Chrome 60+
   - Safari 14+ (iOS 14+)

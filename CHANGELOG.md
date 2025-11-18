@@ -1,9 +1,33 @@
 # Changelog
 
-All notable changes to Zweeds B1 Language Learning App will be documented in this file.
+All notable changes to Svenska Kat (formerly Zweeds B1) Language Learning App will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.3.0] - 2025-11-18
+
+### Added
+- **🐱 App Rebranding:** Renamed from "Zweeds B1" to "Svenska Kat"
+- **Auto-advance Feature:** Automatically opens next phrase after completing daily program phrase
+- **Completion Screen:** Beautiful celebration screen when all daily phrases are completed
+  - Random Swedish praise messages (Bra jobbat!, Fantastiskt!, etc.)
+  - Happy cat emoji animation
+  - Stats summary
+  - Cute cat message: "Purrfekt! Je bent een echte taalkat! 🐾"
+
+### Changed
+- Completed daily program phrases now show **green checkmarks** instead of purple
+- Green gradient (emerald) for completed phrase indicators
+- Improved daily program flow with automatic progression
+- Enhanced user experience with seamless phrase transitions
+
+### Technical
+- Added `fromDailyProgram`, `currentDailyPhraseIndex`, and `showDailyCompletion` state properties
+- Implemented auto-advance logic in `markAsCompleted()` method
+- Created `renderDailyCompletionScreen()` and `closeDailyCompletion()` methods
+- Smart next-phrase detection with uncompleted phrase prioritization
+- All app names updated across UI (login, setup, header, tour, etc.)
 
 ## [1.2.1] - 2025-11-18
 
@@ -170,7 +194,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version Support
 
-- **Current Version**: 1.2.1
+- **Current Version**: 1.3.0
 - **Minimum Browser Requirements**:
   - Chrome 60+
   - Safari 14+ (iOS 14+)

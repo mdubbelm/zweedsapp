@@ -5,6 +5,30 @@ All notable changes to Svenska Kat (formerly Zweeds B1) Language Learning App wi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.3] - 2025-11-18
+
+### Fixed
+- **Critical Bug:** Fixed app-breaking bug where inline `<script>` tag in template literal was closing the main script tag
+- Template literals now execute properly instead of showing as raw text
+- JavaScript execution restored by escaping closing script tag (`<\/script>`)
+
+### Technical
+- Issue was in `renderOnboardingOverlay()` method at line 1013
+- The `</script>` closing tag was prematurely ending the main `<script>` block
+- Caused all subsequent JavaScript to be interpreted as HTML/text
+- Fixed by escaping: `</script>` → `<\/script>`
+
+## [1.3.2] - 2025-11-18
+
+### Changed
+- **Personalized Cat Phrases:** All phrases in Katten category now feature Sok and Winnie de Poes
+- Updated 7 Swedish phrases with personalized cat names
+- More relatable and fun learning experience
+
+### Technical
+- Modified all phrase IDs k1-k7 with new Swedish/Dutch translations
+- Kept pronunciation guides accurate for new phrases
+
 ## [1.3.1] - 2025-11-18
 
 ### Added
@@ -219,7 +243,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version Support
 
-- **Current Version**: 1.3.1
+- **Current Version**: 1.3.3
 - **Minimum Browser Requirements**:
   - Chrome 60+
   - Safari 14+ (iOS 14+)

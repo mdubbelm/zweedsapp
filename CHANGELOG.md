@@ -502,20 +502,148 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Future Roadmap
 
 ### Planned Features
+
+#### High Priority
+- **Admin Dashboard** 👨‍💼 - Beheerders interface voor monitoring
+  - Gebruikersoverzicht met statistieken
+  - Recent activity logs (laatste login, progressie)
+  - Top performers en leaderboard analytics
+  - Individuele gebruiker details bekijken
+  - Progressie history en trends
+  - Admin-only toegang (role-based)
+  - Export functionaliteit voor data analyse
+
+- **Feedback & Bug Reports** 🐛 - Directe GitHub Issues integratie
+  - In-app feedback formulier
+  - Bug report knop in settings
+  - Automatisch GitHub Issue aanmaken via API
+  - Screenshot upload optie
+  - Feature request categorisatie
+  - Status tracking van ingediende issues
+
+- **Spaced Repetition System** 🧠 - Intelligente herhaling
+  - Algoritme voor optimale leermomenten
+  - Automatische review scheduling
+  - "Review Queue" met prioriteiten
+  - Moeilijkheidsgraad aanpassing per gebruiker
+  - Retention statistics en succes tracking
+
+#### Social & Engagement
 - **Chat Functionaliteit** 💬 - Sociale interactie tussen gebruikers
   - Gebruikerslijst bekijken (actieve accounts)
   - Direct messaging binnen de app
   - Real-time chat met Supabase Realtime
   - Online/offline status indicators
   - Optionele chat notificaties
-- Spaced repetition algorithm for optimal learning
-- Social features (friend challenges, shared progress)
-- More language categories and phrases
-- Custom user-generated phrases
-- Pronunciation grading with AI
-- Offline mode support
-- Mobile app versions (iOS/Android)
-- Multi-language support beyond Swedish
+
+- **Study Groups & Challenges** 🏆 - Competitieve en coöperatieve features
+  - Wekelijkse challenges met rewards
+  - Study groups maken en joinen
+  - Groepsleaderboards
+  - Shared goals en milestones
+  - Team badges en achievements
+
+- **Friend System** 👥 - Sociaal netwerk
+  - Vrienden toevoegen via email/username
+  - Vrienden progressie bekijken
+  - Head-to-head challenges
+  - Shared learning paths
+  - Support messages en encouragement
+
+#### Learning Enhancement
+- **AI Pronunciation Scoring** 🎤 - Geautomatiseerde feedback
+  - Speech recognition voor Swedish
+  - Real-time pronunciation feedback
+  - Score per phoneme/woord
+  - Improvement suggestions
+  - Progress tracking over tijd
+
+- **Audio Comparison Tool** 🔊 - Side-by-side vergelijking
+  - Jouw opname vs native speaker
+  - Visual waveform comparison
+  - Slow-motion playback
+  - Highlight differences
+  - Practice mode met direct feedback
+
+- **Vocabulary Builder** 📚 - Woordenschat uitbreiding
+  - Persoonlijke woordenlijsten
+  - Flashcards voor nieuwe woorden
+  - Contextual examples
+  - Audio voor elk woord
+  - Spaced repetition integration
+
+- **Grammar Lessons** 📖 - Grammatica uitleg
+  - Basis Zweedse grammatica
+  - Interactive exercises
+  - Rule explanations in Dutch
+  - Practice sentences
+  - Quiz mode
+
+- **Cultural Notes** 🇸🇪 - Culturele context
+  - Swedish cultural information
+  - Holiday explanations
+  - Social etiquette tips
+  - Regional differences
+  - Integrated with relevant phrases
+
+#### User Experience
+- **Study Reminders** ⏰ - Notificaties en motivatie
+  - Daily study reminders
+  - Streak preservation alerts
+  - Custom notification times
+  - Motivational messages
+  - Goal progress updates
+
+- **Progress Certificates** 🎓 - Achievements documentatie
+  - Downloadable PDF certificates
+  - Milestone certificates (50, 100, 200 zinnen)
+  - Shareable on social media
+  - Beautiful design met stats
+  - Print-ready format
+
+- **Custom Phrase Creator** ✍️ - Gebruikers content
+  - Eigen zinnen toevoegen
+  - Community sharing (optioneel)
+  - Pronunciation guide writer
+  - Difficulty level selector
+  - Moderatie system voor publieke zinnen
+
+- **Offline Mode** 📴 - Werken zonder internet
+  - Download phrases voor offline gebruik
+  - Local storage sync
+  - Queue actions voor later sync
+  - Offline progress tracking
+  - Auto-sync when online
+
+#### Advanced Features
+- **Learning Analytics Dashboard** 📊 - Diepgaande statistieken
+  - Learning curve visualization
+  - Time spent per category
+  - Best/worst performing phrases
+  - Optimal study time detection
+  - Prediction of mastery dates
+  - Export data als CSV/PDF
+
+- **Voice Chat Sessions** 🗣️ - Practice met anderen
+  - Random matching met other learners
+  - Topic-based conversations
+  - Native speaker connections (premium)
+  - Session recording (optioneel)
+  - Post-session feedback
+
+- **Mobile Apps** 📱 - Native applications
+  - iOS app (Swift/SwiftUI)
+  - Android app (Kotlin)
+  - Push notifications
+  - Offline-first architecture
+  - Sync met web versie
+
+- **Multi-language Support** 🌍 - Meer talen leren
+  - Norwegian, Danish expansion
+  - German, French toevoegen
+  - Shared progress system
+  - Language switching
+  - Comparison tools tussen talen
 
 ### Under Consideration
 - Voice chat with native speakers

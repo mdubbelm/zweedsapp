@@ -5,6 +5,35 @@ All notable changes to Zweeds B1 Language Learning App will be documented in thi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2025-11-18
+
+### Added
+- **New Category: Katten (Cats)** 🐱 - 7 new Swedish phrases about cats
+- **Daily Program Feature** 📅 - Personalized daily selection of 10 phrases
+  - Smart algorithm prioritizes uncompleted phrases
+  - Mix of difficulty levels and categories
+  - Refresh button to generate new selection
+  - Visual progress tracking for each phrase
+- **Interactive Onboarding Tour** 🎓 - Step-by-step guide for new users
+  - 10-step walkthrough of all app features
+  - Progress bar showing tour completion
+  - Skip and navigation controls
+  - Auto-starts for new user signups
+  - "Restart Tour" button in settings page
+
+### Changed
+- Updated "Allrounder" badge requirement from 5 to 6 categories
+- Enhanced home page layout with daily program section
+- Improved category display with purple gradient for cats category
+
+### Technical
+- Added `showOnboarding`, `onboardingStep`, and `dailyPhrases` to app state
+- Implemented `tourSteps` array with tour configuration
+- Added onboarding methods: `startTour()`, `nextTourStep()`, `previousTourStep()`, `skipTour()`, `completeTour()`
+- Implemented daily program methods: `generateDailyProgram()`, `startDailyPhrase()`
+- Daily program uses localStorage for persistence
+- Smart phrase selection algorithm with shuffle and prioritization
+
 ## [1.1.4] - 2025-11-18
 
 ### Fixed
@@ -123,7 +152,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version Support
 
-- **Current Version**: 1.1.4
+- **Current Version**: 1.2.0
 - **Minimum Browser Requirements**:
   - Chrome 60+
   - Safari 14+ (iOS 14+)
@@ -133,6 +162,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **APIs Used**: MediaRecorder, Web Speech API, Web Audio API
 
 ## Upgrade Notes
+
+### Upgrading to 1.2.0
+- No database changes required
+- Existing user data fully compatible
+- New users will automatically see onboarding tour
+- Daily program generates automatically on first login
+- Total phrase count increased from 35 to 42 (7 new cat phrases)
+- Users can replay onboarding tour from settings at any time
 
 ### Upgrading to 1.1.4
 - No database changes required

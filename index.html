@@ -121,8 +121,18 @@
 
     <script>
         // App Version
-        const APP_VERSION = '1.1.4';
+        const APP_VERSION = '1.2.0';
         const RELEASE_NOTES = {
+            '1.2.0': {
+                date: '2025-11-18',
+                features: [
+                    '🐱 Nieuwe categorie: Katten! (7 nieuwe zinnen)',
+                    '🎯 Dagelijks Programma: Elke dag 10 gepersonaliseerde zinnen',
+                    '🎓 Onboarding Tour: Interactieve rondleiding voor nieuwe gebruikers',
+                    '🔄 Tour opnieuw starten via instellingen',
+                    '✨ Verbeterde UI met betere categorieweergave'
+                ]
+            },
             '1.1.4': {
                 date: '2025-11-18',
                 features: [
@@ -267,6 +277,20 @@
                     { id: 'c5', swedish: 'Har du några planer för sommaren?', dutch: 'Heb je plannen voor de zomer?', pronunciation: 'Haar doe nawgra planer foer sommaren?', difficulty: 'medium' },
                     { id: 'c6', swedish: 'Det är jätteroligt', dutch: 'Het is heel leuk', pronunciation: 'Det er jetterolikt', difficulty: 'easy' }
                 ]
+            },
+            cats: {
+                name: 'Katten',
+                icon: '🐱',
+                color: 'purple',
+                phrases: [
+                    { id: 'k1', swedish: 'Jag har en katt', dutch: 'Ik heb een kat', pronunciation: 'Jaag haar en kat', difficulty: 'easy' },
+                    { id: 'k2', swedish: 'Min katt heter Whiskers', dutch: 'Mijn kat heet Whiskers', pronunciation: 'Meen kat heeter Whiskers', difficulty: 'easy' },
+                    { id: 'k3', swedish: 'Katten älskar att jaga möss', dutch: 'De kat houdt van muizen jagen', pronunciation: 'Katten elskar at jaaga moess', difficulty: 'medium' },
+                    { id: 'k4', swedish: 'Var är kattmaten?', dutch: 'Waar is het kattenvoer?', pronunciation: 'Vaar er katmaaten?', difficulty: 'easy' },
+                    { id: 'k5', swedish: 'Katten sover i soffan', dutch: 'De kat slaapt in de bank', pronunciation: 'Katten soever ee soffan', difficulty: 'medium' },
+                    { id: 'k6', swedish: 'Hon är en mycket mjuk och söt katt', dutch: 'Ze is een heel zachte en lieve kat', pronunciation: 'Hoon er en myket mjook ok soet kat', difficulty: 'hard' },
+                    { id: 'k7', swedish: 'Jag måste borsta katten varje dag', dutch: 'Ik moet de kat elke dag borstelen', pronunciation: 'Jaag mawste borsta katten varje daag', difficulty: 'medium' }
+                ]
             }
         };
 
@@ -280,7 +304,7 @@
             onFire: { id: 'onFire', name: 'On Fire', icon: '🔥🔥', description: '10 dagen streak', requirement: 10, type: 'streak' },
             unstoppable: { id: 'unstoppable', name: 'Onstuitbaar', icon: '⚡', description: '20 dagen streak', requirement: 20, type: 'streak' },
             categoryMaster: { id: 'categoryMaster', name: 'Categorie Meester', icon: '🎯', description: 'Voltooi alle zinnen in een categorie', requirement: 1, type: 'category' },
-            allRounder: { id: 'allRounder', name: 'Allrounder', icon: '🌟', description: 'Voltooi alle categorieën', requirement: 5, type: 'allCategories' },
+            allRounder: { id: 'allRounder', name: 'Allrounder', icon: '🌟', description: 'Voltooi alle categorieën', requirement: 6, type: 'allCategories' },
             speedster: { id: 'speedster', name: 'Speedster', icon: '⚡', description: 'Voltooi 20 zinnen op één dag', requirement: 20, type: 'dailyPhrases' },
             levelUp: { id: 'levelUp', name: 'Level Up', icon: '📈', description: 'Bereik level 5', requirement: 5, type: 'level' },
             master: { id: 'master', name: 'Meester', icon: '🏆', description: 'Bereik level 10', requirement: 10, type: 'level' }
@@ -306,12 +330,79 @@
                     leaderboard: [],
                     stats: this.getDefaultStats(),
                     showUpdateNotification: false,
-                    lastSeenVersion: localStorage.getItem('lastSeenVersion') || '1.0.0'
+                    lastSeenVersion: localStorage.getItem('lastSeenVersion') || '1.0.0',
+                    showOnboarding: false,
+                    onboardingStep: 0,
+                    dailyPhrases: []
                 };
 
                 this.mediaRecorder = null;
                 this.audioChunks = [];
                 this.audioStream = null;
+
+                // Onboarding tour steps
+                this.tourSteps = [
+                    {
+                        target: 'home',
+                        title: 'Welkom bij Zweeds B1! 🇸🇪',
+                        description: 'Dit is je dashboard waar je je voortgang kunt zien. Laten we samen door de app lopen!',
+                        position: 'center'
+                    },
+                    {
+                        target: 'progress-card',
+                        title: 'Je Voortgang 📊',
+                        description: 'Hier zie je je punten, level, streak en badges. Verdien punten door zinnen te oefenen!',
+                        position: 'top'
+                    },
+                    {
+                        target: 'daily-program',
+                        title: 'Dagelijks Programma 📅',
+                        description: 'Elke dag krijg je een selectie van zinnen die je kunt oefenen. Perfect voor een gestructureerde leeraanpak!',
+                        position: 'top'
+                    },
+                    {
+                        target: 'categories',
+                        title: 'Categorieën 📚',
+                        description: 'Kies uit verschillende categorieën: Begroetingen, Dagelijks, Werk, Reizen, Praten en Katten!',
+                        position: 'top'
+                    },
+                    {
+                        target: 'nav-practice',
+                        title: 'Oefenen 🎤',
+                        description: 'Klik hier om te beginnen met uitspraakoefeningen. Neem je stem op en luister terug!',
+                        position: 'top'
+                    },
+                    {
+                        target: 'nav-flashcards',
+                        title: 'Flashcards 🎴',
+                        description: 'Test je geheugen met flashcards. Perfect voor snelle herhalingen!',
+                        position: 'top'
+                    },
+                    {
+                        target: 'nav-badges',
+                        title: 'Badges 🏆',
+                        description: 'Verzamel badges door verschillende doelen te bereiken. Kun jij ze allemaal verzamelen?',
+                        position: 'top'
+                    },
+                    {
+                        target: 'nav-leaderboard',
+                        title: 'Leaderboard 🥇',
+                        description: 'Bekijk hoe je het doet ten opzichte van andere spelers. Competitie maakt leren leuker!',
+                        position: 'top'
+                    },
+                    {
+                        target: 'nav-settings',
+                        title: 'Instellingen ⚙️',
+                        description: 'Pas je account aan, verander je wachtwoord, of start deze tour opnieuw als je wilt!',
+                        position: 'top'
+                    },
+                    {
+                        target: 'home',
+                        title: 'Klaar om te beginnen! 🚀',
+                        description: 'Je bent nu klaar! Begin met oefenen en veel plezier met het leren van Zweeds!',
+                        position: 'center'
+                    }
+                ];
 
                 this.checkAuth();
             }
@@ -345,6 +436,7 @@
                     this.state.user = user;
                     await this.loadUserData();
                     this.checkForUpdates();
+                    this.generateDailyProgram();
                     this.state.currentTab = 'home';
                 } else {
                     this.state.currentTab = 'login';
@@ -462,6 +554,9 @@
                             await this.saveUserData();
                             this.state.currentTab = 'home';
                             alert('Account succesvol aangemaakt! Welkom bij Zweeds B1 🎉');
+                            // Start tour for new users
+                            this.state.showOnboarding = true;
+                            this.state.onboardingStep = 0;
                             this.render();
                         }
                     }
@@ -592,6 +687,203 @@
                         }
                     }
                 }
+            }
+
+            // Onboarding Tour Methods
+            startTour() {
+                this.state.showOnboarding = true;
+                this.state.onboardingStep = 0;
+                this.state.currentTab = 'home';
+                localStorage.setItem('onboardingCompleted', 'false');
+                this.render();
+            }
+
+            nextTourStep() {
+                if (this.state.onboardingStep < this.tourSteps.length - 1) {
+                    this.state.onboardingStep++;
+
+                    // Auto-switch tabs for navigation steps
+                    const currentStep = this.tourSteps[this.state.onboardingStep];
+                    if (currentStep.target === 'nav-practice') {
+                        this.state.currentTab = 'practice';
+                    } else if (currentStep.target === 'nav-flashcards') {
+                        this.state.currentTab = 'flashcards';
+                    } else if (currentStep.target === 'nav-badges') {
+                        this.state.currentTab = 'badges';
+                    } else if (currentStep.target === 'nav-leaderboard') {
+                        this.state.currentTab = 'leaderboard';
+                    } else if (currentStep.target === 'nav-settings') {
+                        this.state.currentTab = 'settings';
+                    } else if (currentStep.target === 'home') {
+                        this.state.currentTab = 'home';
+                    }
+
+                    this.render();
+                } else {
+                    this.completeTour();
+                }
+            }
+
+            previousTourStep() {
+                if (this.state.onboardingStep > 0) {
+                    this.state.onboardingStep--;
+
+                    // Auto-switch tabs when going back
+                    const currentStep = this.tourSteps[this.state.onboardingStep];
+                    if (currentStep.target === 'home' || currentStep.target === 'progress-card' ||
+                        currentStep.target === 'daily-program' || currentStep.target === 'categories') {
+                        this.state.currentTab = 'home';
+                    }
+
+                    this.render();
+                }
+            }
+
+            skipTour() {
+                if (confirm('Weet je zeker dat je de tour wilt overslaan?')) {
+                    this.completeTour();
+                }
+            }
+
+            completeTour() {
+                this.state.showOnboarding = false;
+                this.state.onboardingStep = 0;
+                this.state.currentTab = 'home';
+                localStorage.setItem('onboardingCompleted', 'true');
+                this.render();
+            }
+
+            // Daily Program Methods
+            generateDailyProgram() {
+                const today = new Date().toDateString();
+                const lastGenerated = localStorage.getItem('dailyProgramDate');
+
+                // Check if we already have today's program
+                if (lastGenerated === today) {
+                    const savedProgram = localStorage.getItem('dailyProgram');
+                    if (savedProgram) {
+                        this.state.dailyPhrases = JSON.parse(savedProgram);
+                        return;
+                    }
+                }
+
+                // Generate new daily program
+                const allPhrases = [];
+                Object.entries(categories).forEach(([catId, category]) => {
+                    category.phrases.forEach(phrase => {
+                        allPhrases.push({
+                            ...phrase,
+                            categoryId: catId,
+                            categoryName: category.name,
+                            categoryIcon: category.icon,
+                            categoryColor: category.color
+                        });
+                    });
+                });
+
+                // Shuffle and select 10 phrases
+                // Prioritize uncompleted phrases, but include some completed ones for review
+                const uncompleted = allPhrases.filter(p =>
+                    !this.state.completedPhrases.includes(`${p.categoryId}-${p.id}`)
+                );
+                const completed = allPhrases.filter(p =>
+                    this.state.completedPhrases.includes(`${p.categoryId}-${p.id}`)
+                );
+
+                // Shuffle both arrays
+                const shuffleArray = (array) => {
+                    for (let i = array.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [array[i], array[j]] = [array[j], array[i]];
+                    }
+                    return array;
+                };
+
+                shuffleArray(uncompleted);
+                shuffleArray(completed);
+
+                // Select 8 uncompleted (or all if less than 8) and 2 completed for review
+                const selectedUncompleted = uncompleted.slice(0, 8);
+                const selectedCompleted = completed.slice(0, 2);
+                const dailySelection = [...selectedUncompleted, ...selectedCompleted];
+
+                // Shuffle final selection
+                shuffleArray(dailySelection);
+
+                // Limit to 10 phrases
+                this.state.dailyPhrases = dailySelection.slice(0, 10);
+
+                // Save to localStorage
+                localStorage.setItem('dailyProgram', JSON.stringify(this.state.dailyPhrases));
+                localStorage.setItem('dailyProgramDate', today);
+            }
+
+            startDailyPhrase(phraseIndex) {
+                const phrase = this.state.dailyPhrases[phraseIndex];
+                this.state.currentCategory = phrase.categoryId;
+                this.state.currentPhraseIndex = categories[phrase.categoryId].phrases.findIndex(
+                    p => p.id === phrase.id
+                );
+                this.state.currentTab = 'practice';
+                this.render();
+            }
+
+            renderOnboardingOverlay() {
+                if (!this.state.showOnboarding) return '';
+
+                const step = this.tourSteps[this.state.onboardingStep];
+                const progress = ((this.state.onboardingStep + 1) / this.tourSteps.length) * 100;
+
+                return `
+                    <div class="fixed inset-0 z-50" style="background: rgba(0,0,0,0.7);">
+                        <!-- Tour Popup -->
+                        <div class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md p-4 animate-slideUp">
+                            <div class="bg-white rounded-2xl p-6 card-shadow">
+                                <!-- Progress Bar -->
+                                <div class="mb-4">
+                                    <div class="flex justify-between text-xs text-gray-500 mb-1">
+                                        <span>Stap ${this.state.onboardingStep + 1} van ${this.tourSteps.length}</span>
+                                        <span>${Math.round(progress)}%</span>
+                                    </div>
+                                    <div class="w-full bg-gray-200 rounded-full h-2">
+                                        <div class="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-300"
+                                             style="width: ${progress}%"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Content -->
+                                <h3 class="text-2xl font-bold text-gray-800 mb-3">${step.title}</h3>
+                                <p class="text-gray-600 mb-6">${step.description}</p>
+
+                                <!-- Navigation Buttons -->
+                                <div class="flex gap-2">
+                                    ${this.state.onboardingStep > 0 ? `
+                                        <button onclick="app.previousTourStep()"
+                                                class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg font-semibold text-gray-700">
+                                            <i class="fas fa-arrow-left mr-2"></i>Vorige
+                                        </button>
+                                    ` : ''}
+
+                                    <button onclick="app.skipTour()"
+                                            class="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg font-semibold text-gray-700">
+                                        Overslaan
+                                    </button>
+
+                                    <button onclick="app.nextTourStep()"
+                                            class="flex-1 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-lg font-bold text-white">
+                                        ${this.state.onboardingStep === this.tourSteps.length - 1 ? 'Afronden' : 'Volgende'}
+                                        <i class="fas fa-arrow-right ml-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Highlight target element (if not center) -->
+                        ${step.target !== 'home' && step.position !== 'center' ? `
+                            <div class="tour-highlight" data-target="${step.target}"></div>
+                        ` : ''}
+                    </div>
+                `;
             }
 
             checkStreak() {
@@ -794,7 +1086,7 @@
 
             render() {
                 const app = document.getElementById('app');
-                
+
                 if (this.state.currentTab === 'setup') {
                     app.innerHTML = this.renderSetup();
                 } else if (this.state.currentTab === 'login') {
@@ -803,6 +1095,7 @@
                     app.innerHTML = `
                         ${this.state.showUpdateNotification ? this.renderUpdateNotification() : ''}
                         ${this.state.newBadge ? this.renderNewBadge() : ''}
+                        ${this.state.showOnboarding ? this.renderOnboardingOverlay() : ''}
                         ${this.renderHeader()}
                         <div class="p-4 max-w-2xl mx-auto pb-28">
                             ${this.state.currentTab === 'home' ? this.renderHome() : ''}
@@ -1104,8 +1397,64 @@ create policy "Users can update own progress"
                                 <p class="text-sm text-gray-600">Blijf oefenen om je doel te behalen ⚡</p>
                             </div>
                         `}
-                        
-                        <div class="glass-effect rounded-2xl p-5 card-shadow">
+
+                        <!-- Daily Program Section -->
+                        <div id="daily-program" class="glass-effect rounded-2xl p-5 card-shadow">
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <h3 class="font-bold text-gray-800 text-lg flex items-center gap-2">
+                                        <i class="fas fa-calendar-day text-purple-600"></i>
+                                        Vandaag's Programma
+                                    </h3>
+                                    <p class="text-xs text-gray-600 mt-1">Speciaal voor jou geselecteerd</p>
+                                </div>
+                                <button onclick="app.generateDailyProgram(); app.render();"
+                                        class="p-2 bg-purple-100 hover:bg-purple-200 rounded-lg text-purple-600 transition-colors"
+                                        title="Nieuwe selectie">
+                                    <i class="fas fa-sync-alt"></i>
+                                </button>
+                            </div>
+
+                            ${this.state.dailyPhrases.length > 0 ? `
+                                <div class="space-y-2">
+                                    ${this.state.dailyPhrases.map((phrase, index) => {
+                                        const isCompleted = this.state.completedPhrases.includes(`${phrase.categoryId}-${phrase.id}`);
+                                        const difficultyColors = {
+                                            easy: 'bg-green-100 text-green-700',
+                                            medium: 'bg-yellow-100 text-yellow-700',
+                                            hard: 'bg-red-100 text-red-700'
+                                        };
+
+                                        return `
+                                            <button onclick="app.startDailyPhrase(${index})"
+                                                    class="w-full flex items-center gap-3 p-3 bg-white hover:bg-gray-50 rounded-xl border-2 ${isCompleted ? 'border-green-300' : 'border-gray-200'} transition-all">
+                                                <div class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-xl"
+                                                     style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                                    ${isCompleted ? '<i class="fas fa-check text-white"></i>' : `<span class="text-white font-bold">${index + 1}</span>`}
+                                                </div>
+                                                <div class="flex-1 text-left">
+                                                    <div class="flex items-center gap-2 mb-1">
+                                                        <span class="text-lg">${phrase.categoryIcon}</span>
+                                                        <span class="text-xs font-semibold text-gray-500">${phrase.categoryName}</span>
+                                                        <span class="text-xs px-2 py-0.5 rounded-full ${difficultyColors[phrase.difficulty]}">${phrase.difficulty}</span>
+                                                    </div>
+                                                    <p class="text-sm font-semibold text-gray-800">${phrase.swedish}</p>
+                                                    <p class="text-xs text-gray-500">${phrase.dutch}</p>
+                                                </div>
+                                                <i class="fas fa-chevron-right text-gray-400"></i>
+                                            </button>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            ` : `
+                                <div class="text-center py-8 text-gray-500">
+                                    <i class="fas fa-hourglass-half text-3xl mb-2"></i>
+                                    <p>Dagelijks programma wordt geladen...</p>
+                                </div>
+                            `}
+                        </div>
+
+                        <div id="categories" class="glass-effect rounded-2xl p-5 card-shadow">
                             <h3 class="font-bold text-gray-800 mb-4 text-lg">Kies een categorie</h3>
                             <div class="grid grid-cols-2 gap-3">
                                 ${Object.entries(categories).map(([key, category]) => {
@@ -1121,7 +1470,8 @@ create policy "Users can update own progress"
                                         amber: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
                                         blue: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
                                         indigo: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                        green: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)'
+                                        green: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+                                        purple: 'linear-gradient(135deg, #c471f5 0%, #fa71cd 100%)'
                                     };
                                     
                                     return `
@@ -1590,6 +1940,19 @@ create policy "Users can update own progress"
                                 <p><strong>Versie:</strong> ${APP_VERSION}</p>
                                 <p><strong>Account aangemaakt:</strong> ${new Date(this.state.user?.created_at).toLocaleDateString('nl-NL')}</p>
                             </div>
+                        </div>
+
+                        <div class="glass-effect rounded-2xl p-5 card-shadow">
+                            <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                                <i class="fas fa-route text-green-500"></i> Tour & Hulp
+                            </h4>
+                            <p class="text-sm text-gray-600 mb-3">
+                                Wil je een rondleiding door de app? Start de interactieve tour opnieuw!
+                            </p>
+                            <button onclick="app.startTour()"
+                                    class="w-full py-3 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 rounded-xl font-bold text-white card-hover card-shadow">
+                                <i class="fas fa-play-circle mr-2"></i>Start Tour
+                            </button>
                         </div>
 
                         <div class="glass-effect rounded-2xl p-4 card-shadow border-2 border-red-200">

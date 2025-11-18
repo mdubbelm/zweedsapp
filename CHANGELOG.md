@@ -377,6 +377,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Prioritize most important information
   - Improve scrolling experience
   - Better visual hierarchy
+- **Design System Overhaul** 🎨 - Scandinavian design principles
+  - Less purple, more neutral tones
+  - Remove gradient colors, use solid colors
+  - Flat design aesthetic
+  - Scandinavian color palette (whites, grays, blues, natural tones)
+  - Minimalist, clean interface
 - Spaced repetition algorithm for optimal learning
 - Social features (friend challenges, shared progress)
 - More language categories and phrases

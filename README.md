@@ -2,7 +2,7 @@
 
 A gamified web application for learning Swedish at B1 level, featuring audio recording for pronunciation practice, flashcards, achievements, and competitive leaderboards.
 
-![Version](https://img.shields.io/badge/version-1.4.0-blue)
+![Version](https://img.shields.io/badge/version-1.5.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 ## Features
@@ -283,11 +283,12 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 See [CHANGELOG.md](CHANGELOG.md) for detailed version history.
 
-**Current Version**: 1.4.0 (November 18, 2025)
-- New category: August Avonturen with 30 phrases
-- Category personalization: Choose which categories to practice
-- Toggle categories on/off in Settings
-- Smart filtering in daily program and home page
+**Current Version**: 1.5.0 (November 18, 2025)
+- Complete Scandinavian design overhaul with flat colors
+- Modern minimalist interface with blue color scheme
+- Removed all gradients in favor of solid colors
+- Cleaner, more professional appearance
+- Subtle shadows and refined typography
 
 ## License
 

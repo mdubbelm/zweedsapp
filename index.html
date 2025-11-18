@@ -16,14 +16,23 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
-        /* TODO: Design System Overhaul for future version
-         * - Scandinavian design principles
-         * - Less purple, more neutral tones (whites, grays, blues)
-         * - Remove gradients (linear-gradient), use solid colors
-         * - Flat design aesthetic, minimalist
-         * - Cleaner, simpler color palette
-         */
+        /* Scandinavian Design System - Implemented! */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
+        :root {
+            /* Scandinavian Color Palette */
+            --scandi-blue: #5B9BD5;
+            --scandi-blue-dark: #4A7FA8;
+            --scandi-blue-light: #7FB3E5;
+            --scandi-grey: #F5F7FA;
+            --scandi-grey-dark: #E1E5EB;
+            --scandi-grey-text: #6B7280;
+            --scandi-text: #1F2937;
+            --scandi-white: #FFFFFF;
+            --scandi-green: #10B981;
+            --scandi-amber: #F59E0B;
+            --scandi-red: #EF4444;
+        }
 
         * {
             -webkit-tap-highlight-color: transparent;
@@ -36,7 +45,7 @@
         }
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--scandi-grey);
             min-height: 100vh;
             position: relative;
             overflow-x: hidden;
@@ -81,28 +90,30 @@
         }
         
         .glass-effect {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            background: var(--scandi-white);
+            border: 1px solid var(--scandi-grey-dark);
         }
-        
+
         .card-shadow {
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
         }
-        
+
         .card-hover {
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
         }
-        
+
+        .card-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
         .card-hover:active {
             transform: scale(0.98);
         }
-        
+
         .gradient-text {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--scandi-blue);
+            font-weight: 700;
         }
         
         .progress-bar {
@@ -130,8 +141,18 @@
 
     <script>
         // App Version
-        const APP_VERSION = '1.4.0';
+        const APP_VERSION = '1.5.0';
         const RELEASE_NOTES = {
+            '1.5.0': {
+                date: '2025-11-18',
+                features: [
+                    '🎨 Volledig nieuw Scandinavisch design!',
+                    '🎯 Platte kleuren: geen gradiënten meer',
+                    '🔵 Blauwe tinten vervangen paars',
+                    '✨ Minimalistisch en clean interface',
+                    '🌟 Subtiele schaduwen en moderne uitstraling'
+                ]
+            },
             '1.4.0': {
                 date: '2025-11-18',
                 features: [
@@ -1028,18 +1049,18 @@
 
                             <!-- Stats -->
                             <div class="grid grid-cols-2 gap-4 mb-6">
-                                <div class="bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl p-4">
-                                    <div class="text-3xl font-bold text-purple-600">${this.state.dailyPhrases.length}</div>
+                                <div class="bg-blue-100 rounded-xl p-4">
+                                    <div class="text-3xl font-bold text-blue-600">${this.state.dailyPhrases.length}</div>
                                     <div class="text-xs text-gray-600 mt-1">Zinnen voltooid</div>
                                 </div>
-                                <div class="bg-gradient-to-br from-green-100 to-emerald-100 rounded-xl p-4">
+                                <div class="bg-green-100 rounded-xl p-4">
                                     <div class="text-3xl font-bold text-green-600">+${this.state.dailyPhrases.length * 10}</div>
                                     <div class="text-xs text-gray-600 mt-1">Punten verdiend</div>
                                 </div>
                             </div>
 
                             <!-- Cat Message -->
-                            <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 mb-6">
+                            <div class="bg-blue-50 rounded-xl p-4 mb-6">
                                 <p class="text-sm text-gray-700 italic">
                                     "Purrfekt! Je bent een echte taalkat! 🐾"
                                 </p>
@@ -1047,7 +1068,8 @@
 
                             <!-- Close Button -->
                             <button onclick="app.closeDailyCompletion()"
-                                    class="w-full py-4 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-xl font-bold text-white card-hover card-shadow">
+                                    class="w-full py-4 rounded-xl font-bold text-white card-hover card-shadow"
+                                    style="background: var(--scandi-blue);">
                                 <i class="fas fa-home mr-2"></i>Terug naar Home
                             </button>
                         </div>
@@ -1094,8 +1116,8 @@
                                         <span>${Math.round(progress)}%</span>
                                     </div>
                                     <div class="w-full bg-gray-200 rounded-full h-2">
-                                        <div class="bg-gradient-to-r from-purple-500 to-pink-500 h-2 rounded-full transition-all duration-300"
-                                             style="width: ${progress}%"></div>
+                                        <div class="h-2 rounded-full transition-all duration-300"
+                                             style="width: ${progress}%; background: var(--scandi-blue);"></div>
                                     </div>
                                 </div>
 
@@ -1118,7 +1140,8 @@
                                     </button>
 
                                     <button onclick="app.nextTourStep()"
-                                            class="flex-1 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-lg font-bold text-white">
+                                            class="flex-1 px-4 py-2 rounded-lg font-bold text-white hover:opacity-90"
+                                            style="background: var(--scandi-blue);">
                                         ${this.state.onboardingStep === this.tourSteps.length - 1 ? 'Afronden' : 'Volgende'}
                                         <i class="fas fa-arrow-right ml-2"></i>
                                     </button>
@@ -1475,9 +1498,9 @@ create policy "Users can update own progress"
                                 </pre>
                             </div>
 
-                            <button onclick="location.reload()" 
+                            <button onclick="location.reload()"
                                     class="w-full py-4 rounded-xl font-bold text-white card-hover card-shadow"
-                                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                    style="background: var(--scandi-blue);">
                                 <i class="fas fa-redo mr-2"></i>Opnieuw laden na setup
                             </button>
                         </div>
@@ -1511,7 +1534,7 @@ create policy "Users can update own progress"
 
                                 <div class="flex items-center gap-2">
                                     <input type="checkbox" id="rememberMe"
-                                           class="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                                           class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                                            checked>
                                     <label for="rememberMe" class="text-sm text-gray-700 cursor-pointer">
                                         Blijf ingelogd op dit apparaat
@@ -1526,7 +1549,7 @@ create policy "Users can update own progress"
 
                                 <button type="submit"
                                         class="w-full py-4 rounded-xl font-bold text-white card-hover card-shadow"
-                                        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                        style="background: var(--scandi-blue);">
                                     <i class="fas fa-sign-in-alt mr-2"></i>Inloggen
                                 </button>
                             </form>
@@ -1537,7 +1560,7 @@ create policy "Users can update own progress"
                             </button>
 
                                 <button onclick="app.resetPassword()"
-                                        class="w-full py-2 text-sm text-gray-600 hover:text-purple-600 font-semibold">
+                                        class="w-full py-2 text-sm text-gray-600 hover:text-blue-600 font-semibold">
                                     <i class="fas fa-key mr-1"></i>Wachtwoord vergeten?
                                 </button>
                             </div>
@@ -1603,13 +1626,13 @@ create policy "Users can update own progress"
 
             renderNewBadge() {
                 return `
-                    <div class="fixed top-20 left-1/2 transform -translate-x-1/2 rounded-2xl card-shadow p-6 z-50 animate-bounce" 
-                         style="margin-left: -120px; width: 240px; background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);">
+                    <div class="fixed top-20 left-1/2 transform -translate-x-1/2 rounded-2xl card-shadow p-6 z-50 animate-bounce"
+                         style="margin-left: -120px; width: 240px; background: var(--scandi-amber);">
                         <div class="text-center">
                             <div class="text-6xl mb-3">${this.state.newBadge.icon}</div>
-                            <h3 class="font-bold text-gray-800 text-lg mb-1">Nieuwe Badge!</h3>
-                            <p class="text-sm font-semibold text-gray-700">${this.state.newBadge.name}</p>
-                            <p class="text-xs text-gray-600 mt-2">${this.state.newBadge.description}</p>
+                            <h3 class="font-bold text-white text-lg mb-1">Nieuwe Badge!</h3>
+                            <p class="text-sm font-semibold text-white">${this.state.newBadge.name}</p>
+                            <p class="text-xs text-white opacity-90 mt-2">${this.state.newBadge.description}</p>
                         </div>
                     </div>
                 `;
@@ -1631,15 +1654,15 @@ create policy "Users can update own progress"
                                 <span>${this.state.stats.displayName || this.state.user?.email || 'Gebruiker'}</span>
                             </div>
                             <div class="flex items-center gap-4 text-sm">
-                                <div class="flex items-center gap-1 bg-gradient-to-r from-yellow-400 to-orange-500 text-white px-3 py-1.5 rounded-full font-semibold">
+                                <div class="flex items-center gap-1 text-white px-3 py-1.5 rounded-full font-semibold" style="background: var(--scandi-amber);">
                                     <i class="fas fa-trophy"></i>
                                     <span>Level ${this.state.stats.level}</span>
                                 </div>
-                                <div class="flex items-center gap-1 bg-gradient-to-r from-red-500 to-pink-500 text-white px-3 py-1.5 rounded-full font-semibold">
+                                <div class="flex items-center gap-1 text-white px-3 py-1.5 rounded-full font-semibold" style="background: var(--scandi-red);">
                                     <i class="fas fa-fire"></i>
                                     <span>${this.state.stats.streak}</span>
                                 </div>
-                                <div class="flex items-center gap-1 bg-gradient-to-r from-purple-500 to-indigo-500 text-white px-3 py-1.5 rounded-full font-semibold">
+                                <div class="flex items-center gap-1 text-white px-3 py-1.5 rounded-full font-semibold" style="background: var(--scandi-blue);">
                                     <i class="fas fa-star"></i>
                                     <span>${this.state.stats.totalPoints}</span>
                                 </div>
@@ -1659,7 +1682,7 @@ create policy "Users can update own progress"
                 return `
                     <div class="space-y-4 animate-slideUp">
                         <div id="progress-card" class="grid grid-cols-2 gap-3">
-                            <div class="card-shadow rounded-2xl p-5 text-white card-hover" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <div class="card-shadow rounded-2xl p-5 text-white card-hover" style="background: var(--scandi-blue);">
                                 <div class="flex items-center justify-between mb-3">
                                     <i class="fas fa-trophy text-3xl"></i>
                                     <span class="text-3xl font-bold">${this.state.stats.level}</span>
@@ -1669,8 +1692,8 @@ create policy "Users can update own progress"
                                     <div class="bg-white rounded-full h-2.5 progress-bar" style="width: ${levelProgress}%"></div>
                                 </div>
                             </div>
-                            
-                            <div class="card-shadow rounded-2xl p-5 text-white card-hover" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+
+                            <div class="card-shadow rounded-2xl p-5 text-white card-hover" style="background: var(--scandi-blue-dark);">
                                 <div class="flex items-center justify-between mb-3">
                                     <i class="fas fa-fire text-3xl"></i>
                                     <span class="text-3xl font-bold">${this.state.stats.streak}</span>
@@ -1678,8 +1701,8 @@ create policy "Users can update own progress"
                                 <p class="text-sm opacity-90 font-medium">Dagen Streak</p>
                                 <p class="text-xs opacity-75 mt-1">Blijf leren! 🔥</p>
                             </div>
-                            
-                            <div class="card-shadow rounded-2xl p-5 text-white card-hover" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+
+                            <div class="card-shadow rounded-2xl p-5 text-white card-hover" style="background: var(--scandi-blue-light);">
                                 <div class="flex items-center justify-between mb-3">
                                     <i class="fas fa-bullseye text-3xl"></i>
                                     <span class="text-2xl font-bold">${this.state.stats.dailyGoal}/${this.state.stats.dailyGoalTarget}</span>
@@ -1689,8 +1712,8 @@ create policy "Users can update own progress"
                                     <div class="bg-white rounded-full h-2.5 progress-bar" style="width: ${dailyProgress}%"></div>
                                 </div>
                             </div>
-                            
-                            <div class="card-shadow rounded-2xl p-5 text-white card-hover" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);">
+
+                            <div class="card-shadow rounded-2xl p-5 text-white card-hover" style="background: var(--scandi-amber);">
                                 <div class="flex items-center justify-between mb-3">
                                     <i class="fas fa-star text-3xl"></i>
                                     <span class="text-3xl font-bold">${this.state.stats.totalPoints}</span>
@@ -1727,13 +1750,13 @@ create policy "Users can update own progress"
                             <div class="flex items-center justify-between mb-4">
                                 <div>
                                     <h3 class="font-bold text-gray-800 text-lg flex items-center gap-2">
-                                        <i class="fas fa-calendar-day text-purple-600"></i>
+                                        <i class="fas fa-calendar-day text-blue-600"></i>
                                         Vandaag's Programma
                                     </h3>
                                     <p class="text-xs text-gray-600 mt-1">Speciaal voor jou geselecteerd</p>
                                 </div>
                                 <button onclick="app.generateDailyProgram(); app.render();"
-                                        class="p-2 bg-purple-100 hover:bg-purple-200 rounded-lg text-purple-600 transition-colors"
+                                        class="p-2 bg-blue-100 hover:bg-blue-200 rounded-lg text-blue-600 transition-colors"
                                         title="Nieuwe selectie">
                                     <i class="fas fa-sync-alt"></i>
                                 </button>
@@ -1753,7 +1776,7 @@ create policy "Users can update own progress"
                                             <button onclick="app.startDailyPhrase(${index})"
                                                     class="w-full flex items-center gap-3 p-3 bg-white hover:bg-gray-50 rounded-xl border-2 ${isCompleted ? 'border-green-300' : 'border-gray-200'} transition-all">
                                                 <div class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-xl"
-                                                     style="background: ${isCompleted ? 'linear-gradient(135deg, #10b981 0%, #059669 100%)' : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'};">
+                                                     style="background: ${isCompleted ? 'var(--scandi-green)' : 'var(--scandi-blue)'};">
                                                     ${isCompleted ? '<i class="fas fa-check text-white"></i>' : `<span class="text-white font-bold">${index + 1}</span>`}
                                                 </div>
                                                 <div class="flex-1 text-left">
@@ -1793,19 +1816,20 @@ create policy "Users can update own progress"
                                     const isFullyCompleted = completed === totalPhrases;
                                     const progress = (completed / totalPhrases) * 100;
                                     
-                                    const gradients = {
-                                        pink: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
-                                        amber: 'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
-                                        blue: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
-                                        indigo: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                                        green: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-                                        purple: 'linear-gradient(135deg, #c471f5 0%, #fa71cd 100%)'
+                                    const colors = {
+                                        pink: 'var(--scandi-blue-light)',
+                                        amber: 'var(--scandi-amber)',
+                                        blue: 'var(--scandi-blue)',
+                                        indigo: 'var(--scandi-blue-dark)',
+                                        green: 'var(--scandi-green)',
+                                        purple: 'var(--scandi-blue-light)',
+                                        orange: 'var(--scandi-amber)'
                                     };
                                     
                                     return `
-                                        <button onclick="app.selectCategory('${key}')" 
+                                        <button onclick="app.selectCategory('${key}')"
                                                 class="card-shadow rounded-xl p-4 text-white card-hover relative overflow-hidden"
-                                                style="background: ${gradients[category.color]};">
+                                                style="background: ${colors[category.color]};">
                                             <div class="flex items-center justify-between mb-2">
                                                 <span class="text-3xl">${category.icon}</span>
                                                 ${isFullyCompleted ? '<i class="fas fa-crown text-yellow-300 text-xl"></i>' : ''}
@@ -1831,9 +1855,9 @@ create policy "Users can update own progress"
                                     ${this.state.stats.badges.slice(-4).map(badgeId => {
                                         const badge = badges[badgeId];
                                         return `
-                                            <div class="card-shadow rounded-xl p-3 text-center" style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);">
+                                            <div class="card-shadow rounded-xl p-3 text-center" style="background: var(--scandi-amber);">
                                                 <div class="text-3xl mb-1">${badge.icon}</div>
-                                                <p class="text-xs font-semibold text-gray-800">${badge.name}</p>
+                                                <p class="text-xs font-semibold text-white">${badge.name}</p>
                                             </div>
                                         `;
                                     }).join('')}
@@ -1871,19 +1895,19 @@ create policy "Users can update own progress"
                                 ${difficultyText}
                             </span>
                             
-                            <div class="rounded-2xl p-5 mb-4 card-shadow" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <div class="rounded-2xl p-5 mb-4 card-shadow" style="background: var(--scandi-blue);">
                                 <div class="flex items-start justify-between mb-3">
                                     <div class="flex-1 text-white">
                                         <p class="text-sm font-semibold mb-2 opacity-90">Zweeds:</p>
                                         <p class="text-2xl font-bold mb-3">${currentPhrase.swedish}</p>
                                         <p class="text-sm opacity-80 italic">💬 ${currentPhrase.pronunciation}</p>
                                     </div>
-                                    <button onclick="app.speakPhrase('${currentPhrase.swedish.replace(/'/g, "\\'")}')" 
-                                            class="bg-white/20 hover:bg-white/30 text-white p-4 rounded-full flex-shrink-0 card-hover backdrop-blur-sm">
+                                    <button onclick="app.speakPhrase('${currentPhrase.swedish.replace(/'/g, "\\'")}')"
+                                            class="bg-white/20 hover:bg-white/30 text-white p-4 rounded-full flex-shrink-0 card-hover">
                                         <i class="fas fa-volume-up text-xl"></i>
                                     </button>
                                 </div>
-                                
+
                                 ${this.state.showAnswer ? `
                                     <div class="border-t border-white/20 pt-3 animate-fadeIn">
                                         <p class="text-sm font-semibold text-white opacity-90 mb-1">Nederlands:</p>
@@ -1899,17 +1923,17 @@ create policy "Users can update own progress"
                                 </button>
                                 
                                 ${!this.state.isRecording && !this.state.audioURL ? `
-                                    <button onclick="app.startRecording()" 
+                                    <button onclick="app.startRecording()"
                                             class="w-full py-5 rounded-xl font-bold text-white card-hover card-shadow text-lg"
-                                            style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                                            style="background: var(--scandi-blue);">
                                         <i class="fas fa-microphone mr-2"></i>Start Opname
                                     </button>
                                 ` : ''}
-                                
+
                                 ${this.state.isRecording ? `
-                                    <button onclick="app.stopRecording()" 
+                                    <button onclick="app.stopRecording()"
                                             class="w-full py-5 rounded-xl font-bold text-white animate-pulse card-shadow text-lg"
-                                            style="background: linear-gradient(135deg, #f5576c 0%, #c44569 100%);">
+                                            style="background: var(--scandi-red);">
                                         <i class="fas fa-stop-circle mr-2"></i>Stop Opname
                                     </button>
                                 ` : ''}
@@ -1925,12 +1949,12 @@ create policy "Users can update own progress"
                                         <div class="grid grid-cols-2 gap-3">
                                             <button onclick="app.markAsCompleted(false)"
                                                     class="py-4 rounded-xl font-bold text-white card-hover card-shadow"
-                                                    style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);">
+                                                    style="background: var(--scandi-green);">
                                                 <i class="fas fa-star mr-1"></i> Goed!
                                             </button>
                                             <button onclick="app.markAsCompleted(true)"
                                                     class="py-4 rounded-xl font-bold text-white card-hover card-shadow"
-                                                    style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);">
+                                                    style="background: var(--scandi-blue);">
                                                 <i class="fas fa-gem mr-1"></i> Perfect!
                                             </button>
                                         </div>
@@ -1947,9 +1971,9 @@ create policy "Users can update own progress"
                                         class="flex-1 py-4 glass-effect rounded-xl text-gray-700 card-hover card-shadow font-bold">
                                     <i class="fas fa-chevron-left mr-2"></i>Vorige
                                 </button>
-                                <button onclick="app.nextPhrase()" 
+                                <button onclick="app.nextPhrase()"
                                         class="flex-1 py-4 rounded-xl text-white card-hover card-shadow font-bold"
-                                        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                        style="background: var(--scandi-blue);">
                                     Volgende<i class="fas fa-chevron-right ml-2"></i>
                                 </button>
                             </div>
@@ -1976,10 +2000,10 @@ create policy "Users can update own progress"
                     <div class="space-y-4 animate-slideUp">
                         <div class="glass-effect rounded-2xl p-4 card-shadow">
                             <h3 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
-                                <i class="fas fa-layer-group text-purple-600"></i> Kies categorie
+                                <i class="fas fa-layer-group text-blue-600"></i> Kies categorie
                             </h3>
                             <select onchange="app.changeFlashcardCategory(this.value)" 
-                                    class="w-full p-4 border-2 border-gray-200 rounded-xl font-semibold text-gray-700 focus:border-purple-500 focus:outline-none">
+                                    class="w-full p-4 border-2 border-gray-200 rounded-xl font-semibold text-gray-700 focus:border-blue-500 focus:outline-none">
                                 ${Object.entries(categories).map(([key, category]) => `
                                     <option value="${key}" ${key === this.state.flashcardCategory ? 'selected' : ''}>
                                         ${category.icon} ${category.name}
@@ -1988,9 +2012,9 @@ create policy "Users can update own progress"
                             </select>
                         </div>
                         
-                        <div onclick="app.toggleFlashcard()" 
+                        <div onclick="app.toggleFlashcard()"
                              class="glass-effect rounded-2xl card-shadow overflow-hidden cursor-pointer min-h-[320px] flex flex-col card-hover">
-                            <div class="p-4 text-white" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                            <div class="p-4 text-white" style="background: var(--scandi-blue);">
                                 <div class="flex justify-between items-center">
                                     <span class="text-sm font-bold">
                                         <i class="fas fa-cards mr-1"></i> ${this.state.currentFlashcardIndex + 1} / ${allPhrases.length}
@@ -2004,9 +2028,9 @@ create policy "Users can update own progress"
                                     <div class="text-center">
                                         <p class="text-sm text-gray-500 mb-3 font-semibold uppercase tracking-wide">Zweeds</p>
                                         <p class="text-3xl font-bold text-gray-900 mb-4">${currentCard.swedish}</p>
-                                        <button onclick="event.stopPropagation(); app.speakPhrase('${currentCard.swedish.replace(/'/g, "\\'")}')" 
-                                                class="px-6 py-3 rounded-full font-bold card-hover card-shadow"
-                                                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                                        <button onclick="event.stopPropagation(); app.speakPhrase('${currentCard.swedish.replace(/'/g, "\\'")}')"
+                                                class="px-6 py-3 rounded-full font-bold card-hover card-shadow text-white"
+                                                style="background: var(--scandi-blue);">
                                                 <i class="fas fa-volume-up mr-2"></i>Luister
                                         </button>
                                     </div>
@@ -2027,18 +2051,18 @@ create policy "Users can update own progress"
                                     class="flex-1 py-5 glass-effect rounded-xl text-gray-700 card-hover card-shadow font-bold text-xl">
                                 <i class="fas fa-chevron-left"></i>
                             </button>
-                            <button onclick="app.nextFlashcard()" 
+                            <button onclick="app.nextFlashcard()"
                                     class="flex-1 py-5 rounded-xl text-white card-hover card-shadow font-bold text-xl"
-                                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                    style="background: var(--scandi-blue);">
                                 <i class="fas fa-chevron-right"></i>
                             </button>
                         </div>
                         
-                        <div class="glass-effect rounded-2xl p-4 card-shadow border-2 border-purple-200">
-                            <h4 class="font-bold text-purple-900 mb-2 flex items-center gap-2">
-                                <i class="fas fa-book text-purple-600"></i> Flashcard Tip
+                        <div class="glass-effect rounded-2xl p-4 card-shadow border-2 border-blue-200">
+                            <h4 class="font-bold text-blue-900 mb-2 flex items-center gap-2">
+                                <i class="fas fa-book text-blue-600"></i> Flashcard Tip
                             </h4>
-                            <p class="text-sm text-purple-800">
+                            <p class="text-sm text-blue-800">
                                 Probeer eerst zelf het antwoord te bedenken voordat je de kaart omdraait! 
                                 Spreek de Zweedse zin hardop uit voor betere memorisatie. 🧠
                             </p>
@@ -2055,17 +2079,17 @@ create policy "Users can update own progress"
                                 <i class="fas fa-trophy text-yellow-500"></i> Jouw Badges
                             </h3>
                             <p class="text-sm text-gray-600 mb-4">
-                                <span class="font-bold text-purple-600">${this.state.stats.badges.length}</span> van ${Object.keys(badges).length} badges behaald
+                                <span class="font-bold text-blue-600">${this.state.stats.badges.length}</span> van ${Object.keys(badges).length} badges behaald
                             </p>
                             
                             <div class="grid grid-cols-2 gap-3">
                                 ${Object.values(badges).map(badge => {
                                     const earned = this.state.stats.badges.includes(badge.id);
                                     return `
-                                        <div class="p-4 rounded-xl border-2 card-hover ${earned ? 
-                                            'card-shadow border-yellow-400' : 
+                                        <div class="p-4 rounded-xl border-2 card-hover ${earned ?
+                                            'card-shadow border-yellow-400' :
                                             'bg-gray-50 border-gray-200 opacity-60'}"
-                                            style="${earned ? 'background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);' : ''}">
+                                            style="${earned ? 'background: var(--scandi-amber);' : ''}">
                                             <div class="text-5xl mb-2 text-center">
                                                 ${earned ? badge.icon : '🔒'}
                                             </div>
@@ -2092,7 +2116,7 @@ create policy "Users can update own progress"
                         </div>
                         
                         <div class="rounded-2xl p-5 card-shadow text-white"
-                             style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                             style="background: var(--scandi-blue);">
                             <h4 class="font-bold mb-4 text-lg flex items-center gap-2">
                                 <i class="fas fa-chart-line"></i> Jouw Progressie
                             </h4>
@@ -2141,7 +2165,7 @@ create policy "Users can update own progress"
                                         
                                         return `
                                             <div class="flex items-center gap-3 p-4 rounded-xl ${
-                                                isCurrentUser ? 'bg-gradient-to-r from-purple-100 to-pink-100 border-2 border-purple-400' : 'bg-gray-50'
+                                                isCurrentUser ? 'bg-blue-100 border-2 border-blue-400' : 'bg-gray-50'
                                             }">
                                                 <div class="text-2xl font-bold w-8">
                                                     ${index < 3 ? medals[index] : (index + 1)}
@@ -2149,14 +2173,14 @@ create policy "Users can update own progress"
                                                 <div class="flex-1">
                                                     <p class="font-bold text-gray-800">
                                                         ${player.displayName || 'Anoniem'}
-                                                        ${isCurrentUser ? '<span class="text-xs text-purple-600 ml-2">(jij)</span>' : ''}
+                                                        ${isCurrentUser ? '<span class="text-xs text-blue-600 ml-2">(jij)</span>' : ''}
                                                     </p>
                                                     <p class="text-sm text-gray-600">
                                                         Level ${player.level} • ${player.phrasesCompleted} zinnen
                                                     </p>
                                                 </div>
                                                 <div class="text-right">
-                                                    <p class="font-bold text-purple-600 text-lg">${player.totalPoints}</p>
+                                                    <p class="font-bold text-blue-600 text-lg">${player.totalPoints}</p>
                                                     <p class="text-xs text-gray-600">punten</p>
                                                 </div>
                                             </div>
@@ -2166,11 +2190,11 @@ create policy "Users can update own progress"
                             `}
                         </div>
                         
-                        <div class="glass-effect rounded-2xl p-4 card-shadow border-2 border-purple-200">
-                            <h4 class="font-bold text-purple-900 mb-2 flex items-center gap-2">
-                                <i class="fas fa-info-circle text-purple-600"></i> Info
+                        <div class="glass-effect rounded-2xl p-4 card-shadow border-2 border-blue-200">
+                            <h4 class="font-bold text-blue-900 mb-2 flex items-center gap-2">
+                                <i class="fas fa-info-circle text-blue-600"></i> Info
                             </h4>
-                            <p class="text-sm text-purple-800">
+                            <p class="text-sm text-blue-800">
                                 De leaderboard toont de top 10 spelers op basis van totale punten. 
                                 Blijf oefenen om hoger te komen! 🚀
                             </p>
@@ -2192,7 +2216,7 @@ create policy "Users can update own progress"
                                 <p class="text-sm text-gray-600">Versie ${latestVersion}</p>
                             </div>
 
-                            <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 mb-4">
+                            <div class="bg-blue-50 rounded-xl p-4 mb-4">
                                 <h3 class="font-bold text-gray-800 mb-2">Wat is er nieuw:</h3>
                                 <ul class="space-y-2">
                                     ${notes.features.map(feature => `
@@ -2203,7 +2227,7 @@ create policy "Users can update own progress"
 
                             <button onclick="app.dismissUpdate()"
                                     class="w-full py-4 rounded-xl font-bold text-white card-hover card-shadow"
-                                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                    style="background: var(--scandi-blue);">
                                 <i class="fas fa-check mr-2"></i>Begrepen!
                             </button>
                         </div>
@@ -2216,7 +2240,7 @@ create policy "Users can update own progress"
                     <div class="space-y-4 animate-slideUp">
                         <div class="glass-effect rounded-2xl p-5 card-shadow">
                             <h3 class="text-2xl font-bold text-gray-800 mb-4 flex items-center gap-2">
-                                <i class="fas fa-cog text-purple-600"></i> Instellingen
+                                <i class="fas fa-cog text-blue-600"></i> Instellingen
                             </h3>
 
                             <div class="space-y-3">
@@ -2304,22 +2328,22 @@ create policy "Users can update own progress"
 
                         <div class="glass-effect rounded-2xl p-5 card-shadow">
                             <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
-                                <i class="fas fa-history text-purple-500"></i> Versiegeschiedenis
+                                <i class="fas fa-history text-blue-500"></i> Versiegeschiedenis
                             </h4>
                             <div class="space-y-3 max-h-96 overflow-y-auto">
                                 ${Object.entries(RELEASE_NOTES).map(([version, notes]) => `
-                                    <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-4 border-2 ${version === APP_VERSION ? 'border-purple-400' : 'border-transparent'}">
+                                    <div class="bg-blue-50 rounded-xl p-4 border-2 ${version === APP_VERSION ? 'border-blue-400' : 'border-transparent'}">
                                         <div class="flex items-center justify-between mb-2">
                                             <h5 class="font-bold text-gray-800">
                                                 Versie ${version}
-                                                ${version === APP_VERSION ? '<span class="ml-2 text-xs bg-purple-500 text-white px-2 py-1 rounded-full">Huidig</span>' : ''}
+                                                ${version === APP_VERSION ? '<span class="ml-2 text-xs bg-blue-500 text-white px-2 py-1 rounded-full">Huidig</span>' : ''}
                                             </h5>
                                             <span class="text-xs text-gray-500">${notes.date}</span>
                                         </div>
                                         <ul class="space-y-1">
                                             ${notes.features.map(feature => `
                                                 <li class="text-sm text-gray-700 flex items-start gap-2">
-                                                    <span class="text-purple-500 mt-0.5">•</span>
+                                                    <span class="text-blue-500 mt-0.5">•</span>
                                                     <span>${feature}</span>
                                                 </li>
                                             `).join('')}
@@ -2337,7 +2361,7 @@ create policy "Users can update own progress"
                                 Wil je een rondleiding door de app? Start de interactieve tour opnieuw!
                             </p>
                             <button onclick="app.startTour()"
-                                    class="w-full py-3 bg-gradient-to-r from-green-500 to-blue-500 hover:from-green-600 hover:to-blue-600 rounded-xl font-bold text-white card-hover card-shadow">
+                                    class="w-full py-3 bg-green-500 hover:bg-green-600 rounded-xl font-bold text-white card-hover card-shadow">
                                 <i class="fas fa-play-circle mr-2"></i>Start Tour
                             </button>
                         </div>
@@ -2365,7 +2389,7 @@ create policy "Users can update own progress"
                             <button id="nav-home" onclick="app.switchTab('home')"
                                     class="flex-1 py-4 flex flex-col items-center gap-1 transition-all ${
                                         this.state.currentTab === 'home'
-                                            ? 'text-purple-600'
+                                            ? 'text-blue-600'
                                             : 'text-gray-400 hover:text-gray-600'
                                     }">
                                 <i class="fas fa-home text-xl"></i>
@@ -2374,7 +2398,7 @@ create policy "Users can update own progress"
                             <button id="nav-practice" onclick="app.switchTab('practice')"
                                     class="flex-1 py-4 flex flex-col items-center gap-1 transition-all ${
                                         this.state.currentTab === 'practice'
-                                            ? 'text-purple-600'
+                                            ? 'text-blue-600'
                                             : 'text-gray-400 hover:text-gray-600'
                                     }">
                                 <i class="fas fa-microphone text-xl"></i>
@@ -2383,7 +2407,7 @@ create policy "Users can update own progress"
                             <button id="nav-flashcards" onclick="app.switchTab('flashcards')"
                                     class="flex-1 py-4 flex flex-col items-center gap-1 transition-all ${
                                         this.state.currentTab === 'flashcards' 
-                                            ? 'text-purple-600' 
+                                            ? 'text-blue-600' 
                                             : 'text-gray-400 hover:text-gray-600'
                                     }">
                                 <i class="fas fa-layer-group text-xl"></i>
@@ -2392,14 +2416,14 @@ create policy "Users can update own progress"
                             <button id="nav-badges" onclick="app.switchTab('badges')"
                                     class="flex-1 py-4 flex flex-col items-center gap-1 relative transition-all ${
                                         this.state.currentTab === 'badges'
-                                            ? 'text-purple-600'
+                                            ? 'text-blue-600'
                                             : 'text-gray-400 hover:text-gray-600'
                                     }">
                                 <i class="fas fa-trophy text-xl"></i>
                                 <span class="text-xs font-bold">Badges</span>
                                 ${this.state.stats.badges.length > 0 ? `
                                     <span class="absolute top-2 right-1/4 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold text-white"
-                                          style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                                          style="background: var(--scandi-blue);">
                                         ${this.state.stats.badges.length}
                                     </span>
                                 ` : ''}
@@ -2407,7 +2431,7 @@ create policy "Users can update own progress"
                             <button id="nav-leaderboard" onclick="app.switchTab('leaderboard')"
                                     class="flex-1 py-4 flex flex-col items-center gap-1 transition-all ${
                                         this.state.currentTab === 'leaderboard'
-                                            ? 'text-purple-600'
+                                            ? 'text-blue-600'
                                             : 'text-gray-400 hover:text-gray-600'
                                     }">
                                 <i class="fas fa-ranking-star text-xl"></i>
@@ -2416,7 +2440,7 @@ create policy "Users can update own progress"
                             <button id="nav-settings" onclick="app.switchTab('settings')"
                                     class="flex-1 py-4 flex flex-col items-center gap-1 transition-all ${
                                         this.state.currentTab === 'settings'
-                                            ? 'text-purple-600'
+                                            ? 'text-blue-600'
                                             : 'text-gray-400 hover:text-gray-600'
                                     }">
                                 <i class="fas fa-cog text-xl"></i>

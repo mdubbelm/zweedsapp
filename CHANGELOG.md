@@ -5,6 +5,40 @@ All notable changes to Svenska Kat (formerly Zweeds B1) Language Learning App wi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2025-11-18
+
+### Changed
+- **Complete Scandinavian Design Overhaul** 🎨 - Modern, minimalist redesign
+  - Replaced all gradient backgrounds with solid colors
+  - Changed primary color from purple to Scandinavian blue (#5B9BD5)
+  - Flat design aesthetic with subtle shadows instead of gradients
+  - Updated all UI components: buttons, cards, badges, navigation
+  - Removed colorful gradients in favor of neutral tones
+  - Cleaner, more professional appearance
+- Color scheme updated to Scandinavian palette
+  - Blue: `#5B9BD5` (primary)
+  - Blue Dark: `#4A7FA8`
+  - Blue Light: `#7FB3E5`
+  - Grey: `#F5F7FA` (background)
+  - Amber: `#F59E0B` (accents)
+  - Green: `#10B981` (success)
+  - Red: `#EF4444` (alerts)
+- Background changed from purple gradient to solid light grey
+- All buttons and interactive elements now use solid colors with hover effects
+- Navigation tabs use blue instead of purple for active state
+- Stat cards simplified with single-color backgrounds
+- Progress bars and indicators use flat colors
+- Badge cards redesigned with subtle shadows
+
+### Technical
+- Added CSS custom properties (`:root` variables) for Scandinavian color palette
+- Updated `.gradient-text` class to use solid color
+- Updated `.glass-effect` to remove backdrop blur
+- Simplified `.card-shadow` with lighter shadow (0 2px 8px instead of 0 10px 30px)
+- Replaced all `linear-gradient()` calls with `var(--scandi-*)` colors
+- Updated Tailwind utility classes from `purple-*` to `blue-*`
+- Removed all `bg-gradient-to-*` classes in favor of solid backgrounds
+
 ## [1.4.0] - 2025-11-18
 
 ### Added
@@ -308,7 +342,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version Support
 
-- **Current Version**: 1.4.0
+- **Current Version**: 1.5.0
 - **Minimum Browser Requirements**:
   - Chrome 60+
   - Safari 14+ (iOS 14+)
@@ -377,12 +411,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Prioritize most important information
   - Improve scrolling experience
   - Better visual hierarchy
-- **Design System Overhaul** 🎨 - Scandinavian design principles
-  - Less purple, more neutral tones
-  - Remove gradient colors, use solid colors
-  - Flat design aesthetic
-  - Scandinavian color palette (whites, grays, blues, natural tones)
-  - Minimalist, clean interface
 - Spaced repetition algorithm for optimal learning
 - Social features (friend challenges, shared progress)
 - More language categories and phrases

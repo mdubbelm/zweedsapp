@@ -2,7 +2,7 @@
 
 A gamified web application for learning Swedish at B1 level, featuring audio recording for pronunciation practice, flashcards, achievements, and competitive leaderboards.
 
-![Version](https://img.shields.io/badge/version-1.3.4-blue)
+![Version](https://img.shields.io/badge/version-1.3.5-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 ## Features
@@ -283,10 +283,10 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 See [CHANGELOG.md](CHANGELOG.md) for detailed version history.
 
-**Current Version**: 1.3.4 (November 18, 2025)
-- Expanded Katten category from 7 to 14 phrases
-- Introduced Cleo (Jacob and Monique's cat)
-- Added phrases about all three cats: Cleo, Sok, and Winnie
+**Current Version**: 1.3.5 (November 18, 2025)
+- Added complete version history in Settings page
+- View all updates and changes within the app
+- Current version visually highlighted
 
 ## License
 

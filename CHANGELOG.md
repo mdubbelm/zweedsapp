@@ -5,6 +5,24 @@ All notable changes to Svenska Kat (formerly Zweeds B1) Language Learning App wi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.5] - 2025-11-18
+
+### Added
+- **Version History Section:** Complete version history now visible in Settings page
+- **Visual Indicators:** Current version highlighted with purple border and "Huidig" badge
+- **Scrollable Container:** Max-height of 24rem with overflow scrolling for easy browsing
+- **Release Details:** Each version shows date and all features/changes
+
+### Changed
+- Settings page reorganized with version history between App Info and Tour sections
+- Purple gradient cards for better visual appeal
+
+### Technical
+- Version history dynamically generated from `RELEASE_NOTES` object
+- Uses `Object.entries()` to iterate through all versions
+- Current version detection via `APP_VERSION` comparison
+- Responsive design with proper spacing and typography
+
 ## [1.3.4] - 2025-11-18
 
 ### Added
@@ -260,7 +278,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version Support
 
-- **Current Version**: 1.3.4
+- **Current Version**: 1.3.5
 - **Minimum Browser Requirements**:
   - Chrome 60+
   - Safari 14+ (iOS 14+)

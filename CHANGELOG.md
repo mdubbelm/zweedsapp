@@ -5,6 +5,94 @@ All notable changes to Svenska Kat (formerly Zweeds B1) Language Learning App wi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.0] - 2025-11-20
+
+### Added
+- **MEGA CONTENT UPDATE** 🚀 - All categories expanded to 30 phrases each
+  - **Begroetingen (Greetings)**: 7 → 30 phrases (+23 new)
+    - Morning/evening greetings (God morgon, God kväll, etc.)
+    - Thank you expressions (Tack så mycket, Varsågod)
+    - Apologies and responses (Förlåt, Ingen fara)
+    - Social farewells (Ha det bra, Vi hörs, Lycka till)
+  - **Dagelijks (Daily)**: 7 → 30 phrases (+23 new)
+    - Morning routines (vakna, frukost, borsta tänderna, dusch)
+    - Daily activities (handla, laga mat, städa, tvätta)
+    - Evening routines (TV, läsa, lägga mig, sova gott)
+    - States and needs (trött, hungrig, törstig)
+  - **Werk (Work)**: 6 → 30 phrases (+24 new)
+    - Office routines (börja arbeta, ta en paus, sluta)
+    - Communication (skriva mail, ringa, möte, presentation)
+    - Work activities (samarbeta, leda, granska, delta)
+    - Work situations (deadline, hemifrån, semester, sjuk)
+  - **Reizen (Travel)**: 6 → 30 phrases (+24 new)
+    - Transportation (flygplatsen, buss, tunnelbana, hyra bil)
+    - Accommodation (hotellrum, wifi, hiss, frukost på rummet)
+    - Navigation (karta, museum, strand, turistinformation)
+    - Check-in/out procedures and hotel amenities
+  - **Praten (Conversation)**: 6 → 30 phrases (+24 new)
+    - Understanding (förstår inte, upprepa, långsammare)
+    - Opinions (håller med, tycker att, intressant)
+    - Questions (Vad menar du?, Varför?, Berätta mer)
+    - Expressions (Kanske, Säkert, Absolut, Det låter bra)
+  - **Katten (Cats)**: 14 → 30 phrases (+16 new)
+    - Cat behavior (sova, jagar, spinner, klättrar)
+    - Cat care (kattmat, borsta, veterinär)
+    - Cat characteristics (mjuka tassar, morrhår, mjauar)
+    - General cat phrases for variety
+
+### Changed
+- **Total phrases**: 81 → 212 phrases (+131 new phrases, +162% increase)
+- **Learning content**: Dramatically expanded practice material across all difficulty levels
+- **Category balance**: All main categories now equal in size (30 phrases each)
+- **Difficulty distribution**: Better mix of easy/medium/hard across all categories
+
+### Technical
+- Updated all category phrase arrays (g1-g30, d1-d30, w1-w30, t1-t30, c1-c30, k1-k30)
+- Maintained consistent structure: Swedish, Dutch, pronunciation, difficulty
+- Added varied difficulty levels per category (easy: ~40%, medium: ~40%, hard: ~20%)
+
+## [1.7.0] - 2025-11-20
+
+### Added
+- **Difficulty Filter** 🎯 - Filter daily program by difficulty level
+  - Four filter buttons: Alles, Makkelijk, Gemiddeld, Moeilijk
+  - Located next to refresh button in daily program section
+  - Filters apply immediately when generating new daily selection
+  - `setDifficultyFilter()` method added to manage filter state
+  - `generateDailyProgram()` now respects difficulty filter
+- **August Winter Expansion** ❄️ - 10 new winter-themed phrases (a31-a40)
+  - Snow activities (sneeuw, bygga snögubbe, kasta snöbollar, åker pulka)
+  - Hot chocolate phrases (varm choklad, choklad med grädde)
+  - Winter clothing and indoor activities
+  - Increased August category from 30 to 40 total phrases
+
+### Fixed
+- **Practice Card Icons** 🎨 - Icons now render correctly as Font Awesome
+  - Changed from `<span>${icon}</span>` to `<i class="fas ${icon}">`
+  - Applies to category icons in practice mode header
+  - Consistent with icon rendering throughout rest of app
+- **Recording Error Handling** 🎤 - Much improved audio recording errors
+  - Added specific error messages for common issues
+  - NotAllowedError: "Geef toegang tot de microfoon"
+  - NotFoundError: "Geen microfoon gevonden"
+  - NotReadableError: "Microfoon is al in gebruik"
+  - Added `MediaRecorder.onerror` event handler
+  - Recording state properly reset on errors
+
+### Changed
+- **Leaderboard SQL Policy** 🏆 - Documented required database change
+  - Added SQL command to allow viewing leaderboard for all users
+  - Policy: "Anyone can view leaderboard" or "Authenticated users can view leaderboard"
+  - Fixes issue where users only see themselves in rankings
+  - Note: Requires manual SQL execution in Supabase
+
+### Technical
+- Added `difficultyFilter` to app state (null | 'easy' | 'medium' | 'hard')
+- Filtering logic in `generateDailyProgram()` before shuffle/selection
+- Enhanced error handling with `mediaRecorder.onerror` callback
+- Icon rendering fixes in `renderPractice()` method line 1919
+- Daily program cache now version-aware (regenerates on app update)
+
 ## [1.6.4] - 2025-11-18
 
 ### Added
@@ -475,7 +563,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version Support
 
-- **Current Version**: 1.6.3
+- **Current Version**: 1.8.0
 - **Minimum Browser Requirements**:
   - Chrome 60+
   - Safari 14+ (iOS 14+)

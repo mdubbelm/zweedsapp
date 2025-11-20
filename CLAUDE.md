@@ -112,18 +112,20 @@ this.state = {
 
 ### Data Models
 
-**Categories**: 5 language topic areas
+**Categories**: 7 language topic areas
 ```javascript
 categories = {
-    greetings: { icon, name, color, phrases[] },
-    daily: { ... },
-    work: { ... },
-    travel: { ... },
-    conversation: { ... }
+    greetings: { icon, name, color, phrases[] },    // 30 phrases
+    daily: { ... },                                 // 30 phrases
+    work: { ... },                                  // 30 phrases
+    travel: { ... },                                // 30 phrases
+    conversation: { ... },                          // 30 phrases
+    cats: { ... },                                  // 30 phrases
+    august: { ... }                                 // 40 phrases
 }
 ```
 
-**Phrases**: 35 total (~7 per category)
+**Phrases**: 212 total (30 per category, 40 for August)
 ```javascript
 phrase = {
     id: 'g1',
@@ -468,6 +470,8 @@ The `SUPABASE_ANON_KEY` is intentionally exposed in the client code. This is saf
 
 ## Version History
 
+- **v1.8.0** (2025-11-20): MEGA UPDATE - All categories expanded to 30 phrases (+131 new phrases)
+- **v1.7.0** (2025-11-20): Difficulty filter, winter phrases, icon & error handling fixes
 - **v1.6.4** (2025-11-18): PWA Auto-Update System, Service Worker, offline support
 - **v1.6.3** (2025-11-18): Category icons flat design (Font Awesome)
 - **v1.6.2** (2025-11-18): Complete icon flat design & WCAG optimization

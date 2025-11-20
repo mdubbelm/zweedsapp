@@ -1,9 +1,10 @@
-# Zweeds B1 - Swedish Language Learning App
+# Svenska Kat - Swedish Language Learning App 🐱
 
-A gamified web application for learning Swedish at B1 level, featuring audio recording for pronunciation practice, flashcards, achievements, and competitive leaderboards.
+A gamified web application for learning Swedish, featuring audio recording for pronunciation practice, flashcards, achievements, and competitive leaderboards. Learn Swedish the fun way with over 200 phrases!
 
-![Version](https://img.shields.io/badge/version-1.6.4-blue)
+![Version](https://img.shields.io/badge/version-1.8.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
+![Phrases](https://img.shields.io/badge/phrases-212-success)
 
 ## Features
 
@@ -11,9 +12,11 @@ A gamified web application for learning Swedish at B1 level, featuring audio rec
 
 - **Audio Pronunciation Practice** - Record yourself speaking Swedish phrases and compare with native pronunciation
 - **Flashcard Mode** - Study Swedish-Dutch translations with interactive flashcards
-- **35+ Phrases** - Organized across 5 practical categories
+- **212 Phrases** - Organized across 7 practical categories (30-40 phrases each)
 - **Text-to-Speech** - Listen to native Swedish pronunciation at a learner-friendly pace
 - **Progressive Difficulty** - Easy, Medium, and Hard levels for each phrase
+- **Daily Program** - Personalized selection of 10 phrases per day
+- **Difficulty Filter** - Filter daily program by difficulty level (easy/medium/hard)
 
 ### 🎮 Gamification
 
@@ -22,6 +25,7 @@ A gamified web application for learning Swedish at B1 level, featuring audio rec
 - **Daily Streaks** - Track consecutive days of practice
 - **Daily Goals** - Complete 10 phrases per day to maintain momentum
 - **Perfect Scores** - Earn bonus points for accurate pronunciation
+- **Interactive Onboarding** - 10-step tour for new users
 
 ### 🏆 Social Features
 
@@ -29,20 +33,24 @@ A gamified web application for learning Swedish at B1 level, featuring audio rec
 - **Rankings** - See where you stand among all players
 - **Public Profiles** - Customize your display name
 
-### 📱 Cross-Platform
+### 📱 Progressive Web App
 
 - **Mobile Optimized** - Works seamlessly on iOS and Android devices
-- **Progressive Web App** - Add to home screen for app-like experience
+- **Installable PWA** - Add to home screen for app-like experience
+- **Auto-Updates** - Automatic update notifications with one-click update
 - **Cloud Sync** - Progress automatically syncs across all your devices
-- **Offline-Capable** - Session data cached for uninterrupted learning
+- **Offline Support** - App works without internet connection after first load
+- **Service Worker** - Background updates and intelligent caching
 
 ## Language Categories
 
-1. **Begroetingen (Greetings)** - Essential Swedish greetings and introductions
-2. **Dagelijks (Daily)** - Common everyday phrases
-3. **Werk (Work)** - Professional and workplace vocabulary
-4. **Reizen (Travel)** - Useful phrases for travelers
-5. **Gesprekken (Conversation)** - Conversational Swedish for social situations
+1. **❤️ Begroetingen (Greetings)** - 30 phrases for greetings, thanks, apologies, farewells
+2. **☕ Dagelijks (Daily)** - 30 phrases for daily routines, meals, activities
+3. **💼 Werk (Work)** - 30 phrases for office work, meetings, communication
+4. **✈️ Reizen (Travel)** - 30 phrases for hotels, transportation, navigation
+5. **💬 Praten (Conversation)** - 30 phrases for understanding, opinions, questions
+6. **🐱 Katten (Cats)** - 30 phrases about cats (featuring Sok, Winnie & Cleo!)
+7. **🎒 August Avonturen (Adventures)** - 40 phrases about school, food, forest & winter
 
 ## Getting Started
 

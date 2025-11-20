@@ -150,8 +150,19 @@
 
     <script>
         // App Version
-        const APP_VERSION = '1.6.6';
+        const APP_VERSION = '1.7.0';
         const RELEASE_NOTES = {
+            '1.7.0': {
+                date: '2025-11-20',
+                features: [
+                    '🎯 Moeilijkheidsniveau filter bij dagelijks programma',
+                    '❄️ August uitgebreid met 10 winter/chocomel zinnen (40 totaal)',
+                    '🎤 Betere opname foutmeldingen en error handling',
+                    '🏆 Leaderboard fix (SQL policy update nodig)',
+                    '🎨 Practice card iconen gerepareerd',
+                    '✨ Alle Font Awesome iconen nu correct'
+                ]
+            },
             '1.6.6': {
                 date: '2025-11-20',
                 features: [
@@ -512,7 +523,18 @@
                     { id: 'a27', swedish: 'August hör fåglarna sjunga', dutch: 'August hoort de vogels zingen', pronunciation: 'August hoer fawglarna sjunga', difficulty: 'medium' },
                     { id: 'a28', swedish: 'August samlar kottar och löv', dutch: 'August verzamelt dennenappels en bladeren', pronunciation: 'August samlar kottar ok loev', difficulty: 'hard' },
                     { id: 'a29', swedish: 'August är trött efter vandringen', dutch: 'August is moe na de wandeling', pronunciation: 'August er troet efter vandringen', difficulty: 'medium' },
-                    { id: 'a30', swedish: 'August kommer hem med full korg', dutch: 'August komt thuis met een volle mand', pronunciation: 'August kommer hem med full korg', difficulty: 'medium' }
+                    { id: 'a30', swedish: 'August kommer hem med full korg', dutch: 'August komt thuis met een volle mand', pronunciation: 'August kommer hem med full korg', difficulty: 'medium' },
+                    // Vinter och chocomel (a31-a40)
+                    { id: 'a31', swedish: 'August ser snö falla från himlen', dutch: 'August ziet sneeuw uit de lucht vallen', pronunciation: 'August seer snoe falla frawn himlen', difficulty: 'medium' },
+                    { id: 'a32', swedish: 'August bygger en snögubbe', dutch: 'August bouwt een sneeuwpop', pronunciation: 'August bygger en snoegubbe', difficulty: 'easy' },
+                    { id: 'a33', swedish: 'August dricker varm choklad', dutch: 'August drinkt warme chocolademelk', pronunciation: 'August dricker varm sjoklad', difficulty: 'easy' },
+                    { id: 'a34', swedish: 'August älskar choklad med vispad grädde', dutch: 'August houdt van chocolademelk met slagroom', pronunciation: 'August elskar sjoklad med vispad graedde', difficulty: 'hard' },
+                    { id: 'a35', swedish: 'August kastar snöbollar med vänner', dutch: 'August gooit sneeuwballen met vrienden', pronunciation: 'August kastar snoebollar med venner', difficulty: 'medium' },
+                    { id: 'a36', swedish: 'August åker pulka i backen', dutch: 'August gaat sleeën op de heuvel', pronunciation: 'August awker pulka ee backen', difficulty: 'hard' },
+                    { id: 'a37', swedish: 'August har på sig varma kläder', dutch: 'August draagt warme kleren', pronunciation: 'August haar paw sei varma klaeder', difficulty: 'medium' },
+                    { id: 'a38', swedish: 'August går in för att värma sig', dutch: 'August gaat naar binnen om op te warmen', pronunciation: 'August gawr in foer at vaerma sei', difficulty: 'hard' },
+                    { id: 'a39', swedish: 'August dricker choklad med mamma', dutch: 'August drinkt chocolademelk met mama', pronunciation: 'August dricker sjoklad med mamma', difficulty: 'easy' },
+                    { id: 'a40', swedish: 'August tittar på snön genom fönstret', dutch: 'August kijkt naar de sneeuw door het raam', pronunciation: 'August tittar paw snoen genom foenster', difficulty: 'medium' }
                 ]
             }
         };
@@ -559,7 +581,8 @@
                     dailyPhrases: [],
                     fromDailyProgram: false,
                     currentDailyPhraseIndex: -1,
-                    showDailyCompletion: false
+                    showDailyCompletion: false,
+                    difficultyFilter: null // null = all, 'easy', 'medium', 'hard'
                 };
 
                 this.mediaRecorder = null;
@@ -1017,6 +1040,10 @@
             }
 
             // Daily Program Methods
+            setDifficultyFilter(difficulty) {
+                this.state.difficultyFilter = difficulty;
+            }
+
             generateDailyProgram() {
                 const today = new Date().toDateString();
                 const lastGenerated = localStorage.getItem('dailyProgramDate');
@@ -1053,12 +1080,17 @@
                     }
                 });
 
+                // Filter by difficulty if set
+                const filteredPhrases = this.state.difficultyFilter
+                    ? allPhrases.filter(p => p.difficulty === this.state.difficultyFilter)
+                    : allPhrases;
+
                 // Shuffle and select 10 phrases
                 // Prioritize uncompleted phrases, but include some completed ones for review
-                const uncompleted = allPhrases.filter(p =>
+                const uncompleted = filteredPhrases.filter(p =>
                     !this.state.completedPhrases.includes(`${p.categoryId}-${p.id}`)
                 );
-                const completed = allPhrases.filter(p =>
+                const completed = filteredPhrases.filter(p =>
                     this.state.completedPhrases.includes(`${p.categoryId}-${p.id}`)
                 );
 
@@ -1352,13 +1384,36 @@
                         }, 100);
                     };
 
+                    // Add error handler for MediaRecorder
+                    this.mediaRecorder.onerror = (event) => {
+                        console.error('MediaRecorder error:', event.error);
+                        this.state.isRecording = false;
+                        alert('Opnamefout: ' + event.error.name);
+                        this.render();
+                    };
+
                     // Start recording
                     this.mediaRecorder.start();
                     this.state.isRecording = true;
                     this.render();
                 } catch (error) {
                     console.error('Recording error:', error);
-                    alert('Kon geen toegang krijgen tot de microfoon: ' + error.message);
+                    this.state.isRecording = false;
+
+                    // More specific error messages
+                    let errorMessage = 'Kon opname niet starten. ';
+                    if (error.name === 'NotAllowedError') {
+                        errorMessage += 'Geef toegang tot de microfoon in je browser instellingen.';
+                    } else if (error.name === 'NotFoundError') {
+                        errorMessage += 'Geen microfoon gevonden.';
+                    } else if (error.name === 'NotReadableError') {
+                        errorMessage += 'Microfoon is al in gebruik.';
+                    } else {
+                        errorMessage += error.message;
+                    }
+
+                    alert(errorMessage);
+                    this.render();
                 }
             }
 
@@ -1785,17 +1840,39 @@ create policy "Users can update own progress"
 
                         <!-- Daily Program Section -->
                         <div id="daily-program" class="glass-effect rounded-2xl p-4 card-shadow">
-                            <div class="flex items-center justify-between mb-3">
-                                <div class="flex items-center gap-2">
-                                    <i class="fas fa-calendar-day text-blue-700 text-lg" aria-hidden="true"></i>
-                                    <h3 class="font-bold text-gray-800">Programma voor vandaag</h3>
+                            <div class="mb-3">
+                                <div class="flex items-center justify-between mb-2">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-calendar-day text-blue-700 text-lg" aria-hidden="true"></i>
+                                        <h3 class="font-bold text-gray-800">Programma voor vandaag</h3>
+                                    </div>
+                                    <button onclick="app.generateDailyProgram(); app.render();"
+                                            class="p-2 bg-blue-100 hover:bg-blue-200 rounded-lg text-blue-700 transition-colors"
+                                            title="Nieuwe selectie"
+                                            aria-label="Nieuwe dagelijkse selectie genereren">
+                                        <i class="fas fa-sync-alt" aria-hidden="true"></i>
+                                    </button>
                                 </div>
-                                <button onclick="app.generateDailyProgram(); app.render();"
-                                        class="p-2 bg-blue-100 hover:bg-blue-200 rounded-lg text-blue-700 transition-colors"
-                                        title="Nieuwe selectie"
-                                        aria-label="Nieuwe dagelijkse selectie genereren">
-                                    <i class="fas fa-sync-alt" aria-hidden="true"></i>
-                                </button>
+
+                                <!-- Difficulty Filter -->
+                                <div class="flex gap-2">
+                                    <button onclick="app.setDifficultyFilter(null); app.generateDailyProgram(); app.render();"
+                                            class="flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${!this.state.difficultyFilter ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}">
+                                        Alles
+                                    </button>
+                                    <button onclick="app.setDifficultyFilter('easy'); app.generateDailyProgram(); app.render();"
+                                            class="flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${this.state.difficultyFilter === 'easy' ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}">
+                                        Makkelijk
+                                    </button>
+                                    <button onclick="app.setDifficultyFilter('medium'); app.generateDailyProgram(); app.render();"
+                                            class="flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${this.state.difficultyFilter === 'medium' ? 'bg-yellow-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}">
+                                        Gemiddeld
+                                    </button>
+                                    <button onclick="app.setDifficultyFilter('hard'); app.generateDailyProgram(); app.render();"
+                                            class="flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${this.state.difficultyFilter === 'hard' ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}">
+                                        Moeilijk
+                                    </button>
+                                </div>
                             </div>
 
                             ${this.state.dailyPhrases.length > 0 ? `
@@ -1916,7 +1993,7 @@ create policy "Users can update own progress"
                         <div class="glass-effect rounded-2xl p-5 card-shadow">
                             <div class="flex justify-between items-center mb-4">
                                 <div class="flex items-center gap-2">
-                                    <span class="text-2xl">${categories[this.state.currentCategory].icon}</span>
+                                    <i class="fas ${categories[this.state.currentCategory].icon} text-gray-700 text-xl" aria-hidden="true"></i>
                                     <span class="font-bold text-gray-800">${categories[this.state.currentCategory].name}</span>
                                 </div>
                                 <div class="flex items-center gap-2">

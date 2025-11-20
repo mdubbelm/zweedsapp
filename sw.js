@@ -1,7 +1,7 @@
 // Service Worker for Svenska Kat PWA
-// Version 1.6.4 - Auto-update system
+// Version 1.6.5 - Daily program icons fix
 
-const CACHE_VERSION = '1.6.4';
+const CACHE_VERSION = '1.6.5';
 const CACHE_NAME = `svenska-kat-v${CACHE_VERSION}`;
 
 // Files to cache for offline support

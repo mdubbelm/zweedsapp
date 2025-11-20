@@ -1,0 +1,23 @@
+{
+  "name": "svenska-kat",
+  "version": "1.6.5",
+  "description": "Swedish language learning web application",
+  "main": "index.html",
+  "scripts": {
+    "test": "node test-changelog.js",
+    "test:changelog": "node test-changelog.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/monique/zweedsapp.git"
+  },
+  "keywords": [
+    "swedish",
+    "language-learning",
+    "pwa",
+    "education"
+  ],
+  "author": "Monique",
+  "license": "MIT",
+  "private": true
+}

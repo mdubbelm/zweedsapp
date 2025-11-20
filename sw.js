@@ -1,7 +1,7 @@
 // Service Worker for Svenska Kat PWA
-// Version 1.7.0 - Difficulty filter & winter phrases
+// Version 1.8.0 - MEGA UPDATE: All categories 30 phrases
 
-const CACHE_VERSION = '1.7.0';
+const CACHE_VERSION = '1.8.0';
 const CACHE_NAME = `svenska-kat-v${CACHE_VERSION}`;
 
 // Files to cache for offline support

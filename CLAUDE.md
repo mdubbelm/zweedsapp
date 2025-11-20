@@ -2,16 +2,37 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## ⚠️ CRITICAL: Deployment Workflow
+
+**THIS APP IS DEPLOYED VIA GITHUB PAGES**
+
+After making ANY changes to the codebase:
+1. **ALWAYS commit and push to GitHub** - changes are NOT visible until pushed
+2. **Wait 2-3 minutes** for GitHub Pages to deploy
+3. **User must refresh their browser** or wait for PWA auto-update notification
+
+**Workflow for every change:**
+```bash
+git add <files>
+git commit -m "Version X.X.X: Description"
+git push origin main
+# → GitHub Pages auto-deploys to: https://mdubbelm.github.io/zweedsapp
+```
+
+**Never tell the user to "refresh the page" without first pushing to GitHub!**
+The live app URL is GitHub Pages, NOT a local file. Local changes are invisible until deployed.
+
 ## Project Overview
 
-**Zweeds B1** is a Swedish language learning web application built as a single-page HTML file with Supabase backend integration. The app features audio recording for pronunciation practice, flashcards, gamification with achievements, and a competitive leaderboard.
+**Svenska Kat** (formerly Zweeds B1) is a Swedish language learning web application built as a single-page HTML file with Supabase backend integration. The app features audio recording for pronunciation practice, flashcards, gamification with achievements, and a competitive leaderboard.
 
 - **Technology**: Vanilla JavaScript (ES6+), single HTML file architecture
 - **Styling**: Tailwind CSS (CDN)
 - **Backend**: Supabase (PostgreSQL + Auth)
 - **APIs**: MediaRecorder, Web Speech API, Web Audio API
 - **PWA**: Service Worker with auto-update system and offline support
-- **Deployment**: Static file hosting (any platform) with GitHub Pages
+- **Deployment**: GitHub Pages (https://mdubbelm.github.io/zweedsapp)
+- **Repository**: https://github.com/mdubbelm/zweedsapp
 
 ## Development Commands
 
@@ -259,16 +280,44 @@ renderHome() {
 After updating render methods, state changes automatically trigger re-render.
 
 ### Updating App Version
-1. Update version constants at top of script:
+
+**CRITICAL: Always update ALL three version numbers together!**
+
+1. Update version in `index.html`:
 ```javascript
-const APP_VERSION = '1.2.0'
-const VERSION_DATE = '2025-11-10'
-const UPDATE_NOTES = [
-    'New feature description',
-    'Bug fix description'
-]
+const APP_VERSION = '1.6.5'
+const RELEASE_NOTES = {
+    '1.6.5': {
+        date: '2025-11-20',
+        features: [
+            'Feature description',
+            'Bug fix description'
+        ]
+    },
+    // ... previous versions
+}
 ```
-2. Update notification will automatically show to users on next load
+
+2. Update version in `sw.js`:
+```javascript
+const CACHE_VERSION = '1.6.5';
+```
+
+3. Update version in `package.json`:
+```json
+"version": "1.6.5"
+```
+
+4. **COMMIT AND PUSH to GitHub Pages**:
+```bash
+git add index.html sw.js package.json
+git commit -m "Version 1.6.5: Description"
+git push origin main
+```
+
+5. Wait 2-3 minutes for GitHub Pages deployment
+
+6. Users will see update notification automatically (checks every 60 seconds)
 
 ## Mobile Optimization
 
@@ -475,8 +524,26 @@ async saveUserData() {
 
 ## Deployment
 
+### Current Deployment: GitHub Pages
+
+**Live URL**: https://mdubbelm.github.io/zweedsapp
+**Repository**: https://github.com/mdubbelm/zweedsapp
+
+**Deployment Process:**
+1. Make changes locally
+2. Update version numbers (index.html, sw.js, package.json)
+3. Commit changes: `git commit -m "Version X.X.X: Description"`
+4. Push to main: `git push origin main`
+5. GitHub Pages auto-deploys in 2-3 minutes
+6. Users get auto-update notification within 60 seconds
+
+**Monitoring Deployment:**
+- Check deployment status: https://github.com/mdubbelm/zweedsapp/actions
+- Green checkmark = deployed successfully
+- GitHub Pages serves from main branch automatically
+
 ### Requirements
-1. Static file hosting with HTTPS (GitHub Pages, Netlify, Vercel, etc.)
+1. Static file hosting with HTTPS (✅ GitHub Pages configured)
 2. Supabase project with `user_progress` table configured
 3. RLS policies enabled on database table
 4. Email authentication enabled in Supabase

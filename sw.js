@@ -1,7 +1,7 @@
 // Service Worker for Svenska Kat PWA
-// Version 1.6.5 - Daily program icons fix
+// Version 1.6.6 - August Avonturen icon fix
 
-const CACHE_VERSION = '1.6.5';
+const CACHE_VERSION = '1.6.6';
 const CACHE_NAME = `svenska-kat-v${CACHE_VERSION}`;
 
 // Files to cache for offline support

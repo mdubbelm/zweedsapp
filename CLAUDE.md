@@ -707,6 +707,76 @@ CREATE POLICY "Users can update own progress"
 CREATE POLICY "Users can update own progress"
     ON user_progress FOR UPDATE
     USING (auth.uid() = user_id);
+
+-- Analytics Events Table (v1.10.2+)
+CREATE TABLE analytics_events (
+    id bigserial primary key,
+    user_id uuid references auth.users not null,
+    event_name text not null,
+    properties jsonb default '{}'::jsonb,
+    created_at timestamp with time zone default now()
+);
+
+-- Index for fast querying by user and event type
+CREATE INDEX idx_analytics_user_id ON analytics_events(user_id);
+CREATE INDEX idx_analytics_event_name ON analytics_events(event_name);
+CREATE INDEX idx_analytics_created_at ON analytics_events(created_at DESC);
+
+ALTER TABLE analytics_events ENABLE ROW LEVEL SECURITY;
+
+-- Users can insert their own events
+CREATE POLICY "Users can insert own analytics"
+    ON analytics_events FOR INSERT
+    WITH CHECK (auth.uid() = user_id);
+
+-- Users can view their own analytics (for debugging/insights)
+CREATE POLICY "Users can view own analytics"
+    ON analytics_events FOR SELECT
+    USING (auth.uid() = user_id);
+
+-- Note: Admins/developers need direct database access or service role key
+-- to query cross-user analytics for learning outcomes analysis
+```
+
+**Analytics Events Tracked:**
+- `user_signup` - New user registration
+- `phrase_completed_first_time` - First completion of specific phrase
+- `phrase_practiced` - Repeated practice of completed phrase
+- `badge_earned` - Achievement unlocked
+- `flashcards_opened`, `writing_mode_opened`, `grammar_opened` - Feature discovery
+- `badges_viewed`, `leaderboard_viewed`, `settings_opened` - Navigation tracking
+
+**Properties Captured:**
+- User context: `user_level`, `total_points`, `streak`
+- Learning metrics: `difficulty`, `is_perfect`, `practice_count`, `category`
+- Feature usage: `from_tab`, `badge_id`, `is_first_phrase_ever`
+
+**Querying Analytics (Supabase Dashboard or Service Role):**
+```sql
+-- Most popular features (last 7 days)
+SELECT event_name, COUNT(*) as usage
+FROM analytics_events
+WHERE created_at > NOW() - INTERVAL '7 days'
+GROUP BY event_name
+ORDER BY usage DESC;
+
+-- User retention: D1, D7, D30
+SELECT
+    DATE(created_at) as signup_date,
+    COUNT(DISTINCT CASE WHEN created_at <= signup_date + INTERVAL '1 day' THEN user_id END) as d1_retained,
+    COUNT(DISTINCT CASE WHEN created_at <= signup_date + INTERVAL '7 days' THEN user_id END) as d7_retained
+FROM analytics_events
+WHERE event_name = 'user_signup'
+GROUP BY signup_date;
+
+-- Learning outcomes: phrases by difficulty
+SELECT
+    properties->>'difficulty' as difficulty,
+    COUNT(*) as completions,
+    AVG((properties->>'is_perfect')::boolean::int) as perfect_rate
+FROM analytics_events
+WHERE event_name = 'phrase_completed_first_time'
+GROUP BY difficulty;
 ```
 
 ## Troubleshooting

@@ -275,8 +275,24 @@
 
     <script>
         // App Version
-        const APP_VERSION = '1.10.0';
+        const APP_VERSION = '1.10.1';
         const RELEASE_NOTES = {
+            '1.10.1': {
+                date: '2025-11-23',
+                features: [
+                    '🎯 NIEUW: Moeilijkheidsgraad Voorkeur! Filter zinnen op niveau',
+                    '👶 Perfect voor beginners - kies "Alleen Makkelijk" om te starten',
+                    '⚙️ Nieuwe Settings sectie: 5 filter opties (Alles, Makkelijk, Makkelijk+Gemiddeld, Gemiddeld, Moeilijk)',
+                    '🔄 Werkt in ALLE modi: Practice, Flashcards, Schrijf, Dagelijks Programma',
+                    '🏷️ Visual badge toont actieve filter in practice modes',
+                    '💾 Permanent opgeslagen per gebruiker',
+                    '📱 Daily Program: Compact card (Duolingo-stijl) ipv volledige lijst',
+                    '🎲 Daily Program: Mix van 50% spraakoefeningen + 50% schrijfoefeningen',
+                    '🔧 Filtering bug fix: Daily Program respecteert nu altijd je filter voorkeur',
+                    '🎨 Amber kleur voor filter badges',
+                    '🚀 GitHub Issue #13: Toekomstige oefeningstypes (meerkeuzevragen, word order)'
+                ]
+            },
             '1.10.0': {
                 date: '2025-11-23',
                 features: [
@@ -1075,6 +1091,7 @@
                     fromDailyProgram: false,
                     currentDailyPhraseIndex: -1,
                     showDailyCompletion: false,
+                    showDailyProgramModal: false,
                     difficultyFilter: null, // null = all, 'easy', 'medium', 'hard'
                     // Writing mode state
                     writingCategory: 'greetings',
@@ -1191,7 +1208,8 @@
                     dailyGoalTarget: 10,
                     badges: [],
                     displayName: '',
-                    categoryPreferences: ['greetings', 'daily', 'work', 'travel', 'conversation', 'cats', 'august'] // All enabled by default
+                    categoryPreferences: ['greetings', 'daily', 'work', 'travel', 'conversation', 'cats', 'august'], // All enabled by default
+                    difficultyPreference: null // null = all, 'easy', 'medium', 'hard', 'easy-medium'
                 };
             }
 
@@ -1557,6 +1575,59 @@
                 this.state.difficultyFilter = difficulty;
             }
 
+            async setDifficultyPreference(difficulty) {
+                // Initialize if doesn't exist
+                if (!this.state.stats.difficultyPreference) {
+                    this.state.stats.difficultyPreference = null;
+                }
+
+                this.state.stats.difficultyPreference = difficulty;
+
+                // Clear daily program cache to force regeneration with new filter
+                localStorage.removeItem('dailyProgram');
+                localStorage.removeItem('dailyProgramDate');
+
+                // Regenerate daily program with new filter
+                this.generateDailyProgram();
+
+                // Save to database
+                await this.saveUserData();
+
+                // Re-render
+                this.render();
+            }
+
+            getFilteredPhrases(phrases) {
+                const preference = this.state.stats.difficultyPreference;
+
+                // No filter set - return all
+                if (!preference) return phrases;
+
+                // Filter based on preference
+                switch(preference) {
+                    case 'easy':
+                        return phrases.filter(p => p.difficulty === 'easy');
+                    case 'medium':
+                        return phrases.filter(p => p.difficulty === 'medium');
+                    case 'hard':
+                        return phrases.filter(p => p.difficulty === 'hard');
+                    case 'easy-medium':
+                        return phrases.filter(p =>
+                            p.difficulty === 'easy' || p.difficulty === 'medium'
+                        );
+                    default:
+                        return phrases;
+                }
+            }
+
+            refreshDailyProgram() {
+                // Clear cache to force regeneration
+                localStorage.removeItem('dailyProgram');
+                localStorage.removeItem('dailyProgramDate');
+                this.generateDailyProgram();
+                this.render();
+            }
+
             generateDailyProgram() {
                 const today = new Date().toDateString();
                 const lastGenerated = localStorage.getItem('dailyProgramDate');
@@ -1593,10 +1664,8 @@
                     }
                 });
 
-                // Filter by difficulty if set
-                const filteredPhrases = this.state.difficultyFilter
-                    ? allPhrases.filter(p => p.difficulty === this.state.difficultyFilter)
-                    : allPhrases;
+                // Filter by difficulty using global preference
+                const filteredPhrases = this.getFilteredPhrases(allPhrases);
 
                 // Shuffle and select 10 phrases
                 // Prioritize uncompleted phrases, but include some completed ones for review
@@ -1627,8 +1696,11 @@
                 // Shuffle final selection
                 shuffleArray(dailySelection);
 
-                // Limit to 10 phrases
-                this.state.dailyPhrases = dailySelection.slice(0, 10);
+                // Limit to 10 phrases and add random exercise type (50% spraak, 50% schrijf)
+                this.state.dailyPhrases = dailySelection.slice(0, 10).map(phrase => ({
+                    ...phrase,
+                    exerciseType: Math.random() < 0.5 ? 'practice' : 'writing'
+                }));
 
                 // Save to localStorage
                 localStorage.setItem('dailyProgram', JSON.stringify(this.state.dailyPhrases));
@@ -1638,11 +1710,27 @@
 
             startDailyPhrase(phraseIndex) {
                 const phrase = this.state.dailyPhrases[phraseIndex];
-                this.state.currentCategory = phrase.categoryId;
-                this.state.currentPhraseIndex = categories[phrase.categoryId].phrases.findIndex(
-                    p => p.id === phrase.id
-                );
-                this.state.currentTab = 'practice';
+                const exerciseType = phrase.exerciseType || 'practice'; // Default to practice if no type
+
+                // Set up state based on exercise type
+                if (exerciseType === 'writing') {
+                    // Writing mode setup
+                    this.state.writingCategory = phrase.categoryId;
+                    this.state.currentWritingIndex = categories[phrase.categoryId].phrases.findIndex(
+                        p => p.id === phrase.id
+                    );
+                    this.state.currentTab = 'writing';
+                    this.state.writingInput = '';
+                    this.state.showWritingFeedback = false;
+                } else {
+                    // Practice (spraak) mode setup
+                    this.state.currentCategory = phrase.categoryId;
+                    this.state.currentPhraseIndex = categories[phrase.categoryId].phrases.findIndex(
+                        p => p.id === phrase.id
+                    );
+                    this.state.currentTab = 'practice';
+                }
+
                 this.state.fromDailyProgram = true;
                 this.state.currentDailyPhraseIndex = phraseIndex;
                 this.render();
@@ -1703,6 +1791,140 @@
             closeDailyCompletion() {
                 this.state.showDailyCompletion = false;
                 this.render();
+            }
+
+            openDailyProgramModal() {
+                this.state.showDailyProgramModal = true;
+                this.render();
+            }
+
+            closeDailyProgramModal() {
+                this.state.showDailyProgramModal = false;
+                this.render();
+            }
+
+            renderDailyProgramModal() {
+                if (!this.state.showDailyProgramModal) return '';
+
+                const completedToday = this.state.dailyPhrases.filter(phrase =>
+                    this.state.completedPhrases.includes(`${phrase.categoryId}-${phrase.id}`)
+                ).length;
+                const total = this.state.dailyPhrases.length;
+                const today = new Date().toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' });
+
+                return `
+                    <div class="fixed inset-0 z-50 flex items-center justify-center p-4" style="background: rgba(0,0,0,0.5);" onclick="app.closeDailyProgramModal()">
+                        <div class="glass-effect rounded-2xl p-6 card-shadow max-w-lg w-full max-h-[80vh] overflow-y-auto animate-slideUp" onclick="event.stopPropagation()">
+                            <!-- Header -->
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <h2 class="text-2xl font-bold text-gray-800">Dagelijks Programma</h2>
+                                    <p class="text-sm text-gray-600">${today}</p>
+                                </div>
+                                <button onclick="app.closeDailyProgramModal()"
+                                        class="w-10 h-10 rounded-full bg-gray-200 hover:bg-gray-300 transition-all flex items-center justify-center">
+                                    <i class="fas fa-times text-gray-600"></i>
+                                </button>
+                            </div>
+
+                            <!-- Progress -->
+                            <div class="mb-4 p-4 rounded-xl" style="background: linear-gradient(135deg, #5B9BD5 0%, #4A7FA8 100%);">
+                                <div class="flex items-center justify-between text-white mb-2">
+                                    <span class="font-bold">Je voortgang</span>
+                                    <span class="text-2xl font-bold">${completedToday}/${total}</span>
+                                </div>
+                                <div class="bg-white/30 rounded-full h-2 overflow-hidden">
+                                    <div class="bg-white h-2 rounded-full transition-all duration-500" style="width: ${(completedToday / total) * 100}%"></div>
+                                </div>
+                            </div>
+
+                            <!-- Filter Info & Settings Link -->
+                            ${this.state.stats.difficultyPreference ? `
+                                <div class="mb-4 p-3 bg-amber-50 border border-amber-200 rounded-xl">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-2">
+                                            <i class="fas fa-filter text-amber-600"></i>
+                                            <span class="text-sm font-semibold text-amber-900">
+                                                Filter actief: ${
+                                                    this.state.stats.difficultyPreference === 'easy' ? '😊 Alleen Makkelijk' :
+                                                    this.state.stats.difficultyPreference === 'medium' ? '⚖️ Alleen Gemiddeld' :
+                                                    this.state.stats.difficultyPreference === 'hard' ? '🔥 Alleen Moeilijk' :
+                                                    this.state.stats.difficultyPreference === 'easy-medium' ? '😊⚖️ Makkelijk + Gemiddeld' : ''
+                                                }
+                                            </span>
+                                        </div>
+                                        <button onclick="app.closeDailyProgramModal(); app.switchTab('settings');"
+                                                class="text-xs px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-full transition-all">
+                                            <i class="fas fa-cog mr-1"></i>Wijzig
+                                        </button>
+                                    </div>
+                                </div>
+                            ` : `
+                                <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded-xl">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-2">
+                                            <i class="fas fa-info-circle text-blue-600"></i>
+                                            <span class="text-sm text-blue-900">
+                                                💡 Wil je alleen makkelijke zinnen zien?
+                                            </span>
+                                        </div>
+                                        <button onclick="app.closeDailyProgramModal(); app.switchTab('settings');"
+                                                class="text-xs px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-all">
+                                                <i class="fas fa-sliders-h mr-1"></i>Instellingen
+                                        </button>
+                                    </div>
+                                </div>
+                            `}
+
+                            <!-- Refresh Button -->
+                            <div class="mb-3 flex justify-end">
+                                <button onclick="app.refreshDailyProgram();"
+                                        class="text-sm px-3 py-1.5 bg-gray-200 hover:bg-gray-300 text-gray-700 rounded-lg transition-all">
+                                    <i class="fas fa-sync-alt mr-1"></i>Nieuwe selectie
+                                </button>
+                            </div>
+
+                            <!-- Daily Phrases List -->
+                            <div class="space-y-2">
+                                ${this.state.dailyPhrases.map((phrase, index) => {
+                                    const isCompleted = this.state.completedPhrases.includes(`${phrase.categoryId}-${phrase.id}`);
+                                    const difficultyColors = {
+                                        easy: 'bg-green-100 text-green-700',
+                                        medium: 'bg-yellow-100 text-yellow-700',
+                                        hard: 'bg-red-100 text-red-700'
+                                    };
+                                    return `
+                                        <button onclick="app.startDailyPhrase(${index}); app.closeDailyProgramModal();"
+                                                class="w-full text-left glass-effect rounded-xl p-3 card-hover ${isCompleted ? 'opacity-60' : ''}">
+                                            <div class="flex items-center gap-3">
+                                                <div class="flex-shrink-0">
+                                                    ${isCompleted ?
+                                                        '<i class="fas fa-check-circle text-green-600 text-xl"></i>' :
+                                                        `<div class="w-8 h-8 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-sm">${index + 1}</div>`
+                                                    }
+                                                </div>
+                                                <div class="flex-1 min-w-0">
+                                                    <p class="font-semibold text-gray-800 truncate">${phrase.swedish}</p>
+                                                    <p class="text-xs text-gray-500 truncate">${phrase.dutch}</p>
+                                                </div>
+                                                <div class="flex items-center gap-2 flex-shrink-0">
+                                                    <span class="text-xs px-2 py-1 rounded-full ${difficultyColors[phrase.difficulty]}">${
+                                                        phrase.difficulty === 'easy' ? 'Makkelijk' :
+                                                        phrase.difficulty === 'medium' ? 'Gemiddeld' : 'Moeilijk'
+                                                    }</span>
+                                                    <span class="text-xs px-2 py-1 rounded-full ${phrase.exerciseType === 'writing' ? 'bg-teal-100 text-teal-700' : 'bg-blue-100 text-blue-700'}" title="${phrase.exerciseType === 'writing' ? 'Schrijfoefening' : 'Spraakoefening'}">
+                                                        <i class="fas ${phrase.exerciseType === 'writing' ? 'fa-keyboard' : 'fa-microphone'}"></i>
+                                                    </span>
+                                                    <i class="fas fa-chevron-right text-gray-400"></i>
+                                                </div>
+                                            </div>
+                                        </button>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+                    </div>
+                `;
             }
 
             renderOnboardingOverlay() {
@@ -2080,6 +2302,7 @@
                         ${this.state.newBadge ? this.renderNewBadge() : ''}
                         ${this.state.showOnboarding ? this.renderOnboardingOverlay() : ''}
                         ${this.state.showDailyCompletion ? this.renderDailyCompletionScreen() : ''}
+                        ${this.state.showDailyProgramModal ? this.renderDailyProgramModal() : ''}
                         ${this.renderHeader()}
                         <div class="p-4 max-w-2xl mx-auto pb-28">
                             ${this.state.currentTab === 'home' ? this.renderHome() : ''}
@@ -2366,6 +2589,44 @@ create policy "Users can update own progress"
                             </div>
                         </div>
 
+                        <!-- Daily Program Compact Card - Duolingo style -->
+                        ${(() => {
+                            const completedToday = this.state.dailyPhrases.filter(phrase =>
+                                this.state.completedPhrases.includes(`${phrase.categoryId}-${phrase.id}`)
+                            ).length;
+                            const total = this.state.dailyPhrases.length;
+                            const progressPercent = (completedToday / total) * 100;
+                            const today = new Date().toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' });
+
+                            return `
+                                <button id="daily-program" onclick="app.openDailyProgramModal()"
+                                        class="w-full glass-effect rounded-2xl p-4 card-shadow card-hover text-left border-2 border-transparent hover:border-blue-400 transition-all">
+                                    <div class="flex items-center justify-between">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-12 h-12 rounded-xl flex items-center justify-center"
+                                                 style="background: linear-gradient(135deg, #5B9BD5 0%, #4A7FA8 100%);">
+                                                <i class="fas fa-calendar-day text-xl text-white"></i>
+                                            </div>
+                                            <div>
+                                                <p class="font-bold text-gray-800">Je oefeningen voor vandaag</p>
+                                                <p class="text-xs text-gray-500">${today}</p>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center gap-3">
+                                            <div class="text-right">
+                                                <p class="text-2xl font-bold text-blue-600">${completedToday}/${total}</p>
+                                                <p class="text-xs text-gray-500">voltooid</p>
+                                            </div>
+                                            <i class="fas fa-chevron-right text-gray-400"></i>
+                                        </div>
+                                    </div>
+                                    <div class="mt-3 bg-gray-200 rounded-full h-2 overflow-hidden">
+                                        <div class="bg-blue-600 h-2 rounded-full transition-all duration-500" style="width: ${progressPercent}%"></div>
+                                    </div>
+                                </button>
+                            `;
+                        })()}
+
                         <!-- HOW DO YOU WANT TO LEARN? (3 equal modes) -->
                         <div class="mt-4">
                             <h3 class="text-xl font-bold text-gray-800 mb-3">
@@ -2648,6 +2909,13 @@ create policy "Users can update own progress"
                                         <i class="fas ${categoryInfo.icon} text-gray-700 text-xl" aria-hidden="true"></i>
                                         <span class="font-bold text-gray-800">${categoryInfo.name}</span>
                                         ${this.state.currentCategory === 'all' ? '<span class="text-xs bg-purple-500 text-white px-2 py-0.5 rounded-full ml-1">Alle</span>' : ''}
+                                        ${this.state.stats.difficultyPreference ? `<span class="text-xs bg-amber-500 text-white px-2 py-0.5 rounded-full ml-1" title="Difficulty filter actief">
+                                            <i class="fas fa-filter"></i> ${
+                                                this.state.stats.difficultyPreference === 'easy' ? 'Makkelijk' :
+                                                this.state.stats.difficultyPreference === 'medium' ? 'Gemiddeld' :
+                                                this.state.stats.difficultyPreference === 'hard' ? 'Moeilijk' :
+                                                this.state.stats.difficultyPreference === 'easy-medium' ? 'Makk+Gem' : ''
+                                            }</span>` : ''}
                                         <i class="fas fa-chevron-down text-xs text-gray-500"></i>
                                     </button>
                                 </div>
@@ -2769,9 +3037,13 @@ create policy "Users can update own progress"
             }
 
             renderFlashcards() {
-                const allPhrases = this.state.flashcardCategory === 'all' ?
+                // Get base phrases
+                const basePhrases = this.state.flashcardCategory === 'all' ?
                     this.state.shuffledPhrases :
                     categories[this.state.flashcardCategory].phrases;
+
+                // Apply difficulty filter
+                const allPhrases = this.getFilteredPhrases(basePhrases);
                 const currentCard = allPhrases[this.state.currentFlashcardIndex];
 
                 // Get category info (for 'all' category, use card's category info)
@@ -2793,6 +3065,13 @@ create policy "Users can update own progress"
                                     <i class="fas ${categoryInfo.icon} text-gray-700 text-xl" aria-hidden="true"></i>
                                     <span class="font-bold text-gray-800">${categoryInfo.name}</span>
                                     ${this.state.flashcardCategory === 'all' ? '<span class="text-xs bg-purple-500 text-white px-2 py-0.5 rounded-full">Alle</span>' : ''}
+                                    ${this.state.stats.difficultyPreference ? `<span class="text-xs bg-amber-500 text-white px-2 py-0.5 rounded-full ml-1" title="Difficulty filter actief">
+                                        <i class="fas fa-filter"></i> ${
+                                            this.state.stats.difficultyPreference === 'easy' ? 'Makkelijk' :
+                                            this.state.stats.difficultyPreference === 'medium' ? 'Gemiddeld' :
+                                            this.state.stats.difficultyPreference === 'hard' ? 'Moeilijk' :
+                                            this.state.stats.difficultyPreference === 'easy-medium' ? 'Makk+Gem' : ''
+                                        }</span>` : ''}
                                 </div>
                                 <i class="fas fa-chevron-down text-gray-500"></i>
                             </button>
@@ -2883,6 +3162,13 @@ create policy "Users can update own progress"
                                         <i class="fas ${categoryInfo.icon} text-gray-700 text-xl" aria-hidden="true"></i>
                                         <span class="font-bold text-gray-800">${categoryInfo.name}</span>
                                         ${this.state.writingCategory === 'all' ? '<span class="text-xs bg-purple-500 text-white px-2 py-0.5 rounded-full ml-1">Alle</span>' : ''}
+                                        ${this.state.stats.difficultyPreference ? `<span class="text-xs bg-amber-500 text-white px-2 py-0.5 rounded-full ml-1" title="Difficulty filter actief">
+                                            <i class="fas fa-filter"></i> ${
+                                                this.state.stats.difficultyPreference === 'easy' ? 'Makkelijk' :
+                                                this.state.stats.difficultyPreference === 'medium' ? 'Gemiddeld' :
+                                                this.state.stats.difficultyPreference === 'hard' ? 'Moeilijk' :
+                                                this.state.stats.difficultyPreference === 'easy-medium' ? 'Makk+Gem' : ''
+                                            }</span>` : ''}
                                         <i class="fas fa-chevron-down text-xs text-gray-500"></i>
                                     </button>
                                 </div>
@@ -3457,6 +3743,40 @@ create policy "Users can update own progress"
                                                 <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
                                             </label>
                                         </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        </div>
+
+                        <div class="glass-effect rounded-2xl p-5 card-shadow">
+                            <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                                <i class="fas fa-filter text-amber-600 text-lg" aria-hidden="true"></i> Moeilijkheidsgraad Voorkeur
+                            </h4>
+                            <p class="text-sm text-gray-600 mb-4">
+                                Filter zinnen op moeilijkheidsgraad. Deze instelling geldt voor alle oefen modi (practice, flashcards, grammatica).
+                                <strong>Perfect voor beginners!</strong>
+                            </p>
+                            <div class="space-y-2">
+                                ${[
+                                    { value: null, label: 'Alles tonen', description: 'Alle zinnen (makkelijk, gemiddeld, moeilijk)', icon: 'fa-list' },
+                                    { value: 'easy', label: 'Alleen Makkelijk', description: 'Perfecte start voor beginners', icon: 'fa-smile' },
+                                    { value: 'easy-medium', label: 'Makkelijk + Gemiddeld', description: 'Voor gevorderden', icon: 'fa-star-half-alt' },
+                                    { value: 'medium', label: 'Alleen Gemiddeld', description: 'Standaard niveau', icon: 'fa-balance-scale' },
+                                    { value: 'hard', label: 'Alleen Moeilijk', description: 'Voor experts', icon: 'fa-fire' }
+                                ].map(option => {
+                                    const isActive = (this.state.stats.difficultyPreference ?? null) === option.value;
+                                    return `
+                                        <button onclick="app.setDifficultyPreference(${option.value === null ? 'null' : `'${option.value}'`})"
+                                                class="w-full text-left bg-gray-50 rounded-xl p-3 card-hover border-2 ${isActive ? 'border-amber-500 bg-amber-50' : 'border-transparent'} transition-all">
+                                            <div class="flex items-center gap-3">
+                                                <i class="fas ${option.icon} text-2xl ${isActive ? 'text-amber-600' : 'text-gray-600'}" aria-hidden="true"></i>
+                                                <div class="flex-1">
+                                                    <p class="font-semibold ${isActive ? 'text-amber-900' : 'text-gray-800'}">${option.label}</p>
+                                                    <p class="text-xs ${isActive ? 'text-amber-700' : 'text-gray-500'}">${option.description}</p>
+                                                </div>
+                                                ${isActive ? '<i class="fas fa-check-circle text-amber-600 text-xl" aria-hidden="true"></i>' : ''}
+                                            </div>
+                                        </button>
                                     `;
                                 }).join('')}
                             </div>
@@ -4040,15 +4360,22 @@ create policy "Users can update own progress"
             }
 
             getCurrentPhrases(category) {
-                // For 'all' category, always return shuffled phrases
+                let phrases;
+
+                // Get base phrases
                 if (category === 'all') {
-                    return this.state.shuffledPhrases;
+                    // For 'all' category, always return shuffled phrases
+                    phrases = this.state.shuffledPhrases;
+                } else if (this.state.isShuffled && this.state.shuffledPhrases.length > 0) {
+                    // Return shuffled phrases if shuffle mode is active
+                    phrases = this.state.shuffledPhrases;
+                } else {
+                    // Return original phrases
+                    phrases = categories[category].phrases;
                 }
-                // Return shuffled phrases if shuffle mode is active, otherwise return original phrases
-                if (this.state.isShuffled && this.state.shuffledPhrases.length > 0) {
-                    return this.state.shuffledPhrases;
-                }
-                return categories[category].phrases;
+
+                // Apply difficulty filter if set
+                return this.getFilteredPhrases(phrases);
             }
 
             trackPhraseCompletion(phraseId, isPerfect) {

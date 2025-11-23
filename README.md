@@ -288,15 +288,37 @@ const SUPABASE_ANON_KEY = 'your-anon-key'
 - **Feature Requests**: Submit via GitHub Issues
 - **Questions**: Check existing issues or create new one
 
-## Contributing
+## 🚧 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+**This is a personal learning project.** I am currently not accepting external contributions or pull requests.
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+### Why?
+
+Svenska Kat serves as both a language learning tool and a personal development project. I handle all development, design decisions, and feature planning myself to maintain a cohesive vision aligned with specific pedagogical goals.
+
+### Can I Use This Code?
+
+Absolutely! This project is licensed under MIT, which means you're free to:
+- ✅ **Fork** the repository and create your own version
+- ✅ **Study** the code to learn about PWAs, Supabase, or language learning apps
+- ✅ **Adapt** the code for your own projects
+- ✅ **Share** your fork with others
+
+### Alternative Ways to Contribute
+
+If you find bugs or have suggestions, you're welcome to:
+- Open an issue describing the bug or idea (I may implement it myself)
+- Share your thoughts in GitHub Discussions
+- Build your own fork with your improvements and share it with the community
+
+### For Developers
+
+If you're interested in building similar functionality:
+1. Fork this repository
+2. Review the [CLAUDE.md](CLAUDE.md) file for architecture details
+3. Build independently and share your learnings!
+
+Thank you for understanding! 🙏
 
 ## Version History
 

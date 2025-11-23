@@ -4219,6 +4219,25 @@ create policy "Users can update own progress"
             }
 
             nextWriting() {
+                // Check if we're in Daily Program mode
+                if (this.state.fromDailyProgram) {
+                    // Find next phrase in daily program (any, completed or not)
+                    const nextIndex = this.state.currentDailyPhraseIndex + 1;
+
+                    if (nextIndex < this.state.dailyPhrases.length) {
+                        // Load next daily phrase (might be different category/mode)
+                        this.startDailyPhrase(nextIndex);
+                        return;
+                    } else {
+                        // End of daily program
+                        this.state.fromDailyProgram = false;
+                        this.state.currentTab = 'home';
+                        this.render();
+                        return;
+                    }
+                }
+
+                // Normal mode: stay in current category
                 const phrases = categories[this.state.writingCategory].phrases;
                 this.state.currentWritingIndex = (this.state.currentWritingIndex + 1) % phrases.length;
                 this.state.writingInput = '';
@@ -4228,6 +4247,22 @@ create policy "Users can update own progress"
             }
 
             previousWriting() {
+                // Check if we're in Daily Program mode
+                if (this.state.fromDailyProgram) {
+                    const prevIndex = this.state.currentDailyPhraseIndex - 1;
+
+                    if (prevIndex >= 0) {
+                        // Load previous daily phrase
+                        this.startDailyPhrase(prevIndex);
+                        return;
+                    } else {
+                        // At start of daily program, wrap to end
+                        this.startDailyPhrase(this.state.dailyPhrases.length - 1);
+                        return;
+                    }
+                }
+
+                // Normal mode: stay in current category
                 const phrases = categories[this.state.writingCategory].phrases;
                 this.state.currentWritingIndex = this.state.currentWritingIndex === 0 ?
                     phrases.length - 1 : this.state.currentWritingIndex - 1;
@@ -4270,6 +4305,25 @@ create policy "Users can update own progress"
                     this.audioStream = null;
                 }
 
+                // Check if we're in Daily Program mode
+                if (this.state.fromDailyProgram) {
+                    // Find next phrase in daily program (any, completed or not)
+                    const nextIndex = this.state.currentDailyPhraseIndex + 1;
+
+                    if (nextIndex < this.state.dailyPhrases.length) {
+                        // Load next daily phrase (might be different category/mode)
+                        this.startDailyPhrase(nextIndex);
+                        return;
+                    } else {
+                        // End of daily program
+                        this.state.fromDailyProgram = false;
+                        this.state.currentTab = 'home';
+                        this.render();
+                        return;
+                    }
+                }
+
+                // Normal mode: stay in current category
                 const phrases = this.getCurrentPhrases(this.state.currentCategory);
                 this.state.currentPhraseIndex = (this.state.currentPhraseIndex + 1) % phrases.length;
                 this.state.audioURL = null;
@@ -4290,6 +4344,22 @@ create policy "Users can update own progress"
                     this.audioStream = null;
                 }
 
+                // Check if we're in Daily Program mode
+                if (this.state.fromDailyProgram) {
+                    const prevIndex = this.state.currentDailyPhraseIndex - 1;
+
+                    if (prevIndex >= 0) {
+                        // Load previous daily phrase
+                        this.startDailyPhrase(prevIndex);
+                        return;
+                    } else {
+                        // At start of daily program, wrap to end
+                        this.startDailyPhrase(this.state.dailyPhrases.length - 1);
+                        return;
+                    }
+                }
+
+                // Normal mode: stay in current category
                 const phrases = this.getCurrentPhrases(this.state.currentCategory);
                 this.state.currentPhraseIndex = this.state.currentPhraseIndex === 0 ?
                     phrases.length - 1 : this.state.currentPhraseIndex - 1;

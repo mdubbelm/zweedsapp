@@ -2158,6 +2158,7 @@
                         this.state.audioMimeType = this.recordedMimeType;
 
                         console.log('Recording stopped, blob size:', audioBlob.size, 'type:', this.recordedMimeType);
+                        console.log('Audio URL created:', url);
 
                         this.render();
 
@@ -2165,7 +2166,21 @@
                         setTimeout(() => {
                             const audioElement = document.getElementById('recordingPlayer');
                             if (audioElement) {
+                                console.log('Audio element found, calling load()');
                                 audioElement.load();
+
+                                // Add error handling for audio loading
+                                audioElement.onerror = (e) => {
+                                    console.error('Audio loading error:', e);
+                                    console.error('Audio element error code:', audioElement.error?.code);
+                                    console.error('Audio element error message:', audioElement.error?.message);
+                                };
+
+                                audioElement.onloadeddata = () => {
+                                    console.log('Audio loaded successfully');
+                                };
+                            } else {
+                                console.error('Audio element not found in DOM!');
                             }
                         }, 100);
                     };
@@ -4718,7 +4733,7 @@ create policy "Users can update own progress"
         // Register Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
+                navigator.serviceWorker.register('./sw.js')
                     .then((reg) => {
                         console.log('[App] Service Worker registered:', reg.scope);
                         registration = reg;

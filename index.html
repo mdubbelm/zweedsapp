@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="Svenska Kat">
-    <meta name="theme-color" content="#8b5cf6">
+    <meta name="theme-color" content="#2D9DA8">
     <link rel="manifest" href="/manifest.json">
     <title>Svenska Kat - Leer Zweeds</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -24,14 +24,24 @@
             --scandi-blue: #5B9BD5;
             --scandi-blue-dark: #4A7FA8;
             --scandi-blue-light: #7FB3E5;
+            --scandi-teal: #2D9DA8;            /* Teal - Writing/Spelling */
+            --scandi-teal-dark: #1F7A82;       /* Teal dark variant */
+            --scandi-teal-light: #4FB8C4;      /* Teal light variant */
             --scandi-grey: #F5F7FA;
             --scandi-grey-dark: #E1E5EB;
             --scandi-grey-text: #6B7280;
             --scandi-text: #1F2937;
             --scandi-white: #FFFFFF;
-            --scandi-green: #10B981;
-            --scandi-amber: #F59E0B;
+            --scandi-green: #5AAD5A;           /* Updated: natuurlijk groen */
+            --scandi-amber: #F4A261;           /* Updated: warm goud */
             --scandi-red: #EF4444;
+
+            /* Category Colors (Scandinavian Design Compliant) */
+            --dusty-rose: #D4A5A5;             /* Begroetingen - zacht roze */
+            --steel-blue: #6B8CAE;             /* Reizen - staal blauw */
+            --lavender-grey: #9FA8BC;          /* Katten - lavendel grijs */
+            --coral: #E89E8D;                  /* August - zachte koraal */
+            --clay: #C9826B;                   /* Winkelen & Eten - terracotta klei */
         }
 
         * {
@@ -133,7 +143,122 @@
             border-radius: 12px;
             background: #f3f4f6;
         }
-        
+
+        /* Mode Selector Modal & Category Selector Modal */
+        .mode-selector-overlay, .category-selector-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(31, 41, 55, 0.7);
+            backdrop-filter: blur(4px);
+            z-index: 2000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.2s ease-out;
+        }
+
+        .mode-selector-modal, .category-selector-modal {
+            background: white;
+            border-radius: 20px;
+            padding: 24px;
+            max-width: 400px;
+            width: 100%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .category-selector-modal {
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .mode-selector-header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--scandi-grey-dark);
+        }
+
+        .mode-selector-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--scandi-text);
+            margin-bottom: 4px;
+        }
+
+        .mode-selector-subtitle {
+            font-size: 0.875rem;
+            color: var(--scandi-grey-text);
+        }
+
+        .mode-option {
+            background: var(--scandi-grey);
+            border: 2px solid var(--scandi-grey-dark);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            width: 100%;
+            display: block;
+        }
+
+        .mode-option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(91, 155, 213, 0.15);
+            border-color: var(--scandi-blue-light);
+        }
+
+        .mode-option:active {
+            transform: scale(0.98);
+        }
+
+        .mode-option-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 8px;
+            font-size: 1.25rem;
+        }
+
+        .mode-option-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--scandi-text);
+            margin-bottom: 4px;
+        }
+
+        .mode-option-description {
+            font-size: 0.875rem;
+            color: var(--scandi-grey-text);
+            line-height: 1.4;
+        }
+
+        .mode-selector-cancel {
+            width: 100%;
+            padding: 12px;
+            background: transparent;
+            border: none;
+            color: var(--scandi-grey-text);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .mode-selector-cancel:hover {
+            color: var(--scandi-text);
+        }
+
         input {
             transition: all 0.2s ease;
         }
@@ -150,8 +275,35 @@
 
     <script>
         // App Version
-        const APP_VERSION = '1.8.0';
+        const APP_VERSION = '1.10.0';
         const RELEASE_NOTES = {
+            '1.10.0': {
+                date: '2025-11-23',
+                features: [
+                    '📚 NIEUWE TAB: Grammatica! Leer werkwoorden en voornaamwoorden',
+                    '🎯 Category Selector met bi-directionele navigatie (mode→categorie & categorie→mode)',
+                    '🎲 Alle Categorieën Random - oefen met alle 220+ zinnen door elkaar',
+                    '🔀 Shuffle functionaliteit per categorie met toggle button',
+                    '🛒 8e categorie: Winkelen & Eten (30 nieuwe zinnen)',
+                    '🎨 Scandinavische kleuren - alle categorieën bijgewerkt naar authentiek Nordic palet',
+                    '📊 Phrase history tracking voor toekomstige spaced repetition',
+                    '🎨 Design guidelines gedocumenteerd in CLAUDE.md'
+                ]
+            },
+            '1.9.0': {
+                date: '2025-11-21',
+                features: [
+                    '✍️ NIEUWE TAB: Schrijfmodus! Nederlands → Zweeds vertalen',
+                    '⌨️ Oefen spelling door Zweedse zinnen te typen',
+                    'åäö Zweedse karakters helper buttons (å, ä, ö)',
+                    '✅ Real-time validatie met groen/rood feedback',
+                    '🎵 Success geluid bij correct antwoord',
+                    '+10 XP per correct getypte zin',
+                    '⏎ Enter toets om te controleren',
+                    '📱 PWA Installatie Instructies toegevoegd in Settings',
+                    '📖 Stap-voor-stap gids voor iOS, Android en Desktop'
+                ]
+            },
             '1.8.0': {
                 date: '2025-11-20',
                 features: [
@@ -415,7 +567,7 @@
             greetings: {
                 name: 'Begroetingen',
                 icon: 'fa-heart',
-                color: 'pink',
+                color: 'dusty-rose',
                 phrases: [
                     { id: 'g1', swedish: 'Hur mår du?', dutch: 'Hoe gaat het met je?', pronunciation: 'Hoer mawr doe?', difficulty: 'easy' },
                     { id: 'g2', swedish: 'Jag mår bra, tack', dutch: 'Het gaat goed met mij, bedankt', pronunciation: 'Jaag mawr braa, tak', difficulty: 'easy' },
@@ -526,7 +678,7 @@
             travel: {
                 name: 'Reizen',
                 icon: 'fa-plane',
-                color: 'indigo',
+                color: 'steel-blue',
                 phrases: [
                     { id: 't1', swedish: 'Var är tågstationen?', dutch: 'Waar is het treinstation?', pronunciation: 'Vaar er taagstasjoonen?', difficulty: 'easy' },
                     { id: 't2', swedish: 'Jag behöver en biljett till Stockholm', dutch: 'Ik heb een kaartje naar Stockholm nodig', pronunciation: 'Jaag behoever en biljett til Stockholm', difficulty: 'medium' },
@@ -600,7 +752,7 @@
             cats: {
                 name: 'Katten',
                 icon: 'fa-cat',
-                color: 'purple',
+                color: 'lavender-grey',
                 phrases: [
                     { id: 'k1', swedish: 'Jag har två katter', dutch: 'Ik heb twee katten', pronunciation: 'Jaag haar tvaw katter', difficulty: 'easy' },
                     { id: 'k2', swedish: 'Mina katter heter Sok och Winnie Pus', dutch: 'Mijn katten heten Sok en Winnie de Poes', pronunciation: 'Meena katter heeter Sok ok Winnie Poes', difficulty: 'medium' },
@@ -637,7 +789,7 @@
             august: {
                 name: 'August Avonturen',
                 icon: 'fa-hiking',
-                color: 'orange',
+                color: 'coral',
                 phrases: [
                     // School (a1-a10)
                     { id: 'a1', swedish: 'August går till skolan', dutch: 'August gaat naar school', pronunciation: 'August gawr til skoolan', difficulty: 'easy' },
@@ -683,6 +835,199 @@
                     { id: 'a38', swedish: 'August går in för att värma sig', dutch: 'August gaat naar binnen om op te warmen', pronunciation: 'August gawr in foer at vaerma sei', difficulty: 'hard' },
                     { id: 'a39', swedish: 'August dricker choklad med mamma', dutch: 'August drinkt chocolademelk met mama', pronunciation: 'August dricker sjoklad med mamma', difficulty: 'easy' },
                     { id: 'a40', swedish: 'August tittar på snön genom fönstret', dutch: 'August kijkt naar de sneeuw door het raam', pronunciation: 'August tittar paw snoen genom foenster', difficulty: 'medium' }
+                ]
+            },
+            shopping: {
+                name: 'Winkelen & Eten',
+                icon: 'fa-shopping-cart',
+                color: 'clay',
+                phrases: [
+                    { id: 's1', swedish: 'Var ligger närmaste mataffär?', dutch: 'Waar is de dichtstbijzijnde supermarkt?', pronunciation: 'Vaar ligger nermaste maataffeer?', difficulty: 'medium' },
+                    { id: 's2', swedish: 'Jag skulle vilja ha notan', dutch: 'Ik wil graag de rekening', pronunciation: 'Jaag skoelee vilja haa nootan', difficulty: 'easy' },
+                    { id: 's3', swedish: 'Kan jag betala med kort?', dutch: 'Kan ik met de kaart betalen?', pronunciation: 'Kan jaag betaala med koort?', difficulty: 'easy' },
+                    { id: 's4', swedish: 'Hur mycket kostar detta?', dutch: 'Hoeveel kost dit?', pronunciation: 'Hoer myket kostar detta?', difficulty: 'easy' },
+                    { id: 's5', swedish: 'Var finns brödet?', dutch: 'Waar is het brood?', pronunciation: 'Vaar finns broedet?', difficulty: 'easy' },
+                    { id: 's6', swedish: 'Jag letar efter mjölk', dutch: 'Ik zoek melk', pronunciation: 'Jaag letar efter mjölk', difficulty: 'easy' },
+                    { id: 's7', swedish: 'Har ni färsk frukt?', dutch: 'Hebben jullie vers fruit?', pronunciation: 'Haar nee fersk froekt?', difficulty: 'medium' },
+                    { id: 's8', swedish: 'Kan jag få en påse?', dutch: 'Kan ik een tas krijgen?', pronunciation: 'Kan jaag faw en pawse?', difficulty: 'easy' },
+                    { id: 's9', swedish: 'Jag vill beställa en kaffe', dutch: 'Ik wil graag een koffie bestellen', pronunciation: 'Jaag vil bestella en kaffee', difficulty: 'easy' },
+                    { id: 's10', swedish: 'Har ni något vegetariskt?', dutch: 'Hebben jullie iets vegetarisch?', pronunciation: 'Haar nee nawgot vegetariskt?', difficulty: 'medium' },
+                    { id: 's11', swedish: 'En kopp te, tack', dutch: 'Een kopje thee, alstublieft', pronunciation: 'En kop tee, tak', difficulty: 'easy' },
+                    { id: 's12', swedish: 'Jag är allergisk mot nötter', dutch: 'Ik ben allergisch voor noten', pronunciation: 'Jaag eer allergisk moot noetter', difficulty: 'hard' },
+                    { id: 's13', swedish: 'Kan jag prova detta?', dutch: 'Mag ik dit passen?', pronunciation: 'Kan jaag proova detta?', difficulty: 'easy' },
+                    { id: 's14', swedish: 'Har ni detta i en större storlek?', dutch: 'Hebben jullie dit in een grotere maat?', pronunciation: 'Haar nee detta ee en stoerre stoorlek?', difficulty: 'hard' },
+                    { id: 's15', swedish: 'Jag tar den här', dutch: 'Ik neem deze', pronunciation: 'Jaag taar den heer', difficulty: 'easy' },
+                    { id: 's16', swedish: 'Var är kassan?', dutch: 'Waar is de kassa?', pronunciation: 'Vaar eer kassan?', difficulty: 'easy' },
+                    { id: 's17', swedish: 'Har ni rabatt idag?', dutch: 'Hebben jullie vandaag korting?', pronunciation: 'Haar nee rabatt eedaag?', difficulty: 'medium' },
+                    { id: 's18', swedish: 'Jag ska handla mat', dutch: 'Ik ga boodschappen doen', pronunciation: 'Jaag skaa handla maat', difficulty: 'easy' },
+                    { id: 's19', swedish: 'Vad rekommenderar du?', dutch: 'Wat raad je aan?', pronunciation: 'Vad rekommenderar doe?', difficulty: 'medium' },
+                    { id: 's20', swedish: 'Kan jag få kvittot?', dutch: 'Kan ik de bon krijgen?', pronunciation: 'Kan jaag faw kvittot?', difficulty: 'medium' },
+                    { id: 's21', swedish: 'Öppettiderna, tack', dutch: 'De openingstijden, alstublieft', pronunciation: 'Oeppetteederna, tak', difficulty: 'hard' },
+                    { id: 's22', swedish: 'Jag vill reservera ett bord', dutch: 'Ik wil graag een tafel reserveren', pronunciation: 'Jaag vil reservera ett boord', difficulty: 'medium' },
+                    { id: 's23', swedish: 'Två personer, tack', dutch: 'Twee personen, alstublieft', pronunciation: 'Twaw personer, tak', difficulty: 'easy' },
+                    { id: 's24', swedish: 'Kan vi sitta vid fönstret?', dutch: 'Kunnen we bij het raam zitten?', pronunciation: 'Kan vee sitta vid foenster?', difficulty: 'hard' },
+                    { id: 's25', swedish: 'Maten var mycket god', dutch: 'Het eten was heel lekker', pronunciation: 'Maaten vaar myket good', difficulty: 'medium' },
+                    { id: 's26', swedish: 'Var finns toaletten?', dutch: 'Waar is het toilet?', pronunciation: 'Vaar finns toaletten?', difficulty: 'easy' },
+                    { id: 's27', swedish: 'Jag vill ha en glass', dutch: 'Ik wil graag een ijsje', pronunciation: 'Jaag vil haa en glass', difficulty: 'easy' },
+                    { id: 's28', swedish: 'Är detta färskt?', dutch: 'Is dit vers?', pronunciation: 'Eer detta ferskt?', difficulty: 'easy' },
+                    { id: 's29', swedish: 'Jag behöver en kasse', dutch: 'Ik heb een tas nodig', pronunciation: 'Jaag behöver en kasse', difficulty: 'medium' },
+                    { id: 's30', swedish: 'Tack för hjälpen', dutch: 'Bedankt voor de hulp', pronunciation: 'Tak foer jelpen', difficulty: 'easy' }
+                ]
+            }
+        };
+
+        const grammar = {
+            verbs: {
+                name: 'Werkwoorden',
+                icon: 'fa-book',
+                items: [
+                    {
+                        infinitive: 'att vara',
+                        dutch: 'zijn',
+                        conjugations: [
+                            { pronoun: 'jag', form: 'är', pronunciation: 'eer' },
+                            { pronoun: 'du', form: 'är', pronunciation: 'eer' },
+                            { pronoun: 'han/hon/den/det', form: 'är', pronunciation: 'eer' },
+                            { pronoun: 'vi', form: 'är', pronunciation: 'eer' },
+                            { pronoun: 'ni', form: 'är', pronunciation: 'eer' },
+                            { pronoun: 'de', form: 'är', pronunciation: 'eer' }
+                        ],
+                        tenses: {
+                            present: 'är',
+                            past: 'var',
+                            supine: 'varit'
+                        }
+                    },
+                    {
+                        infinitive: 'att ha',
+                        dutch: 'hebben',
+                        conjugations: [
+                            { pronoun: 'jag', form: 'har', pronunciation: 'haar' },
+                            { pronoun: 'du', form: 'har', pronunciation: 'haar' },
+                            { pronoun: 'han/hon/den/det', form: 'har', pronunciation: 'haar' },
+                            { pronoun: 'vi', form: 'har', pronunciation: 'haar' },
+                            { pronoun: 'ni', form: 'har', pronunciation: 'haar' },
+                            { pronoun: 'de', form: 'har', pronunciation: 'haar' }
+                        ],
+                        tenses: {
+                            present: 'har',
+                            past: 'hade',
+                            supine: 'haft'
+                        }
+                    },
+                    {
+                        infinitive: 'att göra',
+                        dutch: 'doen/maken',
+                        conjugations: [
+                            { pronoun: 'jag', form: 'gör', pronunciation: 'joer' },
+                            { pronoun: 'du', form: 'gör', pronunciation: 'joer' },
+                            { pronoun: 'han/hon/den/det', form: 'gör', pronunciation: 'joer' },
+                            { pronoun: 'vi', form: 'gör', pronunciation: 'joer' },
+                            { pronoun: 'ni', form: 'gör', pronunciation: 'joer' },
+                            { pronoun: 'de', form: 'gör', pronunciation: 'joer' }
+                        ],
+                        tenses: {
+                            present: 'gör',
+                            past: 'gjorde',
+                            supine: 'gjort'
+                        }
+                    },
+                    {
+                        infinitive: 'att kunna',
+                        dutch: 'kunnen',
+                        conjugations: [
+                            { pronoun: 'jag', form: 'kan', pronunciation: 'kan' },
+                            { pronoun: 'du', form: 'kan', pronunciation: 'kan' },
+                            { pronoun: 'han/hon/den/det', form: 'kan', pronunciation: 'kan' },
+                            { pronoun: 'vi', form: 'kan', pronunciation: 'kan' },
+                            { pronoun: 'ni', form: 'kan', pronunciation: 'kan' },
+                            { pronoun: 'de', form: 'kan', pronunciation: 'kan' }
+                        ],
+                        tenses: {
+                            present: 'kan',
+                            past: 'kunde',
+                            supine: 'kunnat'
+                        }
+                    },
+                    {
+                        infinitive: 'att vilja',
+                        dutch: 'willen',
+                        conjugations: [
+                            { pronoun: 'jag', form: 'vill', pronunciation: 'vil' },
+                            { pronoun: 'du', form: 'vill', pronunciation: 'vil' },
+                            { pronoun: 'han/hon/den/det', form: 'vill', pronunciation: 'vil' },
+                            { pronoun: 'vi', form: 'vill', pronunciation: 'vil' },
+                            { pronoun: 'ni', form: 'vill', pronunciation: 'vil' },
+                            { pronoun: 'de', form: 'vill', pronunciation: 'vil' }
+                        ],
+                        tenses: {
+                            present: 'vill',
+                            past: 'ville',
+                            supine: 'velat'
+                        }
+                    },
+                    {
+                        infinitive: 'att se',
+                        dutch: 'zien',
+                        conjugations: [
+                            { pronoun: 'jag', form: 'ser', pronunciation: 'seer' },
+                            { pronoun: 'du', form: 'ser', pronunciation: 'seer' },
+                            { pronoun: 'han/hon/den/det', form: 'ser', pronunciation: 'seer' },
+                            { pronoun: 'vi', form: 'ser', pronunciation: 'seer' },
+                            { pronoun: 'ni', form: 'ser', pronunciation: 'seer' },
+                            { pronoun: 'de', form: 'ser', pronunciation: 'seer' }
+                        ],
+                        tenses: {
+                            present: 'ser',
+                            past: 'såg',
+                            supine: 'sett'
+                        }
+                    }
+                ]
+            },
+            pronouns: {
+                name: 'Voornaamwoorden',
+                icon: 'fa-users',
+                items: [
+                    {
+                        type: 'Persoonlijk - Onderwerp',
+                        entries: [
+                            { swedish: 'jag', dutch: 'ik', pronunciation: 'jaag' },
+                            { swedish: 'du', dutch: 'jij', pronunciation: 'doe' },
+                            { swedish: 'han', dutch: 'hij', pronunciation: 'han' },
+                            { swedish: 'hon', dutch: 'zij', pronunciation: 'hoon' },
+                            { swedish: 'den/det', dutch: 'het', pronunciation: 'den/det' },
+                            { swedish: 'vi', dutch: 'wij', pronunciation: 'vee' },
+                            { swedish: 'ni', dutch: 'jullie', pronunciation: 'nee' },
+                            { swedish: 'de', dutch: 'zij (mv)', pronunciation: 'dom' }
+                        ]
+                    },
+                    {
+                        type: 'Persoonlijk - Voorwerp',
+                        entries: [
+                            { swedish: 'mig', dutch: 'mij', pronunciation: 'mei' },
+                            { swedish: 'dig', dutch: 'jou', pronunciation: 'dei' },
+                            { swedish: 'honom', dutch: 'hem', pronunciation: 'honom' },
+                            { swedish: 'henne', dutch: 'haar', pronunciation: 'henne' },
+                            { swedish: 'den/det', dutch: 'het', pronunciation: 'den/det' },
+                            { swedish: 'oss', dutch: 'ons', pronunciation: 'oss' },
+                            { swedish: 'er', dutch: 'jullie', pronunciation: 'eer' },
+                            { swedish: 'dem', dutch: 'hen', pronunciation: 'dom' }
+                        ]
+                    },
+                    {
+                        type: 'Bezittelijk',
+                        entries: [
+                            { swedish: 'min/mitt/mina', dutch: 'mijn', pronunciation: 'min/mit/meena' },
+                            { swedish: 'din/ditt/dina', dutch: 'jouw', pronunciation: 'din/dit/deena' },
+                            { swedish: 'hans', dutch: 'zijn', pronunciation: 'hans' },
+                            { swedish: 'hennes', dutch: 'haar', pronunciation: 'hennes' },
+                            { swedish: 'dess', dutch: 'zijn/haar (voorwerp)', pronunciation: 'dess' },
+                            { swedish: 'vår/vårt/våra', dutch: 'onze', pronunciation: 'vawr/vawrt/vawra' },
+                            { swedish: 'er/ert/era', dutch: 'jullie', pronunciation: 'eer/eert/eera' },
+                            { swedish: 'deras', dutch: 'hun', pronunciation: 'deras' }
+                        ]
+                    }
                 ]
             }
         };
@@ -730,7 +1075,25 @@
                     fromDailyProgram: false,
                     currentDailyPhraseIndex: -1,
                     showDailyCompletion: false,
-                    difficultyFilter: null // null = all, 'easy', 'medium', 'hard'
+                    difficultyFilter: null, // null = all, 'easy', 'medium', 'hard'
+                    // Writing mode state
+                    writingCategory: 'greetings',
+                    currentWritingIndex: 0,
+                    writingInput: '',
+                    showWritingFeedback: false,
+                    writingCorrect: false,
+                    // Mode selector modal
+                    selectedCategoryForMode: null,
+                    // Category selector modal
+                    selectedModeForCategory: null, // 'practice', 'flashcards', 'writing'
+                    // Random practice mode
+                    isShuffled: false,
+                    shuffledPhrases: [],
+                    // Phrase history tracking
+                    phraseHistory: {}, // { 'greetings-g1': { lastPracticed: timestamp, practiceCount: 5 } }
+                    // Grammar mode state
+                    grammarType: null, // 'verbs', 'pronouns', etc.
+                    grammarItemIndex: 0
                 };
 
                 this.mediaRecorder = null;
@@ -880,6 +1243,7 @@
                     if (data) {
                         this.state.stats = data.stats || this.getDefaultStats();
                         this.state.completedPhrases = data.completed_phrases || [];
+                        this.state.phraseHistory = data.phrase_history || {};
                         this.checkStreak();
                     } else if (!error || error.code === 'PGRST116') {
                         // Create new user record
@@ -902,6 +1266,7 @@
                             user_id: this.state.user.id,
                             stats: this.state.stats,
                             completed_phrases: this.state.completedPhrases,
+                            phrase_history: this.state.phraseHistory,
                             updated_at: new Date().toISOString()
                         });
 
@@ -1579,8 +1944,12 @@
             }
 
             async markAsCompleted(isPerfect = false) {
-                const currentPhrase = categories[this.state.currentCategory].phrases[this.state.currentPhraseIndex];
+                const phrases = this.getCurrentPhrases(this.state.currentCategory);
+                const currentPhrase = phrases[this.state.currentPhraseIndex];
                 const phraseId = `${this.state.currentCategory}-${currentPhrase.id}`;
+
+                // Track phrase practice (always, not just first time)
+                this.trackPhraseCompletion(phraseId, isPerfect);
 
                 if (!this.state.completedPhrases.includes(phraseId)) {
                     this.state.completedPhrases.push(phraseId);
@@ -1715,7 +2084,9 @@
                         <div class="p-4 max-w-2xl mx-auto pb-28">
                             ${this.state.currentTab === 'home' ? this.renderHome() : ''}
                             ${this.state.currentTab === 'practice' ? this.renderPractice() : ''}
+                            ${this.state.currentTab === 'writing' ? this.renderWriting() : ''}
                             ${this.state.currentTab === 'flashcards' ? this.renderFlashcards() : ''}
+                            ${this.state.currentTab === 'grammar' ? this.renderGrammar() : ''}
                             ${this.state.currentTab === 'badges' ? this.renderBadges() : ''}
                             ${this.state.currentTab === 'leaderboard' ? this.renderLeaderboard() : ''}
                             ${this.state.currentTab === 'settings' ? this.renderSettings() : ''}
@@ -1723,7 +2094,8 @@
                         ${this.renderBottomNav()}
                     `;
                 }
-                this.attachEventListeners();
+                // Attach event listeners after DOM is ready
+                setTimeout(() => this.attachEventListeners(), 0);
             }
 
             renderSetup() {
@@ -1960,116 +2332,100 @@ create policy "Users can update own progress"
 
                 return `
                     <div class="space-y-4 animate-slideUp">
-                        <!-- Compact Stats Row -->
-                        <div id="progress-card" class="glass-effect rounded-2xl p-4 card-shadow">
+                        <!-- Personalized Greeting -->
+                        <div class="mb-2">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-1">
+                                Hej, ${this.state.stats.displayName || 'daar'}! 👋
+                            </h2>
+                            <p class="text-gray-600">Laten we vandaag Zweeds leren</p>
+                        </div>
+
+                        <!-- Compact Stats Row (WCAG Optimized) -->
+                        <div id="progress-card" class="glass-effect rounded-2xl p-3 card-shadow">
                             <div class="grid grid-cols-4 gap-3">
                                 <div class="text-center">
-                                    <i class="fas fa-trophy text-blue-700 text-2xl mb-2" aria-hidden="true"></i>
-                                    <p class="text-2xl font-bold text-gray-800">${this.state.stats.level}</p>
-                                    <p class="text-xs text-gray-600 mt-1">Level</p>
+                                    <i class="fas fa-trophy text-blue-700 text-xl mb-2" aria-hidden="true"></i>
+                                    <p class="text-xl font-bold text-gray-800">${this.state.stats.level}</p>
+                                    <p class="text-sm text-gray-600 mt-1">Level</p>
                                 </div>
                                 <div class="text-center">
-                                    <i class="fas fa-fire text-red-600 text-2xl mb-2" aria-hidden="true"></i>
-                                    <p class="text-2xl font-bold text-gray-800">${this.state.stats.streak}</p>
-                                    <p class="text-xs text-gray-600 mt-1">Streak</p>
+                                    <i class="fas fa-fire text-red-600 text-xl mb-2" aria-hidden="true"></i>
+                                    <p class="text-xl font-bold text-gray-800">${this.state.stats.streak}</p>
+                                    <p class="text-sm text-gray-600 mt-1">Streak</p>
                                 </div>
                                 <div class="text-center">
-                                    <i class="fas fa-bullseye text-green-700 text-2xl mb-2" aria-hidden="true"></i>
-                                    <p class="text-2xl font-bold text-gray-800">${this.state.stats.dailyGoal}/${this.state.stats.dailyGoalTarget}</p>
-                                    <p class="text-xs text-gray-600 mt-1">Vandaag</p>
+                                    <i class="fas fa-bullseye text-green-700 text-xl mb-2" aria-hidden="true"></i>
+                                    <p class="text-xl font-bold text-gray-800">${this.state.stats.dailyGoal}/${this.state.stats.dailyGoalTarget}</p>
+                                    <p class="text-sm text-gray-600 mt-1">Vandaag</p>
                                 </div>
                                 <div class="text-center">
-                                    <i class="fas fa-star text-amber-600 text-2xl mb-2" aria-hidden="true"></i>
-                                    <p class="text-2xl font-bold text-gray-800">${this.state.stats.totalPoints}</p>
-                                    <p class="text-xs text-gray-600 mt-1">Punten</p>
+                                    <i class="fas fa-star text-amber-700 text-xl mb-2" aria-hidden="true"></i>
+                                    <p class="text-xl font-bold text-gray-800">${this.state.stats.totalPoints}</p>
+                                    <p class="text-sm text-gray-600 mt-1">Punten</p>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Daily Program Section -->
-                        <div id="daily-program" class="glass-effect rounded-2xl p-4 card-shadow">
-                            <div class="mb-3">
-                                <div class="flex items-center justify-between mb-2">
-                                    <div class="flex items-center gap-2">
-                                        <i class="fas fa-calendar-day text-blue-700 text-lg" aria-hidden="true"></i>
-                                        <h3 class="font-bold text-gray-800">Programma voor vandaag</h3>
+                        <!-- HOW DO YOU WANT TO LEARN? (3 equal modes) -->
+                        <div class="mt-4">
+                            <h3 class="text-xl font-bold text-gray-800 mb-3">
+                                Hoe wil je leren? 🇸🇪
+                            </h3>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                                <!-- Uitspraak -->
+                                <button onclick="app.showCategorySelector('practice')"
+                                        class="glass-effect rounded-xl p-4 text-center card-hover card-shadow border-2 border-transparent hover:border-blue-400 transition-all">
+                                    <div class="w-12 h-12 mx-auto rounded-xl flex items-center justify-center mb-3"
+                                         style="background: linear-gradient(135deg, #5B9BD5 0%, #4A7FA8 100%);">
+                                        <i class="fas fa-microphone text-xl text-white"></i>
                                     </div>
-                                    <button onclick="app.generateDailyProgram(); app.render();"
-                                            class="p-2 bg-blue-100 hover:bg-blue-200 rounded-lg text-blue-700 transition-colors"
-                                            title="Nieuwe selectie"
-                                            aria-label="Nieuwe dagelijkse selectie genereren">
-                                        <i class="fas fa-sync-alt" aria-hidden="true"></i>
-                                    </button>
-                                </div>
+                                    <p class="text-sm font-bold text-gray-800 mb-1">Uitspraak</p>
+                                    <p class="text-xs text-gray-500">Luister & spreek</p>
+                                </button>
 
-                                <!-- Difficulty Filter -->
-                                <div class="flex gap-2">
-                                    <button onclick="app.setDifficultyFilter(null); app.generateDailyProgram(); app.render();"
-                                            class="flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${!this.state.difficultyFilter ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}">
-                                        Alles
-                                    </button>
-                                    <button onclick="app.setDifficultyFilter('easy'); app.generateDailyProgram(); app.render();"
-                                            class="flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${this.state.difficultyFilter === 'easy' ? 'bg-green-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}">
-                                        Makkelijk
-                                    </button>
-                                    <button onclick="app.setDifficultyFilter('medium'); app.generateDailyProgram(); app.render();"
-                                            class="flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${this.state.difficultyFilter === 'medium' ? 'bg-yellow-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}">
-                                        Gemiddeld
-                                    </button>
-                                    <button onclick="app.setDifficultyFilter('hard'); app.generateDailyProgram(); app.render();"
-                                            class="flex-1 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${this.state.difficultyFilter === 'hard' ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}">
-                                        Moeilijk
-                                    </button>
-                                </div>
+                                <!-- Spelling -->
+                                <button onclick="app.showCategorySelector('writing')"
+                                        class="glass-effect rounded-xl p-4 text-center card-hover card-shadow border-2 border-transparent transition-all"
+                                        style="--hover-border: var(--scandi-teal-light);"
+                                        onmouseover="this.style.borderColor='var(--scandi-teal-light)'"
+                                        onmouseout="this.style.borderColor='transparent'">
+                                    <div class="w-12 h-12 mx-auto rounded-xl flex items-center justify-center mb-3"
+                                         style="background: linear-gradient(135deg, var(--scandi-teal) 0%, var(--scandi-teal-dark) 100%);">
+                                        <i class="fas fa-keyboard text-xl text-white"></i>
+                                    </div>
+                                    <p class="text-sm font-bold text-gray-800 mb-1">Spelling</p>
+                                    <p class="text-xs text-gray-500">Type zinnen</p>
+                                </button>
+
+                                <!-- Flashcards -->
+                                <button onclick="app.showCategorySelector('flashcards')"
+                                        class="glass-effect rounded-xl p-4 text-center card-hover card-shadow border-2 border-transparent hover:border-green-400 transition-all">
+                                    <div class="w-12 h-12 mx-auto rounded-xl flex items-center justify-center mb-3"
+                                         style="background: linear-gradient(135deg, var(--scandi-green) 0%, #3a8a4d 100%);">
+                                        <i class="fas fa-layer-group text-xl text-white"></i>
+                                    </div>
+                                    <p class="text-sm font-bold text-gray-800 mb-1">Flashcards</p>
+                                    <p class="text-xs text-gray-500">Herhalen</p>
+                                </button>
+
+                                <!-- Grammatica -->
+                                <button onclick="app.switchTab('grammar')"
+                                        class="glass-effect rounded-xl p-4 text-center card-hover card-shadow border-2 border-transparent hover:border-purple-400 transition-all">
+                                    <div class="w-12 h-12 mx-auto rounded-xl flex items-center justify-center mb-3"
+                                         style="background: linear-gradient(135deg, #9333EA 0%, #7E22CE 100%);">
+                                        <i class="fas fa-book text-xl text-white"></i>
+                                    </div>
+                                    <p class="text-sm font-bold text-gray-800 mb-1">Grammatica</p>
+                                    <p class="text-xs text-gray-500">Leer regels</p>
+                                </button>
                             </div>
-
-                            ${this.state.dailyPhrases.length > 0 ? `
-                                <div class="space-y-2">
-                                    ${this.state.dailyPhrases.map((phrase, index) => {
-                                        const isCompleted = this.state.completedPhrases.includes(`${phrase.categoryId}-${phrase.id}`);
-                                        const difficultyColors = {
-                                            easy: 'bg-green-100 text-green-700',
-                                            medium: 'bg-yellow-100 text-yellow-700',
-                                            hard: 'bg-red-100 text-red-700'
-                                        };
-
-                                        return `
-                                            <button onclick="app.startDailyPhrase(${index})"
-                                                    class="w-full flex items-center gap-3 p-3 bg-white hover:bg-gray-50 rounded-xl border-2 ${isCompleted ? 'border-green-300' : 'border-gray-200'} transition-all">
-                                                <div class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center text-xl"
-                                                     style="background: ${isCompleted ? 'var(--scandi-green)' : 'var(--scandi-blue)'};">
-                                                    ${isCompleted ? '<i class="fas fa-check text-white"></i>' : `<span class="text-white font-bold">${index + 1}</span>`}
-                                                </div>
-                                                <div class="flex-1 text-left">
-                                                    <div class="flex items-center gap-2 mb-1">
-                                                        <i class="fas ${phrase.categoryIcon} text-gray-700" aria-hidden="true"></i>
-                                                        <span class="text-xs font-semibold text-gray-500">${phrase.categoryName}</span>
-                                                        <span class="text-xs px-2 py-0.5 rounded-full ${difficultyColors[phrase.difficulty]}">${phrase.difficulty}</span>
-                                                    </div>
-                                                    <p class="text-sm font-semibold text-gray-800">${phrase.swedish}</p>
-                                                    <p class="text-xs text-gray-500">${phrase.dutch}</p>
-                                                </div>
-                                                <i class="fas fa-chevron-right text-gray-600"></i>
-                                            </button>
-                                        `;
-                                    }).join('')}
-                                </div>
-                            ` : `
-                                <div class="text-center py-8 text-gray-500">
-                                    <i class="fas fa-hourglass-half text-3xl mb-2"></i>
-                                    <p>Dagelijks programma wordt geladen...</p>
-                                </div>
-                            `}
                         </div>
 
+                        <!-- Categories Section -->
                         <div id="categories" class="glass-effect rounded-2xl p-4 card-shadow">
                             <h3 class="font-bold text-gray-800 mb-3">Kies een categorie</h3>
                             <div class="grid grid-cols-2 gap-3">
-                                ${Object.entries(categories).filter(([key]) => {
-                                    // Filter out disabled categories
-                                    if (!this.state.stats.categoryPreferences) return true;
-                                    return this.state.stats.categoryPreferences.includes(key);
-                                }).map(([key, category]) => {
+                                ${Object.entries(categories).map(([key, category]) => {
                                     const totalPhrases = category.phrases.length;
                                     const completed = category.phrases.filter(p => 
                                         this.state.completedPhrases.includes(`${key}-${p.id}`)
@@ -2078,13 +2434,16 @@ create policy "Users can update own progress"
                                     const progress = (completed / totalPhrases) * 100;
                                     
                                     const colors = {
-                                        pink: 'var(--scandi-blue-light)',
+                                        'dusty-rose': 'var(--dusty-rose)',
                                         amber: 'var(--scandi-amber)',
                                         blue: 'var(--scandi-blue)',
-                                        indigo: 'var(--scandi-blue-dark)',
+                                        'steel-blue': 'var(--steel-blue)',
                                         green: 'var(--scandi-green)',
-                                        purple: 'var(--scandi-blue-light)',
-                                        orange: 'var(--scandi-amber)'
+                                        'lavender-grey': 'var(--lavender-grey)',
+                                        coral: 'var(--coral)',
+                                        clay: 'var(--clay)',
+                                        teal: 'var(--scandi-teal)',
+                                        red: 'var(--scandi-red)'
                                     };
                                     
                                     return `
@@ -2126,27 +2485,183 @@ create policy "Users can update own progress"
                             </div>
                         ` : ''}
                     </div>
+
+                    ${this.state.selectedCategoryForMode ? this.renderModeSelector() : ''}
+                    ${this.state.selectedModeForCategory ? this.renderCategorySelector() : ''}
+                `;
+            }
+
+            renderModeSelector() {
+                const categoryKey = this.state.selectedCategoryForMode;
+                const category = categories[categoryKey];
+
+                return `
+                    <div class="mode-selector-overlay" onclick="app.closeModeSelector(event)">
+                        <div class="mode-selector-modal" onclick="event.stopPropagation()">
+                            <div class="mode-selector-header">
+                                <h2 class="mode-selector-title">${category.name}</h2>
+                                <p class="mode-selector-subtitle">Kies een oefenmodus</p>
+                            </div>
+
+                            <div class="mode-options">
+                                <!-- Uitspraak -->
+                                <button class="mode-option" onclick="app.startMode('${categoryKey}', 'practice')">
+                                    <div class="mode-option-icon" style="background: var(--scandi-blue);">
+                                        <i class="fas fa-microphone" style="color: white;"></i>
+                                    </div>
+                                    <div class="mode-option-title">Uitspraak</div>
+                                    <div class="mode-option-description">
+                                        Oefen je uitspraak met de microfoon
+                                    </div>
+                                </button>
+
+                                <!-- Flashcards -->
+                                <button class="mode-option" onclick="app.startMode('${categoryKey}', 'flashcards')">
+                                    <div class="mode-option-icon" style="background: var(--scandi-green);">
+                                        <i class="fas fa-layer-group" style="color: white;"></i>
+                                    </div>
+                                    <div class="mode-option-title">Flashcards</div>
+                                    <div class="mode-option-description">
+                                        Test je geheugen met flashcards
+                                    </div>
+                                </button>
+
+                                <!-- Writing -->
+                                <button class="mode-option" onclick="app.startMode('${categoryKey}', 'writing')">
+                                    <div class="mode-option-icon" style="background: var(--scandi-teal);">
+                                        <i class="fas fa-keyboard" style="color: white;"></i>
+                                    </div>
+                                    <div class="mode-option-title">Schrijven</div>
+                                    <div class="mode-option-description">
+                                        Type de zinnen zonder fouten
+                                    </div>
+                                </button>
+                            </div>
+
+                            <button class="mode-selector-cancel" onclick="app.closeModeSelector()">
+                                Annuleren
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderCategorySelector() {
+                const mode = this.state.selectedModeForCategory;
+                const modeNames = {
+                    'practice': 'Uitspraak',
+                    'flashcards': 'Flashcards',
+                    'writing': 'Schrijven'
+                };
+                const modeIcons = {
+                    'practice': 'fa-microphone',
+                    'flashcards': 'fa-layer-group',
+                    'writing': 'fa-keyboard'
+                };
+
+                return `
+                    <div class="category-selector-overlay" onclick="app.closeCategorySelector(event)">
+                        <div class="category-selector-modal" onclick="event.stopPropagation()">
+                            <div class="mode-selector-header">
+                                <h2 class="mode-selector-title">
+                                    <i class="fas ${modeIcons[mode]} text-gray-700"></i>
+                                    ${modeNames[mode]}
+                                </h2>
+                                <p class="mode-selector-subtitle">Kies een categorie</p>
+                            </div>
+
+                            <div class="space-y-3 mb-4">
+                                <!-- All Categories Random Option -->
+                                <button class="mode-option" onclick="app.startModeWithAllCategories('${mode}')">
+                                    <div class="mode-option-icon" style="background: linear-gradient(135deg, #8B5CF6 0%, #6D28D9 100%);">
+                                        <i class="fas fa-random" style="color: white;"></i>
+                                    </div>
+                                    <div class="mode-option-title">Alle Categorieën Random</div>
+                                    <div class="mode-option-description">
+                                        Oefen met zinnen uit alle categorieën door elkaar
+                                    </div>
+                                </button>
+
+                                <!-- Individual Categories -->
+                                ${Object.entries(categories).map(([categoryKey, category]) => {
+                                    const colorMap = {
+                                        'dusty-rose': 'var(--dusty-rose)',
+                                        amber: 'var(--scandi-amber)',
+                                        blue: 'var(--scandi-blue)',
+                                        'steel-blue': 'var(--steel-blue)',
+                                        green: 'var(--scandi-green)',
+                                        'lavender-grey': 'var(--lavender-grey)',
+                                        coral: 'var(--coral)',
+                                        clay: 'var(--clay)',
+                                        teal: 'var(--scandi-teal)',
+                                        red: 'var(--scandi-red)'
+                                    };
+                                    const bgColor = colorMap[category.color] || category.color;
+
+                                    return `
+                                        <button class="mode-option" onclick="app.startMode('${categoryKey}', '${mode}')">
+                                            <div class="mode-option-icon" style="background: ${bgColor};">
+                                                <i class="fas ${category.icon}" style="color: white;"></i>
+                                            </div>
+                                            <div class="mode-option-title">${category.name}</div>
+                                            <div class="mode-option-description">
+                                                ${category.phrases.length} zinnen
+                                            </div>
+                                        </button>
+                                    `;
+                                }).join('')}
+                            </div>
+
+                            <button class="mode-selector-cancel" onclick="app.closeCategorySelector()">
+                                Annuleren
+                            </button>
+                        </div>
+                    </div>
                 `;
             }
 
             renderPractice() {
-                const currentPhrase = categories[this.state.currentCategory].phrases[this.state.currentPhraseIndex];
+                const phrases = this.getCurrentPhrases(this.state.currentCategory);
+                const currentPhrase = phrases[this.state.currentPhraseIndex];
                 const phraseId = `${this.state.currentCategory}-${currentPhrase.id}`;
                 const isCompleted = this.state.completedPhrases.includes(phraseId);
                 const difficultyClass = this.getDifficultyClass(currentPhrase.difficulty);
                 const difficultyText = this.getDifficultyText(currentPhrase.difficulty);
-                
+
+                // Get category info (for 'all' category, use phrase's category info)
+                const categoryInfo = this.state.currentCategory === 'all' ? {
+                    name: currentPhrase.categoryName,
+                    icon: currentPhrase.categoryIcon
+                } : {
+                    name: categories[this.state.currentCategory].name,
+                    icon: categories[this.state.currentCategory].icon
+                };
+
                 return `
                     <div class="space-y-4 animate-slideUp">
                         <div class="glass-effect rounded-2xl p-5 card-shadow">
                             <div class="flex justify-between items-center mb-4">
                                 <div class="flex items-center gap-2">
-                                    <i class="fas ${categories[this.state.currentCategory].icon} text-gray-700 text-xl" aria-hidden="true"></i>
-                                    <span class="font-bold text-gray-800">${categories[this.state.currentCategory].name}</span>
+                                    <button onclick="app.showCategorySelector('practice')"
+                                            class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 transition-all"
+                                            title="Kies een categorie">
+                                        <i class="fas ${categoryInfo.icon} text-gray-700 text-xl" aria-hidden="true"></i>
+                                        <span class="font-bold text-gray-800">${categoryInfo.name}</span>
+                                        ${this.state.currentCategory === 'all' ? '<span class="text-xs bg-purple-500 text-white px-2 py-0.5 rounded-full ml-1">Alle</span>' : ''}
+                                        <i class="fas fa-chevron-down text-xs text-gray-500"></i>
+                                    </button>
                                 </div>
-                                <div class="flex items-center gap-2">
+                                <div class="flex items-center gap-3">
+                                    ${this.state.currentCategory !== 'all' ? `
+                                        <button onclick="app.toggleShuffle()"
+                                                class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all
+                                                       ${this.state.isShuffled ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}"
+                                                title="${this.state.isShuffled ? 'Shuffle uitgeschakeld' : 'Shuffle ingeschakeld'}">
+                                            <i class="fas fa-random"></i> ${this.state.isShuffled ? 'Shuffle' : 'Volgorde'}
+                                        </button>
+                                    ` : ''}
                                     <span class="text-sm text-gray-600 font-medium">
-                                        ${this.state.currentPhraseIndex + 1}/${categories[this.state.currentCategory].phrases.length}
+                                        ${this.state.currentPhraseIndex + 1}/${phrases.length}
                                     </span>
                                     ${isCompleted ? '<i class="fas fa-check-circle text-green-700 text-xl"></i>' : ''}
                                 </div>
@@ -2178,11 +2693,11 @@ create policy "Users can update own progress"
                             </div>
                             
                             <div class="space-y-3 mb-4">
-                                <button onclick="app.toggleAnswer()" 
+                                <button onclick="app.toggleAnswer()"
                                         class="w-full py-4 glass-effect rounded-xl font-bold text-gray-700 card-hover card-shadow">
                                     ${this.state.showAnswer ? '🙈 Verberg vertaling' : '👁️ Toon vertaling'}
                                 </button>
-                                
+
                                 ${!this.state.isRecording && !this.state.audioURL ? `
                                     <button onclick="app.startRecording()"
                                             class="w-full py-5 rounded-xl font-bold text-white card-hover card-shadow text-lg"
@@ -2254,23 +2769,33 @@ create policy "Users can update own progress"
             }
 
             renderFlashcards() {
-                const allPhrases = categories[this.state.flashcardCategory].phrases;
+                const allPhrases = this.state.flashcardCategory === 'all' ?
+                    this.state.shuffledPhrases :
+                    categories[this.state.flashcardCategory].phrases;
                 const currentCard = allPhrases[this.state.currentFlashcardIndex];
-                
+
+                // Get category info (for 'all' category, use card's category info)
+                const categoryInfo = this.state.flashcardCategory === 'all' ? {
+                    name: currentCard.categoryName,
+                    icon: currentCard.categoryIcon
+                } : {
+                    name: categories[this.state.flashcardCategory].name,
+                    icon: categories[this.state.flashcardCategory].icon
+                };
+
                 return `
                     <div class="space-y-4 animate-slideUp">
                         <div class="glass-effect rounded-2xl p-4 card-shadow">
-                            <h3 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
-                                <i class="fas fa-layer-group text-blue-700" aria-hidden="true"></i> Kies categorie
-                            </h3>
-                            <select onchange="app.changeFlashcardCategory(this.value)" 
-                                    class="w-full p-4 border-2 border-gray-200 rounded-xl font-semibold text-gray-700 focus:border-blue-500 focus:outline-none">
-                                ${Object.entries(categories).map(([key, category]) => `
-                                    <option value="${key}" ${key === this.state.flashcardCategory ? 'selected' : ''}>
-                                        ${category.name}
-                                    </option>
-                                `).join('')}
-                            </select>
+                            <button onclick="app.showCategorySelector('flashcards')"
+                                    class="w-full flex items-center justify-between gap-2 px-4 py-3 rounded-lg bg-gray-100 hover:bg-gray-200 transition-all"
+                                    title="Kies een categorie">
+                                <div class="flex items-center gap-2">
+                                    <i class="fas ${categoryInfo.icon} text-gray-700 text-xl" aria-hidden="true"></i>
+                                    <span class="font-bold text-gray-800">${categoryInfo.name}</span>
+                                    ${this.state.flashcardCategory === 'all' ? '<span class="text-xs bg-purple-500 text-white px-2 py-0.5 rounded-full">Alle</span>' : ''}
+                                </div>
+                                <i class="fas fa-chevron-down text-gray-500"></i>
+                            </button>
                         </div>
                         
                         <div onclick="app.toggleFlashcard()"
@@ -2330,6 +2855,367 @@ create policy "Users can update own progress"
                         </div>
                     </div>
                 `;
+            }
+
+            renderWriting() {
+                const phrases = this.getCurrentPhrases(this.state.writingCategory);
+                const currentPhrase = phrases[this.state.currentWritingIndex];
+                const difficultyClass = this.getDifficultyClass(currentPhrase.difficulty);
+                const difficultyText = this.getDifficultyText(currentPhrase.difficulty);
+
+                // Get category info (for 'all' category, use phrase's category info)
+                const categoryInfo = this.state.writingCategory === 'all' ? {
+                    name: currentPhrase.categoryName,
+                    icon: currentPhrase.categoryIcon
+                } : {
+                    name: categories[this.state.writingCategory].name,
+                    icon: categories[this.state.writingCategory].icon
+                };
+
+                return `
+                    <div class="space-y-4 animate-slideUp">
+                        <div class="glass-effect rounded-2xl p-5 card-shadow">
+                            <div class="flex justify-between items-center mb-4">
+                                <div class="flex items-center gap-2">
+                                    <button onclick="app.showCategorySelector('writing')"
+                                            class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-gray-100 hover:bg-gray-200 transition-all"
+                                            title="Kies een categorie">
+                                        <i class="fas ${categoryInfo.icon} text-gray-700 text-xl" aria-hidden="true"></i>
+                                        <span class="font-bold text-gray-800">${categoryInfo.name}</span>
+                                        ${this.state.writingCategory === 'all' ? '<span class="text-xs bg-purple-500 text-white px-2 py-0.5 rounded-full ml-1">Alle</span>' : ''}
+                                        <i class="fas fa-chevron-down text-xs text-gray-500"></i>
+                                    </button>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    ${this.state.writingCategory !== 'all' ? `
+                                        <button onclick="app.toggleShuffleWriting()"
+                                                class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all
+                                                       ${this.state.isShuffled ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}"
+                                                title="${this.state.isShuffled ? 'Shuffle uitgeschakeld' : 'Shuffle ingeschakeld'}">
+                                            <i class="fas fa-random"></i> ${this.state.isShuffled ? 'Shuffle' : 'Volgorde'}
+                                        </button>
+                                    ` : ''}
+                                    <span class="text-sm text-gray-600 font-medium">
+                                        ${this.state.currentWritingIndex + 1}/${phrases.length}
+                                    </span>
+                                </div>
+                            </div>
+
+                            <span class="${difficultyClass} inline-block px-4 py-1.5 rounded-full text-xs font-bold mb-4">
+                                ${difficultyText}
+                            </span>
+
+                            <!-- Nederlandse zin (wat de gebruiker moet vertalen) -->
+                            <div class="rounded-2xl p-5 mb-4 card-shadow" style="background: var(--scandi-blue);">
+                                <div class="flex items-start justify-between mb-3">
+                                    <div class="flex-1 text-white">
+                                        <p class="text-sm font-semibold mb-2 opacity-90">Nederlands:</p>
+                                        <p class="text-2xl font-bold mb-3">${currentPhrase.dutch}</p>
+                                        <p class="text-sm opacity-80 italic">💬 Typ de Zweedse vertaling</p>
+                                    </div>
+                                    <button onclick="app.speakPhrase('${currentPhrase.swedish.replace(/'/g, "\\'")}')"
+                                            class="bg-white/20 hover:bg-white/30 text-white p-4 rounded-full flex-shrink-0 card-hover"
+                                            title="Hoor de uitspraak">
+                                        <i class="fas fa-volume-up text-xl"></i>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Typing Section -->
+                            <div class="space-y-3">
+                                <h4 class="font-bold text-gray-800 flex items-center gap-2">
+                                    <i class="fas fa-keyboard" style="color: var(--scandi-teal-dark);"></i>
+                                    Typ de Zweedse zin
+                                </h4>
+
+                                <input
+                                    type="text"
+                                    id="writing-input"
+                                    value="${this.state.writingInput}"
+                                    placeholder="Typ hier de Zweedse vertaling..."
+                                    class="w-full p-4 text-xl border-2 rounded-xl ${
+                                        this.state.showWritingFeedback
+                                            ? (this.state.writingCorrect ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50')
+                                            : 'border-gray-300'
+                                    } focus:outline-none"
+                                    autocomplete="off"
+                                    autocorrect="off"
+                                    autocapitalize="off"
+                                    spellcheck="false">
+
+                                <!-- Swedish character helper buttons -->
+                                <div class="flex gap-2 justify-center flex-wrap">
+                                    <button onclick="app.insertWritingChar('å')"
+                                            class="px-4 py-2 rounded-lg font-bold text-gray-700 card-hover"
+                                            style="background: #E6F7F9;"
+                                            onmouseover="this.style.background='var(--scandi-teal-light)'"
+                                            onmouseout="this.style.background='#E6F7F9'">
+                                        å
+                                    </button>
+                                    <button onclick="app.insertWritingChar('ä')"
+                                            class="px-4 py-2 rounded-lg font-bold text-gray-700 card-hover"
+                                            style="background: #E6F7F9;"
+                                            onmouseover="this.style.background='var(--scandi-teal-light)'"
+                                            onmouseout="this.style.background='#E6F7F9'">
+                                        ä
+                                    </button>
+                                    <button onclick="app.insertWritingChar('ö')"
+                                            class="px-4 py-2 rounded-lg font-bold text-gray-700 card-hover"
+                                            style="background: #E6F7F9;"
+                                            onmouseover="this.style.background='var(--scandi-teal-light)'"
+                                            onmouseout="this.style.background='#E6F7F9'">
+                                        ö
+                                    </button>
+                                    <button onclick="app.insertWritingChar('Å')"
+                                            class="px-4 py-2 rounded-lg font-bold text-gray-700 card-hover"
+                                            style="background: #E6F7F9;"
+                                            onmouseover="this.style.background='var(--scandi-teal-light)'"
+                                            onmouseout="this.style.background='#E6F7F9'">
+                                        Å
+                                    </button>
+                                    <button onclick="app.insertWritingChar('Ä')"
+                                            class="px-4 py-2 rounded-lg font-bold text-gray-700 card-hover"
+                                            style="background: #E6F7F9;"
+                                            onmouseover="this.style.background='var(--scandi-teal-light)'"
+                                            onmouseout="this.style.background='#E6F7F9'">
+                                        Ä
+                                    </button>
+                                    <button onclick="app.insertWritingChar('Ö')"
+                                            class="px-4 py-2 rounded-lg font-bold text-gray-700 card-hover"
+                                            style="background: #E6F7F9;"
+                                            onmouseover="this.style.background='var(--scandi-teal-light)'"
+                                            onmouseout="this.style.background='#E6F7F9'">
+                                        Ö
+                                    </button>
+                                </div>
+
+                                ${this.state.showWritingFeedback ? `
+                                    <div class="p-4 rounded-xl ${this.state.writingCorrect ? 'bg-green-100 border-2 border-green-500' : 'bg-red-100 border-2 border-red-500'} animate-fadeIn">
+                                        <p class="font-bold ${this.state.writingCorrect ? 'text-green-800' : 'text-red-800'}">
+                                            ${this.state.writingCorrect
+                                                ? '✅ Perfect! +10 XP'
+                                                : `❌ Bijna goed! Het juiste antwoord is: <span class="text-xl">${currentPhrase.swedish}</span>`
+                                            }
+                                        </p>
+                                    </div>
+                                ` : ''}
+
+                                <button onclick="app.checkWriting()"
+                                        class="w-full py-4 rounded-xl font-bold text-white card-hover card-shadow"
+                                        style="background: var(--scandi-teal);">
+                                    <i class="fas fa-check mr-2"></i>Controleer Antwoord
+                                </button>
+                            </div>
+
+                            <div class="flex gap-3 mt-4">
+                                <button onclick="app.previousWriting()"
+                                        class="flex-1 py-4 glass-effect rounded-xl text-gray-700 card-hover card-shadow font-bold">
+                                    <i class="fas fa-chevron-left mr-2"></i>Vorige
+                                </button>
+                                <button onclick="app.nextWriting()"
+                                        class="flex-1 py-4 rounded-xl text-white card-hover card-shadow font-bold"
+                                        style="background: var(--scandi-teal);">
+                                    Volgende<i class="fas fa-chevron-right ml-2"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="glass-effect rounded-2xl p-4 card-shadow border-2" style="border-color: var(--scandi-teal-light);">
+                            <h4 class="font-bold mb-2 flex items-center gap-2" style="color: var(--scandi-teal-dark);">
+                                <i class="fas fa-lightbulb text-yellow-700"></i> Schrijf Tip
+                            </h4>
+                            <p class="text-sm" style="color: var(--scandi-teal-dark);">
+                                Probeer eerst zelf de vertaling te typen! Luister naar de uitspraak om te checken of je het goed hebt.
+                                Let op de speciale Zweedse karakters (å, ä, ö)! 🇸🇪
+                            </p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            renderGrammar() {
+                // If no grammar type selected, show selection screen
+                if (!this.state.grammarType) {
+                    return `
+                        <div class="space-y-4 animate-slideUp">
+                            <div class="glass-effect rounded-2xl p-5 card-shadow">
+                                <h2 class="text-2xl font-bold text-gray-800 mb-2 flex items-center gap-2">
+                                    <i class="fas fa-book text-purple-600"></i>
+                                    Grammatica
+                                </h2>
+                                <p class="text-gray-600 mb-4">Kies een onderwerp om te leren</p>
+
+                                <div class="space-y-3">
+                                    ${Object.entries(grammar).map(([key, section]) => `
+                                        <button onclick="app.selectGrammarType('${key}')"
+                                                class="w-full glass-effect rounded-xl p-4 text-left card-hover card-shadow border-2 border-transparent hover:border-purple-400 transition-all">
+                                            <div class="flex items-center gap-3">
+                                                <div class="w-12 h-12 rounded-xl flex items-center justify-center bg-purple-600">
+                                                    <i class="fas ${section.icon} text-xl text-white"></i>
+                                                </div>
+                                                <div class="flex-1">
+                                                    <p class="font-bold text-gray-800">${section.name}</p>
+                                                    <p class="text-xs text-gray-500">${section.items.length} items</p>
+                                                </div>
+                                                <i class="fas fa-chevron-right text-gray-400"></i>
+                                            </div>
+                                        </button>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+
+                // Show selected grammar type content
+                const section = grammar[this.state.grammarType];
+                const item = section.items[this.state.grammarItemIndex];
+
+                if (this.state.grammarType === 'verbs') {
+                    return `
+                        <div class="space-y-4 animate-slideUp">
+                            <div class="glass-effect rounded-2xl p-5 card-shadow">
+                                <div class="flex justify-between items-center mb-4">
+                                    <button onclick="app.backToGrammarMenu()" class="text-purple-600 hover:text-purple-800">
+                                        <i class="fas fa-arrow-left mr-2"></i>Terug
+                                    </button>
+                                    <div class="text-sm text-gray-600 font-medium">
+                                        ${this.state.grammarItemIndex + 1}/${section.items.length}
+                                    </div>
+                                </div>
+
+                                <h3 class="text-2xl font-bold text-gray-800 mb-2">${item.infinitive}</h3>
+                                <p class="text-gray-600 mb-4">${item.dutch}</p>
+
+                                <!-- Conjugation Table -->
+                                <div class="mb-6">
+                                    <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                                        <i class="fas fa-list text-purple-600"></i>
+                                        Tegenwoordige Tijd (Presens)
+                                    </h4>
+                                    <div class="glass-effect rounded-xl p-4">
+                                        ${item.conjugations.map(conj => `
+                                            <div class="flex justify-between items-center py-2 border-b border-gray-200 last:border-0">
+                                                <span class="font-semibold text-gray-700">${conj.pronoun}</span>
+                                                <span class="text-xl font-bold text-purple-700">${conj.form}</span>
+                                                <span class="text-sm text-gray-500 italic">${conj.pronunciation}</span>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+
+                                <!-- Tenses -->
+                                <div class="mb-6">
+                                    <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                                        <i class="fas fa-clock text-purple-600"></i>
+                                        Tijden
+                                    </h4>
+                                    <div class="grid grid-cols-3 gap-3">
+                                        <div class="glass-effect rounded-xl p-3 text-center">
+                                            <p class="text-xs text-gray-500 mb-1">Presens</p>
+                                            <p class="font-bold text-purple-700">${item.tenses.present}</p>
+                                        </div>
+                                        <div class="glass-effect rounded-xl p-3 text-center">
+                                            <p class="text-xs text-gray-500 mb-1">Imperfectum</p>
+                                            <p class="font-bold text-purple-700">${item.tenses.past}</p>
+                                        </div>
+                                        <div class="glass-effect rounded-xl p-3 text-center">
+                                            <p class="text-xs text-gray-500 mb-1">Supinum</p>
+                                            <p class="font-bold text-purple-700">${item.tenses.supine}</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Navigation -->
+                                <div class="flex gap-2">
+                                    <button onclick="app.previousGrammarItem()"
+                                            ${this.state.grammarItemIndex === 0 ? 'disabled' : ''}
+                                            class="flex-1 py-3 px-4 rounded-xl font-semibold transition-all
+                                                   ${this.state.grammarItemIndex === 0 ? 'bg-gray-200 text-gray-400' : 'bg-purple-600 text-white hover:bg-purple-700'}">
+                                        <i class="fas fa-chevron-left mr-2"></i>Vorige
+                                    </button>
+                                    <button onclick="app.nextGrammarItem()"
+                                            ${this.state.grammarItemIndex === section.items.length - 1 ? 'disabled' : ''}
+                                            class="flex-1 py-3 px-4 rounded-xl font-semibold transition-all
+                                                   ${this.state.grammarItemIndex === section.items.length - 1 ? 'bg-gray-200 text-gray-400' : 'bg-purple-600 text-white hover:bg-purple-700'}">
+                                        Volgende<i class="fas fa-chevron-right ml-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else if (this.state.grammarType === 'pronouns') {
+                    return `
+                        <div class="space-y-4 animate-slideUp">
+                            <div class="glass-effect rounded-2xl p-5 card-shadow">
+                                <div class="flex justify-between items-center mb-4">
+                                    <button onclick="app.backToGrammarMenu()" class="text-purple-600 hover:text-purple-800">
+                                        <i class="fas fa-arrow-left mr-2"></i>Terug
+                                    </button>
+                                    <div class="text-sm text-gray-600 font-medium">
+                                        ${this.state.grammarItemIndex + 1}/${section.items.length}
+                                    </div>
+                                </div>
+
+                                <h3 class="text-2xl font-bold text-gray-800 mb-2">${item.type}</h3>
+
+                                <div class="glass-effect rounded-xl p-4 mb-6">
+                                    ${item.entries.map(entry => `
+                                        <div class="flex justify-between items-center py-2 border-b border-gray-200 last:border-0">
+                                            <span class="font-semibold text-gray-700">${entry.dutch}</span>
+                                            <span class="text-xl font-bold text-purple-700">${entry.swedish}</span>
+                                            <span class="text-sm text-gray-500 italic">${entry.pronunciation}</span>
+                                        </div>
+                                    `).join('')}
+                                </div>
+
+                                <!-- Navigation -->
+                                <div class="flex gap-2">
+                                    <button onclick="app.previousGrammarItem()"
+                                            ${this.state.grammarItemIndex === 0 ? 'disabled' : ''}
+                                            class="flex-1 py-3 px-4 rounded-xl font-semibold transition-all
+                                                   ${this.state.grammarItemIndex === 0 ? 'bg-gray-200 text-gray-400' : 'bg-purple-600 text-white hover:bg-purple-700'}">
+                                        <i class="fas fa-chevron-left mr-2"></i>Vorige
+                                    </button>
+                                    <button onclick="app.nextGrammarItem()"
+                                            ${this.state.grammarItemIndex === section.items.length - 1 ? 'disabled' : ''}
+                                            class="flex-1 py-3 px-4 rounded-xl font-semibold transition-all
+                                                   ${this.state.grammarItemIndex === section.items.length - 1 ? 'bg-gray-200 text-gray-400' : 'bg-purple-600 text-white hover:bg-purple-700'}">
+                                        Volgende<i class="fas fa-chevron-right ml-2"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            // Grammar navigation methods
+            selectGrammarType(type) {
+                this.state.grammarType = type;
+                this.state.grammarItemIndex = 0;
+                this.render();
+            }
+
+            backToGrammarMenu() {
+                this.state.grammarType = null;
+                this.state.grammarItemIndex = 0;
+                this.render();
+            }
+
+            nextGrammarItem() {
+                const section = grammar[this.state.grammarType];
+                if (this.state.grammarItemIndex < section.items.length - 1) {
+                    this.state.grammarItemIndex++;
+                    this.render();
+                }
+            }
+
+            previousGrammarItem() {
+                if (this.state.grammarItemIndex > 0) {
+                    this.state.grammarItemIndex--;
+                    this.render();
+                }
             }
 
             renderBadges() {
@@ -2586,6 +3472,89 @@ create policy "Users can update own progress"
                             </div>
                         </div>
 
+                        <div class="glass-effect rounded-2xl p-5 card-shadow border-2 border-blue-200">
+                            <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                                <i class="fas fa-mobile-alt text-purple-700 text-lg" aria-hidden="true"></i>
+                                Installeer als App
+                            </h4>
+                            <p class="text-sm text-gray-700 mb-4">
+                                Voor de beste ervaring kun je Svenska Kat installeren op je beginscherm.
+                                Je kunt dan offline oefenen en de app openen zonder browser!
+                            </p>
+
+                            <div class="space-y-4">
+                                <!-- iOS Instructions -->
+                                <div class="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4">
+                                    <div class="flex items-center gap-2 mb-3">
+                                        <i class="fab fa-apple text-2xl text-gray-800"></i>
+                                        <h5 class="font-bold text-gray-800">iPhone / iPad (Safari)</h5>
+                                    </div>
+                                    <ol class="text-sm text-gray-700 space-y-2 ml-4 list-decimal">
+                                        <li>Open Svenska Kat in <strong>Safari</strong> browser</li>
+                                        <li>Tik op het <strong>Deel-icoon</strong>
+                                            <i class="fas fa-share text-blue-600 mx-1"></i> (onderaan of bovenaan je scherm)
+                                        </li>
+                                        <li>Scroll naar beneden en tik op <strong>"Zet op beginscherm"</strong>
+                                            <i class="fas fa-plus-square text-blue-600 mx-1"></i>
+                                        </li>
+                                        <li>Tik op <strong>"Voeg toe"</strong> rechtsboven</li>
+                                        <li>🎉 De app verschijnt nu op je beginscherm!</li>
+                                    </ol>
+                                </div>
+
+                                <!-- Android Instructions -->
+                                <div class="bg-gradient-to-r from-green-50 to-blue-50 rounded-xl p-4">
+                                    <div class="flex items-center gap-2 mb-3">
+                                        <i class="fab fa-android text-2xl text-gray-800"></i>
+                                        <h5 class="font-bold text-gray-800">Android (Chrome)</h5>
+                                    </div>
+                                    <ol class="text-sm text-gray-700 space-y-2 ml-4 list-decimal">
+                                        <li>Open Svenska Kat in <strong>Chrome</strong> browser</li>
+                                        <li>Tik op het <strong>menu-icoon</strong>
+                                            <i class="fas fa-ellipsis-v text-green-600 mx-1"></i> (3 stippen rechtsboven)
+                                        </li>
+                                        <li>Tik op <strong>"App installeren"</strong> of
+                                            <strong>"Toevoegen aan startscherm"</strong>
+                                            <i class="fas fa-plus-square text-green-600 mx-1"></i>
+                                        </li>
+                                        <li>Tik op <strong>"Installeren"</strong> in de popup</li>
+                                        <li>🎉 De app verschijnt nu op je startscherm!</li>
+                                    </ol>
+                                </div>
+
+                                <!-- Desktop Instructions -->
+                                <div class="bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-4">
+                                    <div class="flex items-center gap-2 mb-3">
+                                        <i class="fas fa-desktop text-2xl text-gray-800"></i>
+                                        <h5 class="font-bold text-gray-800">Computer (Chrome/Edge)</h5>
+                                    </div>
+                                    <ol class="text-sm text-gray-700 space-y-2 ml-4 list-decimal">
+                                        <li>Open Svenska Kat in <strong>Chrome</strong> of <strong>Edge</strong></li>
+                                        <li>Klik op het <strong>installatie-icoon</strong>
+                                            <i class="fas fa-download text-blue-600 mx-1"></i> in de adresbalk (rechts)
+                                        </li>
+                                        <li>Of: klik op het <strong>menu</strong>
+                                            <i class="fas fa-ellipsis-v text-blue-600 mx-1"></i> →
+                                            <strong>"Svenska Kat installeren"</strong>
+                                        </li>
+                                        <li>Klik op <strong>"Installeren"</strong></li>
+                                        <li>🎉 De app opent als standalone venster!</li>
+                                    </ol>
+                                </div>
+
+                                <div class="bg-amber-50 rounded-xl p-4 border-2 border-amber-200">
+                                    <div class="flex gap-3">
+                                        <i class="fas fa-lightbulb text-amber-600 text-xl flex-shrink-0"></i>
+                                        <div class="text-sm text-amber-900">
+                                            <p class="font-bold mb-1">Pro Tip:</p>
+                                            <p>Na installatie werkt de app ook <strong>offline</strong>!
+                                            Je kunt overal oefenen, zelfs zonder internet. 🚀</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="glass-effect rounded-2xl p-5 card-shadow">
                             <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
                                 <i class="fas fa-history text-blue-700 text-lg" aria-hidden="true"></i> Versiegeschiedenis
@@ -2655,24 +3624,6 @@ create policy "Users can update own progress"
                                 <i class="fas fa-home text-xl" aria-hidden="true"></i>
                                 <span class="text-xs font-bold">Home</span>
                             </button>
-                            <button id="nav-practice" onclick="app.switchTab('practice')"
-                                    class="flex-1 py-4 flex flex-col items-center gap-1 transition-all ${
-                                        this.state.currentTab === 'practice'
-                                            ? 'text-blue-700'
-                                            : 'text-gray-600 hover:text-gray-600'
-                                    }">
-                                <i class="fas fa-microphone text-xl" aria-hidden="true"></i>
-                                <span class="text-xs font-bold">Oefen</span>
-                            </button>
-                            <button id="nav-flashcards" onclick="app.switchTab('flashcards')"
-                                    class="flex-1 py-4 flex flex-col items-center gap-1 transition-all ${
-                                        this.state.currentTab === 'flashcards'
-                                            ? 'text-blue-700'
-                                            : 'text-gray-600 hover:text-gray-600'
-                                    }">
-                                <i class="fas fa-layer-group text-xl" aria-hidden="true"></i>
-                                <span class="text-xs font-bold">Cards</span>
-                            </button>
                             <button id="nav-badges" onclick="app.switchTab('badges')"
                                     class="flex-1 py-4 flex flex-col items-center gap-1 relative transition-all ${
                                         this.state.currentTab === 'badges'
@@ -2717,6 +3668,12 @@ create policy "Users can update own progress"
             }
 
             selectCategory(category) {
+                // Show mode selector modal instead of going directly to practice
+                this.state.selectedCategoryForMode = category;
+                this.render();
+            }
+
+            startMode(category, mode) {
                 // Clean up audio when switching categories
                 if (this.state.audioURL) {
                     URL.revokeObjectURL(this.state.audioURL);
@@ -2728,18 +3685,243 @@ create policy "Users can update own progress"
 
                 this.state.currentCategory = category;
                 this.state.currentPhraseIndex = 0;
-                this.state.currentTab = 'practice';
+                this.state.currentTab = mode; // 'practice', 'flashcards', or 'writing'
+                this.state.selectedCategoryForMode = null; // Close mode selector modal
+                this.state.selectedModeForCategory = null; // Close category selector modal
                 this.state.audioURL = null;
                 this.state.audioBlob = null;
                 this.state.audioMimeType = null;
                 this.state.isRecording = false;
                 this.state.showAnswer = false;
+
+                // Enable shuffle by default for practice and writing modes
+                if (mode === 'practice' || mode === 'writing') {
+                    this.state.isShuffled = true;
+                    const phrases = [...categories[category].phrases];
+                    this.state.shuffledPhrases = this.shuffleArray(phrases);
+                } else {
+                    // Flashcards don't need shuffle
+                    this.state.isShuffled = false;
+                    this.state.shuffledPhrases = [];
+                }
+
+                // Reset writing mode state if switching to writing
+                if (mode === 'writing') {
+                    this.state.writingCategory = category;
+                    this.state.currentWritingIndex = 0;
+                    this.state.writingInput = '';
+                    this.state.showWritingFeedback = false;
+                    this.state.writingCorrect = false;
+                }
+
+                // Reset flashcard state if switching to flashcards
+                if (mode === 'flashcards') {
+                    this.state.flashcardCategory = category;
+                    this.state.currentFlashcardIndex = 0;
+                    this.state.showFlashcardAnswer = false;
+                }
+
+                this.render();
+            }
+
+            closeModeSelector(event) {
+                // Close modal if clicking overlay (not modal content)
+                if (event && event.target !== event.currentTarget) return;
+                this.state.selectedCategoryForMode = null;
+                this.render();
+            }
+
+            // Category selector methods
+            showCategorySelector(mode) {
+                this.state.selectedModeForCategory = mode;
+                this.render();
+            }
+
+            closeCategorySelector(event) {
+                // Close modal if clicking overlay (not modal content)
+                if (event && event.target !== event.currentTarget) return;
+                this.state.selectedModeForCategory = null;
+                this.render();
+            }
+
+            startModeWithAllCategories(mode) {
+                // Collect all phrases from all categories
+                const allPhrases = [];
+                Object.entries(categories).forEach(([categoryKey, category]) => {
+                    category.phrases.forEach(phrase => {
+                        allPhrases.push({
+                            ...phrase,
+                            categoryKey: categoryKey,
+                            categoryName: category.name,
+                            categoryIcon: category.icon
+                        });
+                    });
+                });
+
+                // Clean up audio when switching
+                if (this.state.audioURL) {
+                    URL.revokeObjectURL(this.state.audioURL);
+                }
+                if (this.audioStream) {
+                    this.audioStream.getTracks().forEach(track => track.stop());
+                    this.audioStream = null;
+                }
+
+                // Set to 'all' category with shuffled phrases
+                this.state.currentCategory = 'all';
+                this.state.currentPhraseIndex = 0;
+                this.state.currentTab = mode;
+                this.state.selectedModeForCategory = null; // Close modal
+                this.state.isShuffled = true;
+                this.state.shuffledPhrases = this.shuffleArray(allPhrases);
+
+                // Reset mode-specific state
+                if (mode === 'practice') {
+                    this.state.isRecording = false;
+                    this.state.audioURL = null;
+                } else if (mode === 'flashcards') {
+                    this.state.showAnswer = false;
+                } else if (mode === 'writing') {
+                    this.state.currentWritingIndex = 0;
+                    this.state.writingInput = '';
+                    this.state.showWritingFeedback = false;
+                    this.state.writingCorrect = false;
+                }
+
                 this.render();
             }
 
             toggleAnswer() {
                 this.state.showAnswer = !this.state.showAnswer;
                 this.render();
+            }
+
+            // Writing mode methods
+            insertWritingChar(char) {
+                const input = document.getElementById('writing-input');
+                if (input) {
+                    const start = input.selectionStart;
+                    const end = input.selectionEnd;
+                    const text = input.value;
+                    const newText = text.substring(0, start) + char + text.substring(end);
+                    input.value = newText;
+                    this.state.writingInput = newText;
+                    // Set cursor position after inserted character
+                    const newPos = start + char.length;
+                    input.setSelectionRange(newPos, newPos);
+                    input.focus();
+                }
+            }
+
+            checkWriting() {
+                console.log('✅ checkWriting() called');
+                console.log('window.app exists:', typeof window.app);
+
+                const currentPhrase = categories[this.state.writingCategory].phrases[this.state.currentWritingIndex];
+                const input = document.getElementById('writing-input');
+
+                console.log('Input element found:', !!input);
+                console.log('Input value:', input ? input.value : 'NO INPUT');
+                console.log('State value:', this.state.writingInput);
+
+                const userInput = input ? input.value.trim() : this.state.writingInput.trim();
+                const correctAnswer = currentPhrase.swedish;
+
+                console.log('👤 User typed:', userInput);
+                console.log('✔️ Correct answer:', correctAnswer);
+
+                // Update state with current input value
+                this.state.writingInput = input ? input.value : this.state.writingInput;
+
+                // Case-insensitive comparison, ignore punctuation
+                const normalize = (str) => str.toLowerCase().replace(/[!?,.\s]/g, '');
+                const isCorrect = normalize(userInput) === normalize(correctAnswer);
+
+                this.state.writingCorrect = isCorrect;
+                this.state.showWritingFeedback = true;
+
+                if (isCorrect) {
+                    // Add XP for correct answer (same as Practice mode)
+                    this.state.stats.totalPoints += 10;
+                    this.state.stats.phrasesCompleted += 1;
+                    this.state.stats.dailyGoal += 1;
+
+                    // Update level
+                    this.state.stats.level = Math.floor(this.state.stats.totalPoints / 100) + 1;
+
+                    // Update streak (if new day)
+                    const today = new Date().toDateString();
+                    if (this.state.stats.lastPlayedDate !== today) {
+                        const yesterday = new Date();
+                        yesterday.setDate(yesterday.getDate() - 1);
+                        const wasYesterday = this.state.stats.lastPlayedDate === yesterday.toDateString();
+                        this.state.stats.streak = wasYesterday ? this.state.stats.streak + 1 : 1;
+                    }
+                    this.state.stats.lastPlayedDate = today;
+
+                    // Mark phrase as completed
+                    const phraseId = `${this.state.writingCategory}-${currentPhrase.id}`;
+                    if (!this.state.completedPhrases.includes(phraseId)) {
+                        this.state.completedPhrases.push(phraseId);
+                    }
+
+                    // Check badges
+                    this.checkBadges();
+
+                    // Save to database
+                    this.saveUserData();
+
+                    // Auto-clear after 2 seconds
+                    setTimeout(() => {
+                        this.state.writingInput = '';
+                        this.state.showWritingFeedback = false;
+                        this.render();
+                    }, 2000);
+                }
+
+                this.render();
+            }
+
+            nextWriting() {
+                const phrases = categories[this.state.writingCategory].phrases;
+                this.state.currentWritingIndex = (this.state.currentWritingIndex + 1) % phrases.length;
+                this.state.writingInput = '';
+                this.state.showWritingFeedback = false;
+                this.state.writingCorrect = false;
+                this.render();
+            }
+
+            previousWriting() {
+                const phrases = categories[this.state.writingCategory].phrases;
+                this.state.currentWritingIndex = this.state.currentWritingIndex === 0 ?
+                    phrases.length - 1 : this.state.currentWritingIndex - 1;
+                this.state.writingInput = '';
+                this.state.showWritingFeedback = false;
+                this.state.writingCorrect = false;
+                this.render();
+            }
+
+            playCorrectSound() {
+                // Simple success sound using Web Audio API
+                try {
+                    const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+
+                    oscillator.frequency.value = 523.25; // C5 note
+                    oscillator.type = 'sine';
+
+                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.3);
+                } catch (err) {
+                    console.log('Audio playback not available');
+                }
             }
 
             nextPhrase() {
@@ -2752,7 +3934,7 @@ create policy "Users can update own progress"
                     this.audioStream = null;
                 }
 
-                const phrases = categories[this.state.currentCategory].phrases;
+                const phrases = this.getCurrentPhrases(this.state.currentCategory);
                 this.state.currentPhraseIndex = (this.state.currentPhraseIndex + 1) % phrases.length;
                 this.state.audioURL = null;
                 this.state.audioBlob = null;
@@ -2772,7 +3954,7 @@ create policy "Users can update own progress"
                     this.audioStream = null;
                 }
 
-                const phrases = categories[this.state.currentCategory].phrases;
+                const phrases = this.getCurrentPhrases(this.state.currentCategory);
                 this.state.currentPhraseIndex = this.state.currentPhraseIndex === 0 ?
                     phrases.length - 1 : this.state.currentPhraseIndex - 1;
                 this.state.audioURL = null;
@@ -2847,8 +4029,98 @@ create policy "Users can update own progress"
                 return texts[difficulty] || '';
             }
 
+            shuffleArray(array) {
+                // Fisher-Yates shuffle algorithm
+                const shuffled = [...array];
+                for (let i = shuffled.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+                }
+                return shuffled;
+            }
+
+            getCurrentPhrases(category) {
+                // For 'all' category, always return shuffled phrases
+                if (category === 'all') {
+                    return this.state.shuffledPhrases;
+                }
+                // Return shuffled phrases if shuffle mode is active, otherwise return original phrases
+                if (this.state.isShuffled && this.state.shuffledPhrases.length > 0) {
+                    return this.state.shuffledPhrases;
+                }
+                return categories[category].phrases;
+            }
+
+            trackPhraseCompletion(phraseId, isPerfect) {
+                // Track when phrase was last practiced
+                const now = new Date().toISOString();
+
+                if (!this.state.phraseHistory[phraseId]) {
+                    // First time practicing this phrase
+                    this.state.phraseHistory[phraseId] = {
+                        lastPracticed: now,
+                        practiceCount: 1,
+                        perfectCount: isPerfect ? 1 : 0
+                    };
+                } else {
+                    // Update existing practice history
+                    this.state.phraseHistory[phraseId].lastPracticed = now;
+                    this.state.phraseHistory[phraseId].practiceCount += 1;
+                    if (isPerfect) {
+                        this.state.phraseHistory[phraseId].perfectCount += 1;
+                    }
+                }
+            }
+
+            toggleShuffle() {
+                this.state.isShuffled = !this.state.isShuffled;
+
+                if (this.state.isShuffled) {
+                    // Create shuffled version of current category phrases
+                    const phrases = [...categories[this.state.currentCategory].phrases];
+                    this.state.shuffledPhrases = this.shuffleArray(phrases);
+                    this.state.currentPhraseIndex = 0; // Reset to first phrase in shuffled order
+                } else {
+                    // Clear shuffled phrases when disabling shuffle
+                    this.state.shuffledPhrases = [];
+                    this.state.currentPhraseIndex = 0; // Reset to first phrase in normal order
+                }
+
+                this.render();
+            }
+
+            toggleShuffleWriting() {
+                this.state.isShuffled = !this.state.isShuffled;
+
+                if (this.state.isShuffled) {
+                    // Create shuffled version of current writing category phrases
+                    const phrases = [...categories[this.state.writingCategory].phrases];
+                    this.state.shuffledPhrases = this.shuffleArray(phrases);
+                    this.state.currentWritingIndex = 0; // Reset to first phrase in shuffled order
+                } else {
+                    // Clear shuffled phrases when disabling shuffle
+                    this.state.shuffledPhrases = [];
+                    this.state.currentWritingIndex = 0; // Reset to first phrase in normal order
+                }
+
+                this.render();
+            }
+
             attachEventListeners() {
-                // Event listeners are handled by onclick attributes
+                // Writing input - update state without full re-render
+                const writingInput = document.getElementById('writing-input');
+                if (writingInput) {
+                    writingInput.addEventListener('input', (e) => {
+                        this.state.writingInput = e.target.value;
+                    });
+
+                    // Enable Enter key to submit
+                    writingInput.addEventListener('keypress', (e) => {
+                        if (e.key === 'Enter') {
+                            this.checkWriting();
+                        }
+                    });
+                }
             }
         }
 
@@ -2935,7 +4207,8 @@ create policy "Users can update own progress"
             });
         }
 
-        const app = new SwedishApp();
+        // Make app globally available for onclick handlers
+        window.app = new SwedishApp();
     </script>
 </body>
 </html>

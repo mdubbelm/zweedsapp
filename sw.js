@@ -1,7 +1,7 @@
 // Service Worker for Svenska Kat PWA
-// Version 1.8.0 - MEGA UPDATE: All categories 30 phrases
+// Version 1.10.0 - Mode Selector, Shuffle & Smart Tracking
 
-const CACHE_VERSION = '1.8.0';
+const CACHE_VERSION = '1.10.0';
 const CACHE_NAME = `svenska-kat-v${CACHE_VERSION}`;
 
 // Files to cache for offline support

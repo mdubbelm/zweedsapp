@@ -62,6 +62,130 @@ git push origin main
 - Test authentication flow and session persistence
 - Verify Supabase data sync across browser sessions
 
+## Scandinavian Design Guidelines
+
+**CRITICAL: Always consult these guidelines when adding visual elements, colors, or UI components.**
+
+### Design Philosophy
+Svenska Kat follows **authentic Scandinavian design principles**:
+- **Minimalism**: Clean, uncluttered interfaces
+- **Natural Colors**: Low saturation, earthy tones with grey undertones
+- **Warmth**: Hygge-inspired, inviting atmosphere
+- **Accessibility**: WCAG 2.1 Level AA compliant colors
+- **Consistency**: Cohesive color family across all categories
+
+### Scandinavian Color Palette
+
+**Primary Colors** (Core Brand):
+```css
+--scandi-blue: #5B9BD5        /* Main brand color */
+--scandi-green: #5AAD5A       /* Natural green */
+--scandi-amber: #F4A261       /* Warm gold */
+--scandi-teal: #2D9DA8        /* Writing/Spelling mode */
+--scandi-red: #EF4444         /* Accents */
+--scandi-grey: #F5F7FA        /* Background */
+```
+
+**Category Colors** (Must use these specific colors):
+```css
+--dusty-rose: #D4A5A5         /* Begroetingen - soft pink */
+--steel-blue: #6B8CAE         /* Reizen - steel blue */
+--lavender-grey: #9FA8BC      /* Katten - lavender grey */
+--coral: #E89E8D              /* August - soft coral */
+--clay: #C9826B               /* Winkelen & Eten - terracotta */
+```
+
+**Category Assignments**:
+```javascript
+greetings:    'dusty-rose'    // Soft, welcoming
+daily:        'amber'         // Warm, everyday
+work:         'blue'          // Professional, reliable
+travel:       'steel-blue'    // Adventure, movement
+conversation: 'green'         // Natural, growth
+cats:         'lavender-grey' // Mysterious, soft
+august:       'coral'         // Summer warmth
+shopping:     'clay'          // Kitchen, hygge
+```
+
+### Design Rules (MUST FOLLOW)
+
+1. **Never use vibrant/neon colors** (#9333EA, #EC4899, #6366F1)
+   - ❌ Purple, hot pink, bright indigo
+   - ✅ Lavender-grey, dusty rose, steel blue
+
+2. **Color saturation must be < 60%**
+   - All colors should feel "muted" or "dusty"
+   - Grey undertones required
+
+3. **When adding new categories**:
+   - Consult UI Designer agent FIRST
+   - Choose from existing Scandinavian palette
+   - Never introduce new bright colors
+   - Consider: What natural material/feeling does this represent?
+
+4. **Color accessibility**:
+   - All category colors are WCAG AA compliant on white backgrounds
+   - Minimum contrast ratio: 4.5:1 for normal text, 3:1 for large text
+
+5. **Scandinavian associations**:
+   - Clay/Terracotta → Kitchen, ceramics, warmth
+   - Lavender-grey → Nordic mist, soft nature
+   - Coral → Summer sunset, warmth without brightness
+   - Dusty rose → Soft textiles, hygge
+   - Steel blue → Scandinavian sky, professional
+
+### Common Mistakes to Avoid
+
+❌ **Wrong**: Adding `purple: #9333EA` (vibrant, not Scandinavian)
+✅ **Right**: Using `lavender-grey: #9FA8BC` (muted, Nordic)
+
+❌ **Wrong**: `color: 'pink'` without checking if it's dusty rose
+✅ **Right**: `color: 'dusty-rose'` with CSS variable
+
+❌ **Wrong**: Choosing colors based on brightness/pop
+✅ **Right**: Choosing colors based on natural materials and Nordic aesthetics
+
+### How to Add a New Category Color
+
+1. **Consult UI Designer agent**:
+   ```
+   "I need a color for [category] that fits Scandinavian design"
+   ```
+
+2. **Check criteria**:
+   - Is it a natural material/element?
+   - Does it have grey/blue undertones?
+   - Is saturation < 60%?
+   - WCAG AA compliant?
+
+3. **Add to CSS**:
+   ```css
+   :root {
+       --new-color: #XXXXXX;  /* Description */
+   }
+   ```
+
+4. **Update color maps** in:
+   - `renderHome()` colors object
+   - `renderCategorySelector()` colorMap
+   - Any other color mapping logic
+
+5. **Document** the color in this file
+
+### Color Harmony Reference
+
+The palette creates visual harmony through:
+- **Temperature balance**: Mix of warm (coral, clay, amber) and cool (blue, lavender-grey, steel-blue)
+- **Tonal consistency**: All colors at similar saturation levels
+- **Natural progression**: Colors flow like Scandinavian landscape (sky → mist → earth → warmth)
+
+**Visual spectrum**:
+```
+Cool ←→ Warm
+Steel Blue → Lavender Grey → Dusty Rose → Coral → Clay → Amber
+#6B8CAE      #9FA8BC          #D4A5A5        #E89E8D  #C9826B  #F4A261
+```
+
 ## Architecture
 
 ### Single-File Monolithic Structure

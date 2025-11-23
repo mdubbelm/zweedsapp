@@ -1755,18 +1755,30 @@
                 if (exerciseType === 'writing') {
                     // Writing mode setup
                     this.state.writingCategory = phrase.categoryId;
-                    this.state.currentWritingIndex = categories[phrase.categoryId].phrases.findIndex(
+                    // IMPORTANT: Find index in FILTERED phrases, not full category
+                    const filteredPhrases = this.getFilteredPhrases(categories[phrase.categoryId].phrases);
+                    this.state.currentWritingIndex = filteredPhrases.findIndex(
                         p => p.id === phrase.id
                     );
+                    // Fallback if not found in filtered list
+                    if (this.state.currentWritingIndex === -1) {
+                        this.state.currentWritingIndex = 0;
+                    }
                     this.state.currentTab = 'writing';
                     this.state.writingInput = '';
                     this.state.showWritingFeedback = false;
                 } else {
                     // Practice (spraak) mode setup
                     this.state.currentCategory = phrase.categoryId;
-                    this.state.currentPhraseIndex = categories[phrase.categoryId].phrases.findIndex(
+                    // IMPORTANT: Find index in FILTERED phrases, not full category
+                    const filteredPhrases = this.getFilteredPhrases(categories[phrase.categoryId].phrases);
+                    this.state.currentPhraseIndex = filteredPhrases.findIndex(
                         p => p.id === phrase.id
                     );
+                    // Fallback if not found in filtered list
+                    if (this.state.currentPhraseIndex === -1) {
+                        this.state.currentPhraseIndex = 0;
+                    }
                     this.state.currentTab = 'practice';
                 }
 

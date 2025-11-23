@@ -2,9 +2,18 @@
 
 A gamified web application for learning Swedish, featuring audio recording for pronunciation practice, flashcards, achievements, and competitive leaderboards. Learn Swedish the fun way with over 200 phrases!
 
-![Version](https://img.shields.io/badge/version-1.8.0-blue)
+## 🚀 Use the App
+
+**[✨ Open Svenska Kat →](https://mdubbelm.github.io/zweedsapp)**
+
+No installation required! Works on desktop, tablet, and mobile. Install as PWA for the best experience.
+
+---
+
+![Version](https://img.shields.io/badge/version-1.10.1-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Phrases](https://img.shields.io/badge/phrases-212-success)
+[![Live Demo](https://img.shields.io/badge/demo-live-success)](https://mdubbelm.github.io/zweedsapp)
 
 ## Features
 
@@ -62,10 +71,12 @@ A gamified web application for learning Swedish, featuring audio recording for p
 
 ### Installation
 
-#### Option 1: Use Online (Hosted Version)
-Simply visit the hosted application URL and create an account to start learning.
+#### Option 1: Use Online (Recommended)
+Visit **[https://mdubbelm.github.io/zweedsapp](https://mdubbelm.github.io/zweedsapp)** and create an account to start learning.
 
-#### Option 2: Run Locally
+No installation needed! The app works in your browser and can be installed as a PWA for offline access.
+
+#### Option 2: Run Locally (Developers)
 1. Clone this repository:
    ```bash
    git clone https://github.com/mdubbelm/zweedsapp.git
@@ -291,12 +302,14 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 See [CHANGELOG.md](CHANGELOG.md) for detailed version history.
 
-**Current Version**: 1.6.4 (November 18, 2025)
-- PWA Auto-Update System: No more manual reinstallation!
-- Service Worker automatically detects and applies updates
-- Update notification banner with one-click update
-- Offline support: App works without internet
-- Seamless version updates via background cache management
+**Current Version**: 1.10.1 (November 23, 2025)
+- 🎯 Difficulty Preference Filter: Choose your learning level (Beginner to Expert)
+- 📱 Daily Program Redesign: Duolingo-style compact card + modal
+- 🎲 Mixed Exercise Types: 50% audio practice + 50% writing exercises
+- 🔄 Auto-flow through Daily Program: Automatically switches between modes
+- ⚙️ Settings: Global difficulty preference applies to all learning modes
+- 🏷️ Visual badges show active difficulty filter
+- 🔧 Bug fixes: Daily Program caching and modal scrolling
 
 ## License
 

@@ -1224,6 +1224,28 @@
                     .replace(/'/g, "&#039;");
             }
 
+            // Analytics: Track user events for learning outcomes measurement
+            async trackEvent(eventName, properties = {}) {
+                if (!this.state.user || !supabaseEnabled) return;
+
+                try {
+                    await supabase.from('analytics_events').insert({
+                        user_id: this.state.user.id,
+                        event_name: eventName,
+                        properties: {
+                            ...properties,
+                            timestamp: new Date().toISOString(),
+                            user_level: this.state.stats.level,
+                            total_points: this.state.stats.totalPoints,
+                            streak: this.state.stats.streak
+                        }
+                    });
+                } catch (error) {
+                    // Silent fail - don't block user experience if analytics fail
+                    console.warn('Analytics tracking failed:', error);
+                }
+            }
+
             async checkAuth() {
                 if (!supabaseEnabled) {
                     this.state.currentTab = 'setup';
@@ -1355,6 +1377,8 @@
                             this.state.lastSeenVersion = APP_VERSION;
                             localStorage.setItem('lastSeenVersion', APP_VERSION);
                             await this.saveUserData();
+                            // Track signup event for analytics
+                            await this.trackEvent('user_signup', { display_name_set: !!displayName });
                             this.state.currentTab = 'home';
                             alert('Account succesvol aangemaakt! Welkom bij Svenska Kat 🐱');
                             // Start tour for new users
@@ -2291,6 +2315,13 @@
                         if (shouldAward) {
                             this.state.stats.badges.push(badge.id);
                             this.state.newBadge = badge;
+                            // Track badge earning for learning outcomes
+                            this.trackEvent('badge_earned', {
+                                badge_id: badge.id,
+                                badge_name: badge.name,
+                                badge_type: badge.type,
+                                total_badges: this.state.stats.badges.length
+                            });
                             setTimeout(() => {
                                 this.state.newBadge = null;
                                 this.render();
@@ -4010,6 +4041,19 @@ create policy "Users can update own progress"
             }
 
             switchTab(tab) {
+                // Track feature discovery
+                const featureMap = {
+                    'flashcards': 'flashcards_opened',
+                    'writing': 'writing_mode_opened',
+                    'grammar': 'grammar_opened',
+                    'badges': 'badges_viewed',
+                    'leaderboard': 'leaderboard_viewed',
+                    'settings': 'settings_opened'
+                };
+                if (featureMap[tab]) {
+                    this.trackEvent(featureMap[tab], { from_tab: this.state.currentTab });
+                }
+
                 this.state.currentTab = tab;
                 this.render();
             }
@@ -4479,7 +4523,9 @@ create policy "Users can update own progress"
                 // Track when phrase was last practiced
                 const now = new Date().toISOString();
 
-                if (!this.state.phraseHistory[phraseId]) {
+                const isFirstTime = !this.state.phraseHistory[phraseId];
+
+                if (isFirstTime) {
                     // First time practicing this phrase
                     this.state.phraseHistory[phraseId] = {
                         lastPracticed: now,
@@ -4494,6 +4540,19 @@ create policy "Users can update own progress"
                         this.state.phraseHistory[phraseId].perfectCount += 1;
                     }
                 }
+
+                // Track analytics event for learning outcomes
+                const [category, phraseIdOnly] = phraseId.split('-');
+                const phrase = categories[category]?.phrases.find(p => p.id === phraseIdOnly);
+
+                this.trackEvent(isFirstTime ? 'phrase_completed_first_time' : 'phrase_practiced', {
+                    phrase_id: phraseId,
+                    category,
+                    difficulty: phrase?.difficulty,
+                    is_perfect: isPerfect,
+                    practice_count: this.state.phraseHistory[phraseId].practiceCount,
+                    is_first_phrase_ever: this.state.stats.phrasesCompleted === 0
+                });
             }
 
             toggleShuffle() {

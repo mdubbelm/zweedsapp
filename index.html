@@ -4232,7 +4232,7 @@ create policy "Users can update own progress"
 
                 // Case-insensitive comparison, ignore punctuation
                 const normalize = (str) => str.toLowerCase().replace(/[!?,.\s]/g, '');
-                const normalized User = normalize(userInput);
+                const normalizedUser = normalize(userInput);
                 const normalizedCorrect = normalize(correctAnswer);
 
                 console.log('👤 Normalized user:', normalizedUser);

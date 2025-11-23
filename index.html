@@ -1226,6 +1226,10 @@
 
             // Analytics: Track user events for learning outcomes measurement
             async trackEvent(eventName, properties = {}) {
+                // TODO: Enable after creating analytics_events table in Supabase
+                // Temporarily disabled to prevent errors
+                return;
+
                 if (!this.state.user || !supabaseEnabled) return;
 
                 try {

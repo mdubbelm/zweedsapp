@@ -4224,13 +4224,22 @@ create policy "Users can update own progress"
 
                 console.log('👤 User typed:', userInput);
                 console.log('✔️ Correct answer:', correctAnswer);
+                console.log('👤 User typed (char codes):', [...userInput].map(c => c.charCodeAt(0)));
+                console.log('✔️ Correct (char codes):', [...correctAnswer].map(c => c.charCodeAt(0)));
 
                 // Update state with current input value
                 this.state.writingInput = input ? input.value : this.state.writingInput;
 
                 // Case-insensitive comparison, ignore punctuation
                 const normalize = (str) => str.toLowerCase().replace(/[!?,.\s]/g, '');
-                const isCorrect = normalize(userInput) === normalize(correctAnswer);
+                const normalized User = normalize(userInput);
+                const normalizedCorrect = normalize(correctAnswer);
+
+                console.log('👤 Normalized user:', normalizedUser);
+                console.log('✔️ Normalized correct:', normalizedCorrect);
+                console.log('Match:', normalizedUser === normalizedCorrect);
+
+                const isCorrect = normalizedUser === normalizedCorrect;
 
                 this.state.writingCorrect = isCorrect;
                 this.state.showWritingFeedback = true;

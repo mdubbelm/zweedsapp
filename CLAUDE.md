@@ -6,15 +6,47 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **THIS APP IS DEPLOYED VIA GITHUB PAGES**
 
-After making ANY changes to the codebase:
-1. **ALWAYS commit and push to GitHub** - changes are NOT visible until pushed
-2. **Wait 2-3 minutes** for GitHub Pages to deploy
-3. **User must refresh their browser** or wait for PWA auto-update notification
+### Testing Protocol (MANDATORY before pushing)
+
+Before committing ANY code changes, run these checks:
+
+```bash
+# 1. Syntax check (basic)
+node -e "console.log('Syntax OK')" 2>&1 || echo "Check for syntax errors manually"
+
+# 2. Search for common issues
+grep -n "undefined is not an object" index.html || echo "✓ No obvious undefined errors"
+grep -n "normalize d User" index.html && echo "⚠️  Found typo!" || echo "✓ No variable name typos"
+
+# 3. Verify critical sections aren't broken
+grep -n "renderPractice\|renderWriting\|renderFlashcards" index.html | wc -l
+# Should return 3+ (one for each method definition)
+```
+
+**Manual Checks:**
+- [ ] Open `index.html` locally and test the changed feature
+- [ ] Check browser console for JavaScript errors
+- [ ] Test on critical user path: signup → practice → writing
+- [ ] If touching validation logic: test with known input/output
+- [ ] If touching difficulty filter: test with "Alleen Makkelijk" filter
+
+### Deployment Workflow
+
+After testing locally:
+1. **Commit changes** with descriptive message
+2. **Push to GitHub** - changes are NOT visible until pushed
+3. **Wait 2-3 minutes** for GitHub Pages to deploy
+4. **Ask user to hard refresh** (Cmd+Shift+R / Ctrl+Shift+R)
+5. **Verify deployment** - ask user to test and report back
 
 **Workflow for every change:**
 ```bash
+# 1. TEST LOCALLY FIRST
+open index.html  # or python3 -m http.server 8000
+
+# 2. Only push after local testing succeeds
 git add <files>
-git commit -m "Version X.X.X: Description"
+git commit -m "fix/feat: Description of change"
 git push origin main
 # → GitHub Pages auto-deploys to: https://mdubbelm.github.io/zweedsapp
 ```
@@ -876,3 +908,4 @@ navigator.serviceWorker.getRegistration().then(reg => reg.update())
 - **CLAUDE.md** - This file (development guide for Claude Code)
 - **zweeds-b1-supabase.html** - Backup copy (may be outdated)
 - **.git/** - Version control history
+- memorize

@@ -1,8 +1,9 @@
 // Service Worker for Svenska Kat PWA
-// Version 1.10.1 - Difficulty Preference Filter
+// Version 1.10.2 - Performance Optimizations
 
-const CACHE_VERSION = '1.10.1';
+const CACHE_VERSION = '1.10.2';
 const CACHE_NAME = `svenska-kat-v${CACHE_VERSION}`;
+const CDN_CACHE = `svenska-kat-cdn-v${CACHE_VERSION}`;
 
 // Files to cache for offline support
 const urlsToCache = [
@@ -37,7 +38,8 @@ self.addEventListener('activate', (event) => {
     caches.keys().then((cacheNames) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
+          // Keep current app and CDN caches, delete everything else
+          if (cacheName !== CACHE_NAME && cacheName !== CDN_CACHE) {
             console.log('[ServiceWorker] Deleting old cache:', cacheName);
             return caches.delete(cacheName);
           }
@@ -51,8 +53,45 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch event - network first, fallback to cache
+// Fetch event - cache-first for CDN, network-first for app
 self.addEventListener('fetch', (event) => {
+  const url = new URL(event.request.url);
+
+  // Cache-first strategy for CDN resources (Performance Quick Win #3)
+  if (url.hostname.includes('cdn.') ||
+      url.hostname.includes('cdnjs.') ||
+      url.hostname.includes('jsdelivr.') ||
+      url.hostname.includes('googleapis.') ||
+      url.hostname.includes('gstatic.')) {
+
+    event.respondWith(
+      caches.open(CDN_CACHE).then(cache =>
+        cache.match(event.request).then(cached => {
+          // Return cached version immediately if available
+          if (cached) {
+            // Update cache in background (stale-while-revalidate)
+            fetch(event.request).then(response => {
+              if (response && response.status === 200) {
+                cache.put(event.request, response.clone());
+              }
+            }).catch(() => {});
+            return cached;
+          }
+
+          // No cache, fetch and cache
+          return fetch(event.request).then(response => {
+            if (response && response.status === 200) {
+              cache.put(event.request, response.clone());
+            }
+            return response;
+          });
+        })
+      )
+    );
+    return;
+  }
+
+  // Network-first strategy for app resources
   event.respondWith(
     fetch(event.request)
       .then((response) => {

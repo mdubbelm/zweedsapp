@@ -2,10 +2,10 @@
   "name": "Svenska Kat",
   "short_name": "Svenska Kat",
   "description": "Leer Zweeds met gamification - Zweeds leren is nu leuker dan ooit!",
-  "start_url": "/index.html",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#8b5cf6",
+  "theme_color": "#3E7DB8",
   "orientation": "portrait",
   "icons": [
     {

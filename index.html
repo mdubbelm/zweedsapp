@@ -293,11 +293,16 @@
             '1.10.2': {
                 date: '2025-11-24',
                 features: [
-                    'Performance: LCP verbeterd van 4.2s → ~2.0s (Quick Wins)',
-                    'Resource hints toegevoegd (preconnect, preload)',
-                    'Google Fonts geoptimaliseerd (-20KB)',
-                    'CDN caching verbeterd (stale-while-revalidate)',
-                    'Service Worker versie 1.10.2'
+                    '🚀 Performance: LCP verbeterd van 4.2s → ~2.0s (52% sneller!)',
+                    '⚡ Resource hints (preconnect, preload) voor snellere CDN loading',
+                    '📦 Google Fonts geoptimaliseerd (-20KB)',
+                    '💾 CDN caching in Service Worker (instant repeat visits)',
+                    '🎨 WCAG AA: Alle 9 kleuren nu toegankelijk (4.5:1 contrast)',
+                    '🐛 Fix: "Sov gott" schrijfvalidatie bug opgelost',
+                    '🐛 Fix: "All Categories" crash voorkomen',
+                    '📊 Analytics: 10 events tracking geactiveerd',
+                    '✨ Homepage: Dagelijks Programma prominenter gemaakt',
+                    '🏆 Nieuw: "Bekijk voortgang" link naar Badges'
                 ]
             },
             '1.10.1': {
@@ -2684,7 +2689,7 @@ create policy "Users can update own progress"
                             </div>
                         </div>
 
-                        <!-- Daily Program Compact Card - Duolingo style -->
+                        <!-- Daily Program - PRIMARY CTA (Enhanced prominence) -->
                         ${(() => {
                             const completedToday = this.state.dailyPhrases.filter(phrase =>
                                 this.state.completedPhrases.includes(`${phrase.categoryId}-${phrase.id}`)
@@ -2695,28 +2700,30 @@ create policy "Users can update own progress"
 
                             return `
                                 <button id="daily-program" onclick="app.openDailyProgramModal()"
-                                        class="w-full glass-effect rounded-2xl p-4 card-shadow card-hover text-left border-2 border-transparent hover:border-blue-400 transition-all">
+                                        class="w-full rounded-2xl p-6 card-shadow card-hover text-left border-3 transition-all"
+                                        style="background: linear-gradient(135deg, rgba(91, 155, 213, 0.15) 0%, rgba(74, 127, 168, 0.08) 100%); border: 3px solid var(--scandi-blue);">
                                     <div class="flex items-center justify-between">
-                                        <div class="flex items-center gap-3">
-                                            <div class="w-12 h-12 rounded-xl flex items-center justify-center"
-                                                 style="background: linear-gradient(135deg, #5B9BD5 0%, #4A7FA8 100%);">
-                                                <i class="fas fa-calendar-day text-xl text-white"></i>
+                                        <div class="flex items-center gap-4">
+                                            <div class="w-14 h-14 rounded-xl flex items-center justify-center"
+                                                 style="background: linear-gradient(135deg, var(--scandi-blue) 0%, #2F5F8A 100%); box-shadow: 0 4px 12px rgba(62, 125, 184, 0.3);">
+                                                <i class="fas fa-calendar-day text-2xl text-white"></i>
                                             </div>
                                             <div>
-                                                <p class="font-bold text-gray-800">Je oefeningen voor vandaag</p>
-                                                <p class="text-xs text-gray-500">${today}</p>
+                                                <p class="text-lg font-bold text-gray-800">Je oefeningen voor vandaag</p>
+                                                <p class="text-sm text-gray-600">${today}</p>
                                             </div>
                                         </div>
-                                        <div class="flex items-center gap-3">
+                                        <div class="flex items-center gap-4">
                                             <div class="text-right">
-                                                <p class="text-2xl font-bold text-blue-600">${completedToday}/${total}</p>
-                                                <p class="text-xs text-gray-500">voltooid</p>
+                                                <p class="text-3xl font-bold" style="color: var(--scandi-blue);">${completedToday}/${total}</p>
+                                                <p class="text-xs text-gray-600 font-medium">voltooid</p>
                                             </div>
-                                            <i class="fas fa-chevron-right text-gray-400"></i>
+                                            <i class="fas fa-chevron-right text-gray-400 text-lg"></i>
                                         </div>
                                     </div>
-                                    <div class="mt-3 bg-gray-200 rounded-full h-2 overflow-hidden">
-                                        <div class="bg-blue-600 h-2 rounded-full transition-all duration-500" style="width: ${progressPercent}%"></div>
+                                    <div class="mt-4 bg-gray-200 rounded-full h-3 overflow-hidden">
+                                        <div class="h-3 rounded-full transition-all duration-500"
+                                             style="width: ${progressPercent}%; background: linear-gradient(90deg, var(--scandi-blue) 0%, #5B9BD5 100%);"></div>
                                     </div>
                                 </button>
                             `;
@@ -2783,12 +2790,12 @@ create policy "Users can update own progress"
                             <div class="grid grid-cols-2 gap-3">
                                 ${Object.entries(categories).map(([key, category]) => {
                                     const totalPhrases = category.phrases.length;
-                                    const completed = category.phrases.filter(p => 
+                                    const completed = category.phrases.filter(p =>
                                         this.state.completedPhrases.includes(`${key}-${p.id}`)
                                     ).length;
                                     const isFullyCompleted = completed === totalPhrases;
                                     const progress = (completed / totalPhrases) * 100;
-                                    
+
                                     const colors = {
                                         'dusty-rose': 'var(--dusty-rose)',
                                         amber: 'var(--scandi-amber)',
@@ -2801,7 +2808,7 @@ create policy "Users can update own progress"
                                         teal: 'var(--scandi-teal)',
                                         red: 'var(--scandi-red)'
                                     };
-                                    
+
                                     return `
                                         <button onclick="app.selectCategory('${key}')"
                                                 class="card-shadow rounded-xl p-4 text-white card-hover relative overflow-hidden"
@@ -2820,26 +2827,18 @@ create policy "Users can update own progress"
                                 }).join('')}
                             </div>
                         </div>
-                        
-                        ${this.state.stats.badges.length > 0 ? `
-                            <div class="glass-effect rounded-2xl p-4 card-shadow">
-                                <div class="flex items-center gap-2 mb-3">
-                                    <i class="fas fa-medal text-amber-600 text-lg" aria-hidden="true"></i>
-                                    <h3 class="font-bold text-gray-800">Recente Badges</h3>
-                                </div>
-                                <div class="grid grid-cols-4 gap-2">
-                                    ${this.state.stats.badges.slice(-4).map(badgeId => {
-                                        const badge = badges[badgeId];
-                                        return `
-                                            <div class="card-shadow rounded-xl p-3 text-center bg-white">
-                                                <i class="fas ${badge.icon} ${badge.color} text-3xl mb-2" aria-hidden="true"></i>
-                                                <p class="text-xs font-semibold text-gray-800">${badge.name}</p>
-                                            </div>
-                                        `;
-                                    }).join('')}
-                                </div>
-                            </div>
-                        ` : ''}
+
+                        <!-- View All Progress Link -->
+                        <div class="mt-6 text-center">
+                            <a href="#" onclick="app.switchTab('badges'); return false;"
+                               class="inline-flex items-center gap-2 font-semibold transition-all hover:gap-3"
+                               style="color: var(--scandi-blue);">
+                                <i class="fas fa-trophy"></i>
+                                <span>Bekijk al je voortgang en badges</span>
+                                <i class="fas fa-arrow-right text-sm"></i>
+                            </a>
+                        </div>
+
                     </div>
 
                     ${this.state.selectedCategoryForMode ? this.renderModeSelector() : ''}

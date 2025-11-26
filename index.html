@@ -288,8 +288,18 @@
 
     <script>
         // App Version
-        const APP_VERSION = '1.10.2';
+        const APP_VERSION = '1.10.3';
         const RELEASE_NOTES = {
+            '1.10.3': {
+                date: '2025-11-26',
+                features: [
+                    '🔒 Uitspraak gating: Goed/Perfect buttons disabled tot je luistert of opneemt',
+                    '🐛 Fix: Dagelijks programma toont nu correcte zin',
+                    '🐛 Fix: Dagelijks programma voltooiing telt correct',
+                    '🐛 Fix: Opname blijft intact na luisteren naar TTS',
+                    '📚 WCAG toegankelijkheidsrichtlijnen toegevoegd aan docs'
+                ]
+            },
             '1.10.2': {
                 date: '2025-11-24',
                 features: [
@@ -1795,7 +1805,12 @@
                 } else {
                     // Practice (spraak) mode setup
                     this.state.currentCategory = phrase.categoryId;
-                    // IMPORTANT: Find index in FILTERED phrases, not full category
+                    // IMPORTANT: Disable shuffle when coming from daily program to ensure correct phrase
+                    // Store original shuffle state to restore later if needed
+                    this.state.wasShuffledBeforeDaily = this.state.isShuffled;
+                    this.state.isShuffled = false;
+
+                    // Find index in FILTERED phrases (without shuffle)
                     const filteredPhrases = this.getFilteredPhrases(categories[phrase.categoryId].phrases);
                     this.state.currentPhraseIndex = filteredPhrases.findIndex(
                         p => p.id === phrase.id
@@ -1812,6 +1827,8 @@
 
                 this.state.fromDailyProgram = true;
                 this.state.currentDailyPhraseIndex = phraseIndex;
+                // Store the actual daily phrase for reference
+                this.state.currentDailyPhrase = phrase;
                 this.render();
             }
 
@@ -2131,9 +2148,13 @@
                     window.speechSynthesis.speak(utterance);
 
                     // Mark that user has listened (enables rating buttons in practice mode)
+                    // Only re-render if buttons aren't already enabled (no audioURL yet)
                     if (this.state.currentTab === 'practice' && !this.state.hasListenedToAudio) {
                         this.state.hasListenedToAudio = true;
-                        this.render();
+                        // Only render if we don't have an audio recording - avoid destroying the audio element
+                        if (!this.state.audioURL) {
+                            this.render();
+                        }
                     }
                 }
             }
@@ -2266,9 +2287,19 @@
             }
 
             async markAsCompleted(isPerfect = false) {
-                const phrases = this.getCurrentPhrases(this.state.currentCategory);
-                const currentPhrase = phrases[this.state.currentPhraseIndex];
-                const phraseId = `${this.state.currentCategory}-${currentPhrase.id}`;
+                let currentPhrase;
+                let phraseId;
+
+                // When coming from daily program, use the stored phrase directly
+                // This avoids issues with difficulty filter mismatches
+                if (this.state.fromDailyProgram && this.state.currentDailyPhrase) {
+                    currentPhrase = this.state.currentDailyPhrase;
+                    phraseId = `${currentPhrase.categoryId}-${currentPhrase.id}`;
+                } else {
+                    const phrases = this.getCurrentPhrases(this.state.currentCategory);
+                    currentPhrase = phrases[this.state.currentPhraseIndex];
+                    phraseId = `${this.state.currentCategory}-${currentPhrase.id}`;
+                }
 
                 // Track phrase practice (always, not just first time)
                 this.trackPhraseCompletion(phraseId, isPerfect);
@@ -2327,6 +2358,10 @@
                         // Show completion screen
                         this.state.showDailyCompletion = true;
                         this.state.fromDailyProgram = false;
+                        // Restore shuffle state
+                        if (this.state.wasShuffledBeforeDaily !== undefined) {
+                            this.state.isShuffled = this.state.wasShuffledBeforeDaily;
+                        }
                         this.state.currentTab = 'home';
                     } else {
                         // Find next uncompleted phrase
@@ -2343,6 +2378,10 @@
                         } else {
                             // No more phrases, go back to home
                             this.state.fromDailyProgram = false;
+                            // Restore shuffle state
+                            if (this.state.wasShuffledBeforeDaily !== undefined) {
+                                this.state.isShuffled = this.state.wasShuffledBeforeDaily;
+                            }
                             this.state.currentTab = 'home';
                         }
                     }
@@ -4414,6 +4453,10 @@ create policy "Users can update own progress"
                     } else {
                         // End of daily program
                         this.state.fromDailyProgram = false;
+                        // Restore shuffle state
+                        if (this.state.wasShuffledBeforeDaily !== undefined) {
+                            this.state.isShuffled = this.state.wasShuffledBeforeDaily;
+                        }
                         this.state.currentTab = 'home';
                         this.render();
                         return;
@@ -4500,6 +4543,10 @@ create policy "Users can update own progress"
                     } else {
                         // End of daily program
                         this.state.fromDailyProgram = false;
+                        // Restore shuffle state
+                        if (this.state.wasShuffledBeforeDaily !== undefined) {
+                            this.state.isShuffled = this.state.wasShuffledBeforeDaily;
+                        }
                         this.state.currentTab = 'home';
                         this.render();
                         return;

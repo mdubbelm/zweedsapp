@@ -218,6 +218,139 @@ Steel Blue → Lavender Grey → Dusty Rose → Coral → Clay → Amber
 #6B8CAE      #9FA8BC          #D4A5A5        #E89E8D  #C9826B  #F4A261
 ```
 
+## Digitale Toegankelijkheid (WCAG)
+
+**CRITICAL: Volg deze richtlijnen bij alle UI-wijzigingen**
+
+### The Five Rules of ARIA
+
+**First Rule of ARIA: Gebruik geen ARIA als native HTML volstaat**
+
+> "If you can use a native HTML element or attribute with the semantics and behavior you require already built in, instead of re-purposing an element and adding an ARIA role, state or property to make it accessible, **then do so**."
+
+**Praktisch:**
+- ❌ `<div role="button">` → ✅ `<button>`
+- ❌ `<span aria-disabled="true">` → ✅ `<button disabled>`
+- ❌ `<div role="link">` → ✅ `<a href="...">`
+
+**Second Rule: Verander geen native semantiek**
+- ❌ `<h1 role="button">` → ✅ `<h1><button>...</button></h1>`
+
+**Third Rule: Alle interactieve ARIA controls moeten keyboard-toegankelijk zijn**
+
+**Fourth Rule: Verberg geen focusbare elementen**
+- ❌ `<button aria-hidden="true">` (focusbaar maar verborgen = verwarrend)
+
+**Fifth Rule: Alle interactieve elementen moeten een accessible name hebben**
+- ✅ `<button aria-label="Sluiten">×</button>`
+- ✅ `<input aria-labelledby="label-id">`
+
+### Disabled Buttons
+
+**Gebruik native `disabled` attribuut:**
+```html
+<!-- ✅ Correct -->
+<button disabled>Niet beschikbaar</button>
+
+<!-- ❌ Vermijd - schendt First Rule of ARIA -->
+<button aria-disabled="true">Niet beschikbaar</button>
+```
+
+**Waarom native `disabled`?**
+- Browser handelt alles automatisch af
+- Consistent gedrag across screenreaders
+- Geen extra JavaScript nodig om clicks te blokkeren
+- Disabled buttons horen niet in tab-order - dat is verwacht gedrag
+
+**"Maar screenreader users vinden disabled buttons niet!"**
+- Screenreader users in **browse mode** (pijltjestoetsen) vinden ze wél
+- Alleen Tab-navigatie slaat ze over (verwacht gedrag)
+- Visuele instructietekst helpt alle users
+
+### Contrast Requirements (WCAG 2.1 AA)
+
+| Element Type | Minimum Contrast |
+|--------------|------------------|
+| Normal text (<18px) | 4.5:1 |
+| Large text (≥18px bold of ≥24px) | 3:1 |
+| UI components & graphics | 3:1 |
+| Disabled elements | Geen eis* |
+
+*Disabled elements hebben geen contrast-eis, maar moeten wel zichtbaar zijn.
+
+### Focus Indicators (WCAG 2.4.7)
+
+Alle interactieve elementen moeten zichtbare focus hebben:
+```css
+button:focus {
+    outline: 3px solid var(--scandi-blue);
+    outline-offset: 2px;
+}
+```
+
+### Formulieren
+
+**Labels zijn verplicht:**
+```html
+<!-- ✅ Correct -->
+<label for="email">E-mailadres</label>
+<input type="email" id="email">
+
+<!-- ✅ Ook correct -->
+<input type="email" aria-label="E-mailadres">
+
+<!-- ❌ Fout - geen label -->
+<input type="email" placeholder="E-mailadres">
+```
+
+### Touch Targets (WCAG 2.5.5)
+
+Minimale touch target grootte: **44x44px**
+```css
+button {
+    min-height: 44px;
+    min-width: 44px;
+}
+```
+
+### Testing Checklist
+
+- [ ] Tab door de pagina - alle interactieve elementen bereikbaar?
+- [ ] Focus indicator zichtbaar?
+- [ ] Contrast checker (Chrome DevTools > Accessibility)
+- [ ] Screen reader test (VoiceOver op Mac: Cmd+F5)
+- [ ] Reduced motion respecteren (`prefers-reduced-motion`)
+
+### Common Mistakes to Avoid
+
+❌ **Divs als buttons**
+```html
+<!-- Fout -->
+<div onclick="submit()">Verstuur</div>
+<!-- Goed -->
+<button onclick="submit()">Verstuur</button>
+```
+
+❌ **Placeholder als label**
+```html
+<!-- Fout - placeholder verdwijnt bij typen -->
+<input placeholder="Naam">
+<!-- Goed -->
+<label>Naam <input></label>
+```
+
+❌ **Kleur als enige indicator**
+```html
+<!-- Fout - alleen kleur -->
+<span class="text-red-500">Fout</span>
+<!-- Goed - kleur + icon + tekst -->
+<span class="text-red-500"><i class="fa-exclamation"></i> Fout: veld is verplicht</span>
+```
+
+❌ **Auto-playing media**
+- Nooit audio/video automatisch afspelen
+- Altijd controls tonen
+
 ## Architecture
 
 ### Single-File Monolithic Structure

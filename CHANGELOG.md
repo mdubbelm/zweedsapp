@@ -810,6 +810,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Planned Features
 
 #### High Priority
+- **Guest Mode** 👤 - App gebruiken zonder account
+  - Alle basisfuncties toegankelijk (Practice, Flashcards, Writing)
+  - Lokale opslag van voortgang (localStorage)
+  - Duidelijke "upgrade prompt" met wat je mist:
+    - ❌ Voortgang synchronisatie tussen apparaten
+    - ❌ Leaderboard deelname
+    - ❌ Badges en achievements opslaan
+    - ❌ Streak behouden na browser cache wissen
+  - Makkelijke conversie naar account (data migratie)
+  - Niet-opdringerige reminders om account aan te maken
+
 - **Admin Dashboard** 👨‍💼 - Beheerders interface voor monitoring
   - Gebruikersoverzicht met statistieken
   - Recent activity logs (laatste login, progressie)

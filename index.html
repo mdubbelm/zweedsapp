@@ -1100,6 +1100,7 @@
                     currentPhraseIndex: 0,
                     isRecording: false,
                     audioURL: null,
+                    hasListenedToAudio: false,
                     audioBlob: null,
                     audioMimeType: null,
                     showAnswer: false,
@@ -1804,6 +1805,9 @@
                         this.state.currentPhraseIndex = 0;
                     }
                     this.state.currentTab = 'practice';
+                    // Reset audio state for gating
+                    this.state.audioURL = null;
+                    this.state.hasListenedToAudio = false;
                 }
 
                 this.state.fromDailyProgram = true;
@@ -2125,6 +2129,12 @@
 
                     window.speechSynthesis.cancel();
                     window.speechSynthesis.speak(utterance);
+
+                    // Mark that user has listened (enables rating buttons in practice mode)
+                    if (this.state.currentTab === 'practice' && !this.state.hasListenedToAudio) {
+                        this.state.hasListenedToAudio = true;
+                        this.render();
+                    }
                 }
             }
 
@@ -3095,33 +3105,48 @@ create policy "Users can update own progress"
                                         <i class="fas fa-stop-circle mr-2"></i>Stop Opname
                                     </button>
                                 ` : ''}
-                                
+
                                 ${this.state.audioURL ? `
-                                    <div class="space-y-3">
-                                        <div class="glass-effect rounded-xl p-4">
-                                            <audio id="recordingPlayer" src="${this.state.audioURL}" controls
-                                                   class="w-full"
-                                                   controlsList="nodownload"
-                                                   preload="auto"></audio>
-                                        </div>
-                                        <div class="grid grid-cols-2 gap-3">
-                                            <button onclick="app.markAsCompleted(false)"
-                                                    class="py-4 rounded-xl font-bold text-white card-hover card-shadow"
-                                                    style="background: var(--scandi-green);">
-                                                <i class="fas fa-star mr-1"></i> Goed!
-                                            </button>
-                                            <button onclick="app.markAsCompleted(true)"
-                                                    class="py-4 rounded-xl font-bold text-white card-hover card-shadow"
-                                                    style="background: var(--scandi-blue);">
-                                                <i class="fas fa-gem mr-1"></i> Perfect!
-                                            </button>
-                                        </div>
-                                        <button onclick="app.resetAudio()" 
-                                                class="w-full py-3 glass-effect rounded-xl text-gray-700 card-hover card-shadow font-semibold">
-                                            <i class="fas fa-redo mr-2"></i>Opnieuw opnemen
-                                        </button>
+                                    <div class="glass-effect rounded-xl p-4 mb-3">
+                                        <audio id="recordingPlayer" src="${this.state.audioURL}" controls
+                                               class="w-full"
+                                               controlsList="nodownload"
+                                               preload="auto"></audio>
                                     </div>
+                                    <button onclick="app.resetAudio()"
+                                            class="w-full py-3 glass-effect rounded-xl text-gray-700 card-hover card-shadow font-semibold mb-3">
+                                        <i class="fas fa-redo mr-2"></i>Opnieuw opnemen
+                                    </button>
                                 ` : ''}
+
+                                <!-- Rating instruction -->
+                                <p class="text-sm text-gray-600 text-center mb-2">
+                                    ${this.state.hasListenedToAudio || this.state.audioURL
+                                        ? 'Hoe ging je uitspraak? Geef jezelf een beoordeling.'
+                                        : 'Luister eerst naar de uitspraak of neem jezelf op.'}
+                                </p>
+
+                                <!-- Rating buttons - always visible, disabled until interaction -->
+                                <div class="grid grid-cols-2 gap-3">
+                                    <button onclick="app.markAsCompleted(false)"
+                                            ${!(this.state.hasListenedToAudio || this.state.audioURL) ? 'disabled' : ''}
+                                            class="py-4 rounded-xl font-bold card-shadow transition-all
+                                                   ${this.state.hasListenedToAudio || this.state.audioURL
+                                                       ? 'text-white card-hover'
+                                                       : 'bg-gray-200 text-gray-500 cursor-not-allowed border-2 border-gray-300'}"
+                                            style="${this.state.hasListenedToAudio || this.state.audioURL ? 'background: var(--scandi-green);' : ''}">
+                                        <i class="fas ${this.state.hasListenedToAudio || this.state.audioURL ? 'fa-star' : 'fa-lock'} mr-1"></i> Goed!
+                                    </button>
+                                    <button onclick="app.markAsCompleted(true)"
+                                            ${!(this.state.hasListenedToAudio || this.state.audioURL) ? 'disabled' : ''}
+                                            class="py-4 rounded-xl font-bold card-shadow transition-all
+                                                   ${this.state.hasListenedToAudio || this.state.audioURL
+                                                       ? 'text-white card-hover'
+                                                       : 'bg-gray-200 text-gray-500 cursor-not-allowed border-2 border-gray-300'}"
+                                            style="${this.state.hasListenedToAudio || this.state.audioURL ? 'background: var(--scandi-blue);' : ''}">
+                                        <i class="fas ${this.state.hasListenedToAudio || this.state.audioURL ? 'fa-gem' : 'fa-lock'} mr-1"></i> Perfect!
+                                    </button>
+                                </div>
                             </div>
                             
                             <div class="flex gap-3">
@@ -4489,6 +4514,7 @@ create policy "Users can update own progress"
                 this.state.audioMimeType = null;
                 this.state.isRecording = false;
                 this.state.showAnswer = false;
+                this.state.hasListenedToAudio = false;
                 this.render();
             }
 
@@ -4526,6 +4552,7 @@ create policy "Users can update own progress"
                 this.state.audioMimeType = null;
                 this.state.isRecording = false;
                 this.state.showAnswer = false;
+                this.state.hasListenedToAudio = false;
                 this.render();
             }
 

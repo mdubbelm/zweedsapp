@@ -958,6 +958,12 @@ export class SwedishApp {
             }
 
             window.speechSynthesis.speak(utterance);
+
+            // Mark as listened for practice mode unlock
+            if (!this.state.hasListenedToAudio) {
+                this.state.hasListenedToAudio = true;
+                this.render();
+            }
         }
     }
 
@@ -1088,6 +1094,7 @@ export class SwedishApp {
             this.state.currentPhraseIndex++;
             this.state.showAnswer = false;
             this.state.audioURL = null;
+            this.state.hasListenedToAudio = false;
         }
 
         this.render();
@@ -1098,6 +1105,7 @@ export class SwedishApp {
             this.state.currentPhraseIndex--;
             this.state.showAnswer = false;
             this.state.audioURL = null;
+            this.state.hasListenedToAudio = false;
             this.render();
         }
     }
@@ -1113,6 +1121,7 @@ export class SwedishApp {
             this.state.currentPhraseIndex++;
             this.state.showAnswer = false;
             this.state.audioURL = null;
+            this.state.hasListenedToAudio = false;
             this.render();
         }
     }

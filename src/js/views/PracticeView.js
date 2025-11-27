@@ -7,6 +7,32 @@ import { escapeHtml } from '../utils/helpers.js';
 import { categories } from '../data/phrases.js';
 
 /**
+ * Handle click on disabled complete button
+ * Shows shake animation and announces feedback
+ */
+function handleDisabledClick() {
+    const button = document.getElementById('complete-btn-wrapper');
+    const feedback = document.getElementById('disabled-feedback');
+
+    if (button) {
+        button.classList.add('animate-shake');
+        setTimeout(() => button.classList.remove('animate-shake'), 500);
+    }
+
+    if (feedback) {
+        feedback.textContent = 'Luister eerst naar de uitspraak of neem jezelf op';
+        setTimeout(() => {
+            feedback.textContent = '';
+        }, 3000);
+    }
+}
+
+// Make available globally for onclick
+if (typeof window !== 'undefined') {
+    window.handleDisabledClick = handleDisabledClick;
+}
+
+/**
  * Get difficulty badge HTML
  * @param {string} difficulty - Difficulty level
  * @returns {string} HTML string
@@ -140,23 +166,37 @@ export function renderPractice(state, getFilteredPhrases) {
                 </button>
             </div>
 
+            <!-- Screen reader announcement region -->
+            <div id="disabled-feedback" aria-live="polite" class="sr-only"></div>
+
             <!-- Action Buttons -->
             <div class="flex gap-3">
                 ${
-                    !isCompleted
+                    isCompleted
                         ? `
+                    <button disabled
+                            class="flex-1 py-4 rounded-xl font-bold text-white opacity-60"
+                            style="background: var(--scandi-green);">
+                        <i class="fas fa-check-double mr-2"></i>Al voltooid
+                    </button>
+                `
+                        : state.hasListenedToAudio || state.audioURL
+                          ? `
                     <button onclick="app.markPhraseComplete()"
                             class="flex-1 py-4 rounded-xl font-bold text-white card-hover card-shadow"
                             style="background: var(--scandi-green);">
                         <i class="fas fa-check mr-2"></i>Voltooid
                     </button>
                 `
-                        : `
-                    <button disabled
-                            class="flex-1 py-4 rounded-xl font-bold text-white opacity-60"
-                            style="background: var(--scandi-green);">
-                        <i class="fas fa-check-double mr-2"></i>Al voltooid
-                    </button>
+                          : `
+                    <div id="complete-btn-wrapper" class="flex-1" onclick="handleDisabledClick()">
+                        <button disabled
+                                class="w-full py-4 rounded-xl font-bold text-white opacity-60 cursor-not-allowed"
+                                style="background: var(--scandi-green); pointer-events: none;">
+                            <i class="fas fa-lock mr-2"></i>Voltooid
+                        </button>
+                        <p class="text-xs text-gray-500 text-center mt-1">Luister of neem eerst op</p>
+                    </div>
                 `
                 }
             </div>

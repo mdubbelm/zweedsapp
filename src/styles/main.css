@@ -244,3 +244,126 @@ button:active {
         transition-duration: 0.01ms !important;
     }
 }
+
+/* Mode Selector Modal */
+.mode-selector-overlay,
+.category-selector-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 1rem;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.mode-selector-modal,
+.category-selector-modal {
+    background: white;
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 400px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: scaleIn 0.2s ease-out;
+}
+
+.mode-selector-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.mode-selector-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.25rem;
+}
+
+.mode-selector-subtitle {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.mode-option {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 1rem;
+    background: #f9fafb;
+    border: 2px solid transparent;
+    text-align: left;
+    margin-bottom: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.mode-option:hover {
+    border-color: var(--scandi-blue);
+    background: #f0f9ff;
+}
+
+.mode-option-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.mode-option-title {
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 0.125rem;
+}
+
+.mode-option-description {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.mode-selector-cancel {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    color: #6b7280;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.mode-selector-cancel:hover {
+    background: #f3f4f6;
+}
+
+/* Daily Program Modal */
+.daily-program-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 1rem;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.daily-program-modal {
+    background: white;
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+    animation: scaleIn 0.2s ease-out;
+}

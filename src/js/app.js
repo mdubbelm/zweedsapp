@@ -112,6 +112,9 @@ export class SwedishApp {
         // Initialize Supabase
         await initSupabase();
 
+        // Initialize TTS voices
+        this.initVoices();
+
         // Check authentication
         await this.checkAuth();
 
@@ -900,7 +903,28 @@ export class SwedishApp {
             const utterance = new SpeechSynthesisUtterance(text);
             utterance.lang = 'sv-SE';
             utterance.rate = 0.8;
+
+            // Try to find a Swedish voice
+            const voices = window.speechSynthesis.getVoices();
+            const swedishVoice = voices.find(
+                v => v.lang === 'sv-SE' || v.lang === 'sv' || v.lang.startsWith('sv')
+            );
+            if (swedishVoice) {
+                utterance.voice = swedishVoice;
+            }
+
             window.speechSynthesis.speak(utterance);
+        }
+    }
+
+    // Initialize voices (needed for some browsers)
+    initVoices() {
+        if ('speechSynthesis' in window) {
+            // Voices may not be available immediately
+            window.speechSynthesis.getVoices();
+            window.speechSynthesis.onvoiceschanged = () => {
+                window.speechSynthesis.getVoices();
+            };
         }
     }
 

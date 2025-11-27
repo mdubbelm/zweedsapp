@@ -1,31 +1,9 @@
 /**
  * Home View
- * Main dashboard with stats, daily program, and category selection
+ * Main dashboard with stats, daily program, and learning modes
  */
 
 import { escapeHtml } from '../utils/helpers.js';
-import { categories } from '../data/phrases.js';
-
-/**
- * Get color variable for category
- * @param {string} color - Color name
- * @returns {string} CSS variable
- */
-function getCategoryColor(color) {
-    const colors = {
-        'dusty-rose': 'var(--dusty-rose)',
-        amber: 'var(--scandi-amber)',
-        blue: 'var(--scandi-blue)',
-        'steel-blue': 'var(--steel-blue)',
-        green: 'var(--scandi-green)',
-        'lavender-grey': 'var(--lavender-grey)',
-        coral: 'var(--coral)',
-        clay: 'var(--clay)',
-        teal: 'var(--scandi-teal)',
-        red: 'var(--scandi-red)'
-    };
-    return colors[color] || 'var(--scandi-blue)';
-}
 
 /**
  * Render stats row
@@ -170,61 +148,11 @@ function renderLearningModes() {
 }
 
 /**
- * Render categories grid
- * @param {array} completedPhrases - Completed phrase IDs
- * @param {string|null} difficultyPreference - Active difficulty filter
- * @param {function} getFilteredPhrases - Function to filter phrases
- * @returns {string} HTML string
- */
-function renderCategories(completedPhrases, difficultyPreference, getFilteredPhrases) {
-    const categoryCards = Object.entries(categories)
-        .map(([key, category]) => {
-            const filteredPhrases = getFilteredPhrases
-                ? getFilteredPhrases(category.phrases)
-                : category.phrases;
-            const totalPhrases = filteredPhrases.length;
-            const completed = filteredPhrases.filter(p =>
-                completedPhrases.includes(`${key}-${p.id}`)
-            ).length;
-            const isFullyCompleted = completed === totalPhrases && totalPhrases > 0;
-            const progress = totalPhrases > 0 ? (completed / totalPhrases) * 100 : 0;
-            const hasFilter = difficultyPreference;
-
-            return `
-                <button onclick="app.selectCategory('${key}')"
-                        class="card-shadow rounded-xl p-4 text-white card-hover relative overflow-hidden"
-                        style="background: ${getCategoryColor(category.color)};">
-                    <div class="flex items-center justify-between mb-2">
-                        <i class="fas ${category.icon} text-3xl" aria-hidden="true"></i>
-                        ${isFullyCompleted ? '<i class="fas fa-crown text-yellow-700 text-xl" aria-hidden="true"></i>' : ''}
-                    </div>
-                    <p class="text-sm font-bold text-left mb-1">${category.name}</p>
-                    <p class="text-sm opacity-90 text-left mb-2">${totalPhrases > 0 ? `${completed}/${totalPhrases} voltooid` : 'Geen zinnen'}${hasFilter ? ' <span title="Filter actief">🎯</span>' : ''}</p>
-                    <div class="bg-white/30 rounded-full h-1.5 overflow-hidden">
-                        <div class="bg-white rounded-full h-1.5 progress-bar" style="width: ${progress}%"></div>
-                    </div>
-                </button>
-            `;
-        })
-        .join('');
-
-    return `
-        <div id="categories" class="glass-effect rounded-2xl p-4 card-shadow">
-            <h3 class="font-bold text-gray-800 mb-3">Kies een categorie</h3>
-            <div class="grid grid-cols-2 gap-3">
-                ${categoryCards}
-            </div>
-        </div>
-    `;
-}
-
-/**
  * Render home view
  * @param {object} state - App state
- * @param {function} getFilteredPhrases - Function to filter phrases by difficulty
  * @returns {string} HTML string
  */
-export function renderHome(state, getFilteredPhrases) {
+export function renderHome(state) {
     const displayName = escapeHtml(state.stats.displayName) || 'daar';
 
     return `
@@ -246,16 +174,13 @@ export function renderHome(state, getFilteredPhrases) {
             <!-- Learning Modes -->
             ${renderLearningModes()}
 
-            <!-- Categories -->
-            ${renderCategories(state.completedPhrases, state.stats.difficultyPreference, getFilteredPhrases)}
-
             <!-- View All Progress Link -->
             <div class="mt-6 text-center">
-                <a href="#" onclick="app.switchTab('badges'); return false;"
+                <a href="#" onclick="app.switchTab('categories'); return false;"
                    class="inline-flex items-center gap-2 font-semibold transition-all hover:gap-3"
                    style="color: var(--scandi-blue);">
-                    <i class="fas fa-trophy"></i>
-                    <span>Bekijk al je voortgang en badges</span>
+                    <i class="fas fa-folder"></i>
+                    <span>Bekijk alle categorieën</span>
                     <i class="fas fa-arrow-right text-sm"></i>
                 </a>
             </div>

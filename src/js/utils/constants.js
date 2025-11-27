@@ -93,6 +93,7 @@ export const DIFFICULTY_FILTERS = {
 // Tab names
 export const TABS = {
     HOME: 'home',
+    CATEGORIES: 'categories',
     PRACTICE: 'practice',
     FLASHCARDS: 'flashcards',
     WRITING: 'writing',

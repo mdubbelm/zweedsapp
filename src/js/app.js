@@ -36,6 +36,7 @@ import {
     renderSetup,
     toggleSignUp,
     renderHome,
+    renderCategories,
     renderSettings,
     renderPractice,
     renderWriting,
@@ -462,8 +463,15 @@ export class SwedishApp {
     switchTab(tab) {
         this.state.currentTab = tab;
 
+        // Clear category selection when switching tabs
+        if (tab !== TABS.CATEGORIES) {
+            this.state.selectedCategoryForMode = null;
+        }
+
         // Track feature usage
-        if (tab === TABS.FLASHCARDS) {
+        if (tab === TABS.CATEGORIES) {
+            this.trackEvent('categories_viewed');
+        } else if (tab === TABS.FLASHCARDS) {
             this.trackEvent(EVENTS.FLASHCARDS_OPENED);
         } else if (tab === TABS.WRITING) {
             this.trackEvent(EVENTS.WRITING_MODE_OPENED);
@@ -507,6 +515,37 @@ export class SwedishApp {
 
     closeCategorySelector() {
         this.state.selectedModeForCategory = null;
+        this.render();
+    }
+
+    // Methods for CategoriesView inline mode selection
+    selectCategoryForMode(categoryId) {
+        this.state.selectedCategoryForMode = categoryId;
+        this.render();
+    }
+
+    clearSelectedCategory() {
+        this.state.selectedCategoryForMode = null;
+        this.render();
+    }
+
+    startPracticeWithCategory(categoryId, mode) {
+        this.state.currentCategory = categoryId;
+        this.state.currentPhraseIndex = 0;
+        this.state.selectedCategoryForMode = null;
+
+        if (mode === 'practice') {
+            this.state.currentTab = TABS.PRACTICE;
+        } else if (mode === 'writing') {
+            this.state.writingCategory = categoryId;
+            this.state.currentWritingIndex = 0;
+            this.state.currentTab = TABS.WRITING;
+        } else if (mode === 'flashcards') {
+            this.state.flashcardCategory = categoryId;
+            this.state.currentFlashcardIndex = 0;
+            this.state.currentTab = TABS.FLASHCARDS;
+        }
+
         this.render();
     }
 
@@ -659,7 +698,9 @@ export class SwedishApp {
         const filterFn = this.getFilteredPhrases.bind(this);
         switch (this.state.currentTab) {
             case TABS.HOME:
-                return renderHome(this.state, filterFn);
+                return renderHome(this.state);
+            case TABS.CATEGORIES:
+                return renderCategories(this.state, filterFn);
             case TABS.PRACTICE:
                 return renderPractice(this.state, filterFn);
             case TABS.WRITING:
@@ -675,13 +716,14 @@ export class SwedishApp {
             case TABS.SETTINGS:
                 return renderSettings(this.state);
             default:
-                return renderHome(this.state, filterFn);
+                return renderHome(this.state);
         }
     }
 
     renderAppHeader() {
         const tabTitles = {
             [TABS.HOME]: 'Svenska Kat',
+            [TABS.CATEGORIES]: 'Categorieën',
             [TABS.PRACTICE]: 'Uitspraak',
             [TABS.WRITING]: 'Schrijven',
             [TABS.FLASHCARDS]: 'Flashcards',
@@ -694,7 +736,9 @@ export class SwedishApp {
         return renderHeader({
             title: tabTitles[this.state.currentTab] || 'Svenska Kat',
             showVersion: this.state.currentTab === TABS.HOME,
-            showBack: ![TABS.HOME].includes(this.state.currentTab),
+            showBack: ![TABS.HOME, TABS.CATEGORIES, TABS.BADGES, TABS.SETTINGS].includes(
+                this.state.currentTab
+            ),
             backAction: "app.setTab('home')"
         });
     }

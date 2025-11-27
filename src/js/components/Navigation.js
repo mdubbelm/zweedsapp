@@ -38,11 +38,11 @@ function createNavItem(tab, icon, label, currentTab, onClick) {
  * @returns {string} HTML string
  */
 export function renderNavigation(currentTab) {
-    // Only show core tabs - learning modes accessible via Home
+    // Core navigation tabs
     const navItems = [
         { tab: TABS.HOME, icon: 'fa-home', label: 'Home' },
+        { tab: TABS.CATEGORIES, icon: 'fa-folder', label: 'Categorieën' },
         { tab: TABS.BADGES, icon: 'fa-trophy', label: 'Badges' },
-        { tab: TABS.LEADERBOARD, icon: 'fa-ranking-star', label: 'Ranking' },
         { tab: TABS.SETTINGS, icon: 'fa-cog', label: 'Instellingen' }
     ];
 

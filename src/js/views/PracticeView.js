@@ -175,24 +175,24 @@ export function renderPractice(state, getFilteredPhrases) {
                     isCompleted
                         ? `
                     <button disabled
-                            class="flex-1 py-4 rounded-xl font-bold text-white opacity-60"
+                            class="flex-1 py-4 rounded-xl font-bold text-white"
                             style="background: var(--scandi-green);">
-                        <i class="fas fa-check-double mr-2"></i>Al voltooid
+                        <i class="fas fa-check mr-2"></i>Voltooid
                     </button>
                 `
                         : state.hasListenedToAudio || state.audioURL
                           ? `
                     <button onclick="app.markPhraseComplete()"
-                            class="flex-1 py-4 rounded-xl font-bold text-white card-hover card-shadow"
-                            style="background: var(--scandi-green);">
-                        <i class="fas fa-check mr-2"></i>Voltooid
+                            class="flex-1 py-4 rounded-xl font-bold card-hover card-shadow border-2 transition-all hover:bg-green-50"
+                            style="border-color: var(--scandi-green); color: var(--scandi-green); background: white;">
+                        <i class="far fa-square mr-2"></i>Voltooid
                     </button>
                 `
                           : `
                     <div id="complete-btn-wrapper" class="flex-1" onclick="handleDisabledClick()">
                         <button disabled
-                                class="w-full py-4 rounded-xl font-bold text-white opacity-60 cursor-not-allowed"
-                                style="background: var(--scandi-green); pointer-events: none;">
+                                class="w-full py-4 rounded-xl font-bold text-gray-400 bg-gray-100 cursor-not-allowed border-2 border-gray-200"
+                                style="pointer-events: none;">
                             <i class="fas fa-lock mr-2"></i>Voltooid
                         </button>
                         <p class="text-xs text-gray-500 text-center mt-1">Luister of neem eerst op</p>

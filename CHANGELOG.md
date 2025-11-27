@@ -5,6 +5,61 @@ All notable changes to Svenska Kat (formerly Zweeds B1) Language Learning App wi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.11.0] - 2025-11-27
+
+### Added
+- **Vite Build System** 🚀 - Modern build tooling for better DX and performance
+  - Vite 7 with hot module replacement (HMR) for instant updates
+  - Production builds with tree-shaking and minification
+  - Path aliases for cleaner imports (`@components`, `@services`, etc.)
+- **ESLint 9 + Prettier** 📝 - Code quality enforcement
+  - ESLint flat config with strict rules
+  - Prettier integration for consistent formatting
+  - Pre-commit hooks via Husky + lint-staged
+- **Vitest Testing Framework** ✅ - Unit tests for data integrity
+  - 16 tests covering phrases and badges data
+  - jsdom environment for browser API mocking
+  - Coverage reporting support
+- **GitHub Actions CI/CD** 🔄 - Automated quality checks
+  - CI workflow: lint → test → build on every push/PR
+  - Deploy workflow: automatic GitHub Pages deployment
+  - Node.js 20 environment
+- **Modular Architecture** 🏗️ - Code organization overhaul
+  - Services layer: `auth.js`, `data.js`, `analytics.js`, `supabase.js`
+  - Components: `Navigation.js`, `Header.js`, `CategoryCard.js`, `PhraseCard.js`, `BadgeCard.js`
+  - Utilities: `constants.js`, `helpers.js`
+  - Data: `phrases.js` (220+ phrases), `badges.js` (13 badges)
+- **PWA with Workbox** 📱 - Improved offline support
+  - vite-plugin-pwa for automatic service worker generation
+  - Precaching of all app assets
+  - Auto-update prompts for new versions
+
+### Changed
+- **Project Structure** 📁 - From single-file to modular
+  - Source code in `src/` directory
+  - Build output in `dist/` directory
+  - Static assets in `public/`
+  - Tests in `tests/`
+- **CSS Architecture** 🎨 - Split into logical files
+  - `variables.css` - CSS custom properties
+  - `animations.css` - Keyframe animations
+  - `main.css` - Component styles
+- **Environment Variables** 🔐 - Secure credential handling
+  - Supabase credentials via `.env` file
+  - `VITE_` prefix for client-exposed variables
+  - `.env.example` template provided
+- **Documentation** 📚 - Updated CLAUDE.md
+  - New development commands (npm scripts)
+  - Project structure documentation
+  - Environment setup instructions
+
+### Technical
+- Dependencies: Vite 7.2.4, ESLint 9.39.1, Vitest 4.0.14, Husky 9.1.7
+- Node.js 20+ required
+- Build size: 41.07 kB JS, 3.83 kB CSS (gzipped: ~12.5 kB total)
+- PWA precaches 9 entries (46.11 KiB)
+- ESLint configured with browser globals for MediaRecorder, SpeechSynthesis, etc.
+
 ## [1.10.2] - 2025-11-24
 
 ### Added

@@ -11,20 +11,22 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Before committing ANY code changes, run these checks:
 
 ```bash
-# 1. Syntax check (basic)
-node -e "console.log('Syntax OK')" 2>&1 || echo "Check for syntax errors manually"
+# 1. Run lint (catches syntax errors and formatting issues)
+npm run lint
 
-# 2. Search for common issues
-grep -n "undefined is not an object" index.html || echo "✓ No obvious undefined errors"
-grep -n "normalize d User" index.html && echo "⚠️  Found typo!" || echo "✓ No variable name typos"
+# 2. Run tests
+npm run test
 
-# 3. Verify critical sections aren't broken
-grep -n "renderPractice\|renderWriting\|renderFlashcards" index.html | wc -l
-# Should return 3+ (one for each method definition)
+# 3. Run build (catches any build-time errors)
+npm run build
+
+# 4. Test locally with dev server
+npm run dev
+# Visit http://localhost:5173
 ```
 
 **Manual Checks:**
-- [ ] Open `index.html` locally and test the changed feature
+- [ ] Test the changed feature in the browser
 - [ ] Check browser console for JavaScript errors
 - [ ] Test on critical user path: signup → practice → writing
 - [ ] If touching validation logic: test with known input/output
@@ -33,22 +35,25 @@ grep -n "renderPractice\|renderWriting\|renderFlashcards" index.html | wc -l
 ### Deployment Workflow
 
 After testing locally:
-1. **Commit changes** with descriptive message
-2. **Push to GitHub** - changes are NOT visible until pushed
-3. **Wait 2-3 minutes** for GitHub Pages to deploy
-4. **Ask user to hard refresh** (Cmd+Shift+R / Ctrl+Shift+R)
-5. **Verify deployment** - ask user to test and report back
+1. **Run all checks**: `npm run lint && npm run test && npm run build`
+2. **Commit changes** with descriptive message
+3. **Push to GitHub** - CI pipeline runs automatically
+4. **Wait for CI** - GitHub Actions runs lint, test, build
+5. **Deploy happens automatically** when CI passes on main branch
 
 **Workflow for every change:**
 ```bash
-# 1. TEST LOCALLY FIRST
-open index.html  # or python3 -m http.server 8000
+# 1. Development
+npm run dev  # Start dev server with hot reload
 
-# 2. Only push after local testing succeeds
-git add <files>
-git commit -m "fix/feat: Description of change"
+# 2. Before committing
+npm run lint && npm run test && npm run build
+
+# 3. Commit and push
+git add .
+git commit -m "feat/fix: Description of change"
 git push origin main
-# → GitHub Pages auto-deploys to: https://mdubbelm.github.io/zweedsapp
+# → GitHub Actions auto-deploys to: https://mdubbelm.github.io/zweedsapp
 ```
 
 **Never tell the user to "refresh the page" without first pushing to GitHub!**
@@ -56,13 +61,17 @@ The live app URL is GitHub Pages, NOT a local file. Local changes are invisible 
 
 ## Project Overview
 
-**Svenska Kat** (formerly Zweeds B1) is a Swedish language learning web application built as a single-page HTML file with Supabase backend integration. The app features audio recording for pronunciation practice, flashcards, gamification with achievements, and a competitive leaderboard.
+**Svenska Kat** (formerly Zweeds B1) is a Swedish language learning web application with Supabase backend integration. The app features audio recording for pronunciation practice, flashcards, gamification with achievements, and a competitive leaderboard.
 
-- **Technology**: Vanilla JavaScript (ES6+), single HTML file architecture
-- **Styling**: Tailwind CSS (CDN)
+- **Build System**: Vite 7 with vite-plugin-pwa
+- **Technology**: Vanilla JavaScript (ES6 modules)
+- **Styling**: Tailwind CSS (build-time) + Custom CSS variables
 - **Backend**: Supabase (PostgreSQL + Auth)
 - **APIs**: MediaRecorder, Web Speech API, Web Audio API
-- **PWA**: Service Worker with auto-update system and offline support
+- **PWA**: Workbox-powered Service Worker with auto-update
+- **Testing**: Vitest for unit tests
+- **Linting**: ESLint 9 (flat config) + Prettier
+- **CI/CD**: GitHub Actions (lint → test → build → deploy)
 - **Deployment**: GitHub Pages (https://mdubbelm.github.io/zweedsapp)
 - **Repository**: https://github.com/mdubbelm/zweedsapp
 
@@ -70,29 +79,116 @@ The live app URL is GitHub Pages, NOT a local file. Local changes are invisible 
 
 ### Local Development
 ```bash
-# No build process - open file directly in browser
-open index.html
+# Install dependencies (first time only)
+npm install
 
-# Or use a simple HTTP server for testing
-python3 -m http.server 8000
-# Then visit http://localhost:8000
+# Start development server with hot reload
+npm run dev
+# → Opens at http://localhost:5173
+
+# Build for production
+npm run build
+# → Output in dist/
+
+# Preview production build
+npm run preview
+```
+
+### Code Quality
+```bash
+# Run ESLint
+npm run lint
+
+# Auto-fix linting issues
+npm run lint:fix
+
+# Format code with Prettier
+npm run format
+
+# Run unit tests
+npm run test
+
+# Run tests in watch mode
+npm run test:watch
 ```
 
 ### Version Control
 ```bash
-# Standard git workflow
-git add index.html
-git commit -m "Version X.X.X: Feature description"
-git push origin main
+# Pre-commit hook runs automatically: lint-staged
+# Commits only allowed if lint passes
 
-# Deploy by pushing to main branch
+# Standard workflow
+git add .
+git commit -m "feat/fix: Description of change"
+git push origin main
 ```
 
 ### Testing
-- Manual testing in browser (Chrome, Safari, Firefox)
+- **Unit tests**: Vitest runs on CI and locally
+- **Manual testing**: Use `npm run dev` for hot reload
 - **Critical**: Test audio recording on iOS Safari (special handling required)
 - Test authentication flow and session persistence
 - Verify Supabase data sync across browser sessions
+
+## Project Structure
+
+```
+zweedsapp/
+├── src/                      # Source code
+│   ├── index.html           # Main HTML entry point
+│   ├── main.js              # JavaScript entry point
+│   ├── js/
+│   │   ├── app.js           # Main application class
+│   │   ├── components/      # UI components
+│   │   │   ├── Navigation.js
+│   │   │   ├── Header.js
+│   │   │   ├── CategoryCard.js
+│   │   │   ├── PhraseCard.js
+│   │   │   └── BadgeCard.js
+│   │   ├── services/        # Backend services
+│   │   │   ├── supabase.js  # Supabase client
+│   │   │   ├── auth.js      # Authentication
+│   │   │   ├── data.js      # Data persistence
+│   │   │   └── analytics.js # Event tracking
+│   │   ├── utils/           # Utilities
+│   │   │   ├── constants.js # App constants
+│   │   │   └── helpers.js   # Helper functions
+│   │   └── data/            # Static data
+│   │       ├── phrases.js   # All 220+ Swedish phrases
+│   │       └── badges.js    # Badge definitions
+│   └── styles/              # CSS files
+│       ├── variables.css    # CSS custom properties
+│       ├── animations.css   # Keyframe animations
+│       └── main.css         # Component styles
+├── public/                   # Static assets (copied to dist)
+│   └── icons/               # PWA icons
+├── tests/                    # Unit tests
+│   ├── setup.js             # Test configuration
+│   ├── phrases.test.js
+│   └── badges.test.js
+├── .github/workflows/        # CI/CD
+│   ├── ci.yml               # Lint, test, build
+│   └── deploy.yml           # GitHub Pages deploy
+├── dist/                     # Build output (git-ignored)
+├── vite.config.js           # Vite configuration
+├── eslint.config.js         # ESLint flat config
+├── vitest.config.js         # Test configuration
+├── package.json             # Dependencies and scripts
+├── .env                     # Environment variables (git-ignored)
+├── .env.example             # Environment template
+└── CLAUDE.md                # This file
+```
+
+## Environment Variables
+
+Create a `.env` file based on `.env.example`:
+
+```env
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key
+```
+
+**Note**: Variables must be prefixed with `VITE_` to be exposed to the client.
 
 ## Scandinavian Design Guidelines
 

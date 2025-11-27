@@ -1,0 +1,1236 @@
+/**
+ * Svenska Kat - Main Application Class
+ * Modular version with Vite build system
+ */
+
+import { categories } from './data/phrases.js';
+import { badges } from './data/badges.js';
+import { APP_VERSION, TABS } from './utils/constants.js';
+import { escapeHtml, shuffleArray, isToday, isYesterday } from './utils/helpers.js';
+
+// Services
+import {
+    initSupabase,
+    isSupabaseEnabled,
+    checkAuth,
+    signUp as authSignUp,
+    signIn as authSignIn,
+    signOut as authSignOut,
+    resetPassword as authResetPassword,
+    changePassword as authChangePassword
+} from './services/index.js';
+
+import {
+    getDefaultStats,
+    loadUserData,
+    saveUserData,
+    loadLeaderboard,
+    deleteUserData
+} from './services/data.js';
+
+import { trackEvent, EVENTS } from './services/analytics.js';
+
+// Views
+import {
+    renderLogin,
+    renderSetup,
+    toggleSignUp,
+    renderHome,
+    renderSettings,
+    renderPractice,
+    renderWriting,
+    renderFlashcards,
+    renderGrammar,
+    renderBadges,
+    renderLeaderboard
+} from './views/index.js';
+
+// Components
+import { renderNavigation } from './components/Navigation.js';
+import { renderHeader } from './components/Header.js';
+
+export class SwedishApp {
+    constructor() {
+        this.state = {
+            currentTab: TABS.LOGIN,
+            currentCategory: 'greetings',
+            currentPhraseIndex: 0,
+            isRecording: false,
+            audioURL: null,
+            hasListenedToAudio: false,
+            audioBlob: null,
+            audioMimeType: null,
+            showAnswer: false,
+            completedPhrases: [],
+            newBadge: null,
+            flashcardCategory: 'greetings',
+            currentFlashcardIndex: 0,
+            showFlashcardAnswer: false,
+            user: null,
+            leaderboard: [],
+            stats: getDefaultStats(),
+            showUpdateNotification: false,
+            lastSeenVersion: localStorage.getItem('lastSeenVersion') || '1.0.0',
+            showOnboarding: false,
+            onboardingStep: 0,
+            dailyPhrases: [],
+            fromDailyProgram: false,
+            currentDailyPhraseIndex: -1,
+            showDailyCompletion: false,
+            showDailyProgramModal: false,
+            difficultyFilter: null,
+            writingCategory: 'greetings',
+            currentWritingIndex: 0,
+            writingInput: '',
+            showWritingFeedback: false,
+            writingCorrect: false,
+            selectedCategoryForMode: null,
+            selectedModeForCategory: null,
+            isShuffled: false,
+            shuffledPhrases: [],
+            phraseHistory: {},
+            grammarType: null,
+            grammarItemIndex: 0
+        };
+
+        this.mediaRecorder = null;
+        this.audioChunks = [];
+        this.audioStream = null;
+
+        // Data references
+        this.categories = categories;
+        this.badges = badges;
+
+        // Make app globally accessible for onclick handlers
+        window.app = this;
+
+        // Initialize
+        this.init();
+    }
+
+    async init() {
+        // Initialize Supabase
+        await initSupabase();
+
+        // Initialize TTS voices
+        this.initVoices();
+
+        // Check authentication
+        await this.checkAuth();
+
+        // Render initial view
+        this.render();
+
+        // Check for app updates
+        this.checkForUpdates();
+    }
+
+    // =====================
+    // Authentication Methods
+    // =====================
+
+    async checkAuth() {
+        const { user, needsSetup } = await checkAuth();
+
+        if (needsSetup) {
+            this.state.currentTab = TABS.LOGIN; // Will show setup
+            return;
+        }
+
+        if (user) {
+            this.state.user = user;
+            await this.loadUserData();
+            this.checkForUpdates();
+            this.generateDailyProgram();
+            this.state.currentTab = TABS.HOME;
+        } else {
+            this.state.currentTab = TABS.LOGIN;
+        }
+
+        this.render();
+    }
+
+    async signUp(email, password, displayName, rememberMe = true) {
+        const result = await authSignUp(email, password, displayName, rememberMe);
+
+        if (result.error) {
+            alert('Registratie mislukt: ' + result.error);
+            return;
+        }
+
+        if (result.needsVerification) {
+            alert(
+                'Registratie succesvol! Check je email voor verificatie. (Let op: kan in spam terechtkomen)'
+            );
+            this.state.currentTab = TABS.LOGIN;
+            this.render();
+            return;
+        }
+
+        if (result.user) {
+            this.state.user = result.user;
+            this.state.stats.displayName = result.displayName;
+            this.state.lastSeenVersion = APP_VERSION;
+            localStorage.setItem('lastSeenVersion', APP_VERSION);
+            await this.saveUserData();
+
+            // Track signup
+            await this.trackEvent(EVENTS.USER_SIGNUP, { display_name_set: !!displayName });
+
+            this.state.currentTab = TABS.HOME;
+            alert('Account succesvol aangemaakt! Welkom bij Svenska Kat 🐱');
+
+            // Start tour for new users
+            this.state.showOnboarding = true;
+            this.state.onboardingStep = 0;
+            this.render();
+        }
+    }
+
+    async signIn(email, password, rememberMe = true) {
+        const result = await authSignIn(email, password, rememberMe);
+
+        if (result.error) {
+            alert('Inloggen mislukt: ' + result.error);
+            return;
+        }
+
+        if (result.user) {
+            this.state.user = result.user;
+            await this.loadUserData();
+            this.checkForUpdates();
+            this.generateDailyProgram();
+            this.state.currentTab = TABS.HOME;
+            this.render();
+        }
+    }
+
+    async signOut() {
+        const result = await authSignOut();
+
+        if (result.error) {
+            alert('Uitloggen mislukt: ' + result.error);
+            return;
+        }
+
+        this.state.user = null;
+        this.state.stats = getDefaultStats();
+        this.state.completedPhrases = [];
+        this.state.currentTab = TABS.LOGIN;
+        this.render();
+    }
+
+    async resetPassword() {
+        const email = window.prompt('Voer je email adres in voor wachtwoord reset:');
+        if (email && email.trim()) {
+            const result = await authResetPassword(email);
+            if (result.success) {
+                window.alert('Reset link verstuurd! Check je email (ook spam folder).');
+            } else {
+                window.alert('Wachtwoord reset mislukt: ' + result.error);
+            }
+        }
+    }
+
+    async changePassword() {
+        const newPassword = window.prompt('Nieuw wachtwoord (minimaal 6 tekens):');
+        if (newPassword && newPassword.length >= 6) {
+            const result = await authChangePassword(newPassword);
+            if (result.success) {
+                window.alert('Wachtwoord succesvol gewijzigd!');
+            } else {
+                window.alert('Wachtwoord wijzigen mislukt: ' + result.error);
+            }
+        } else if (newPassword !== null) {
+            window.alert('Wachtwoord moet minimaal 6 tekens zijn');
+        }
+    }
+
+    // =====================
+    // Data Methods
+    // =====================
+
+    async loadUserData() {
+        if (!this.state.user) {
+            return;
+        }
+
+        const result = await loadUserData(this.state.user.id);
+
+        this.state.stats = result.stats;
+        this.state.completedPhrases = result.completedPhrases;
+        this.state.phraseHistory = result.phraseHistory;
+
+        if (result.isNewUser) {
+            await this.saveUserData();
+        }
+
+        this.checkStreak();
+        await this.loadLeaderboard();
+    }
+
+    async saveUserData() {
+        if (!this.state.user) {
+            return;
+        }
+
+        await saveUserData(
+            this.state.user.id,
+            this.state.stats,
+            this.state.completedPhrases,
+            this.state.phraseHistory
+        );
+    }
+
+    async loadLeaderboard() {
+        const result = await loadLeaderboard(10);
+        this.state.leaderboard = result.leaderboard;
+    }
+
+    async deleteAccount() {
+        if (
+            confirm(
+                'Weet je zeker dat je je account wilt verwijderen? Dit kan niet ongedaan worden!'
+            )
+        ) {
+            if (confirm('Laatste waarschuwing! Alle voortgang wordt permanent verwijderd.')) {
+                const result = await deleteUserData(this.state.user.id);
+                if (!result.error) {
+                    alert(
+                        'Voortgang verwijderd. Neem contact op met support om je account volledig te verwijderen.'
+                    );
+                    await this.signOut();
+                } else {
+                    alert('Account verwijderen mislukt: ' + result.error);
+                }
+            }
+        }
+    }
+
+    // =====================
+    // Analytics
+    // =====================
+
+    async trackEvent(eventName, properties = {}) {
+        if (!this.state.user) {
+            return;
+        }
+
+        await trackEvent(this.state.user.id, eventName, properties, {
+            level: this.state.stats.level,
+            totalPoints: this.state.stats.totalPoints,
+            streak: this.state.stats.streak
+        });
+    }
+
+    // =====================
+    // Game Logic
+    // =====================
+
+    checkStreak() {
+        const lastDate = this.state.stats.lastPracticeDate;
+        if (!lastDate) {
+            return;
+        }
+
+        if (isYesterday(lastDate)) {
+            // Streak continues
+        } else if (!isToday(lastDate)) {
+            // Streak broken
+            this.state.stats.streak = 0;
+        }
+    }
+
+    checkForUpdates() {
+        if (this.state.lastSeenVersion !== APP_VERSION && this.state.user) {
+            this.state.showUpdateNotification = true;
+        }
+    }
+
+    dismissUpdate() {
+        this.state.showUpdateNotification = false;
+        this.state.lastSeenVersion = APP_VERSION;
+        localStorage.setItem('lastSeenVersion', APP_VERSION);
+        this.render();
+    }
+
+    // =====================
+    // Difficulty Filtering
+    // =====================
+
+    getFilteredPhrases(phrases) {
+        const pref = this.state.stats.difficultyPreference;
+        if (!pref) {
+            return phrases;
+        }
+
+        return phrases.filter(p => {
+            if (pref === 'easy') {
+                return p.difficulty === 'easy';
+            }
+            if (pref === 'easy-medium') {
+                return p.difficulty === 'easy' || p.difficulty === 'medium';
+            }
+            if (pref === 'medium') {
+                return p.difficulty === 'medium';
+            }
+            if (pref === 'hard') {
+                return p.difficulty === 'hard';
+            }
+            return true;
+        });
+    }
+
+    async setDifficultyPreference(difficulty) {
+        this.state.stats.difficultyPreference = difficulty;
+
+        // Clear daily program cache
+        localStorage.removeItem('dailyProgram');
+        localStorage.removeItem('dailyProgramDate');
+
+        // Regenerate daily program
+        this.generateDailyProgram();
+
+        // Save and re-render
+        await this.saveUserData();
+        this.render();
+    }
+
+    // =====================
+    // Daily Program
+    // =====================
+
+    generateDailyProgram() {
+        const today = new Date().toDateString();
+        const storedDate = localStorage.getItem('dailyProgramDate');
+
+        if (storedDate === today && localStorage.getItem('dailyProgram')) {
+            try {
+                this.state.dailyPhrases = JSON.parse(localStorage.getItem('dailyProgram'));
+                return;
+            } catch {
+                // Regenerate if parsing fails
+            }
+        }
+
+        // Get enabled categories
+        const enabledCategories =
+            this.state.stats.categoryPreferences || Object.keys(this.categories);
+
+        // Collect all eligible phrases
+        let allPhrases = [];
+        enabledCategories.forEach(catId => {
+            const category = this.categories[catId];
+            if (category) {
+                const filtered = this.getFilteredPhrases(category.phrases);
+                filtered.forEach(phrase => {
+                    allPhrases.push({
+                        ...phrase,
+                        categoryId: catId,
+                        categoryName: category.name
+                    });
+                });
+            }
+        });
+
+        // Shuffle and pick 10
+        allPhrases = shuffleArray(allPhrases);
+        const dailyPhrases = allPhrases.slice(0, 10).map((phrase, index) => ({
+            ...phrase,
+            exerciseType: index % 2 === 0 ? 'practice' : 'writing'
+        }));
+
+        this.state.dailyPhrases = dailyPhrases;
+        localStorage.setItem('dailyProgram', JSON.stringify(dailyPhrases));
+        localStorage.setItem('dailyProgramDate', today);
+    }
+
+    openDailyProgramModal() {
+        this.state.showDailyProgramModal = true;
+        this.render();
+    }
+
+    closeDailyProgramModal() {
+        this.state.showDailyProgramModal = false;
+        this.render();
+    }
+
+    // =====================
+    // Navigation
+    // =====================
+
+    switchTab(tab) {
+        this.state.currentTab = tab;
+
+        // Track feature usage
+        if (tab === TABS.FLASHCARDS) {
+            this.trackEvent(EVENTS.FLASHCARDS_OPENED);
+        } else if (tab === TABS.WRITING) {
+            this.trackEvent(EVENTS.WRITING_MODE_OPENED);
+        } else if (tab === TABS.GRAMMAR) {
+            this.trackEvent(EVENTS.GRAMMAR_OPENED);
+        } else if (tab === TABS.BADGES) {
+            this.trackEvent(EVENTS.BADGES_VIEWED);
+        } else if (tab === TABS.LEADERBOARD) {
+            this.trackEvent(EVENTS.LEADERBOARD_VIEWED);
+        } else if (tab === TABS.SETTINGS) {
+            this.trackEvent(EVENTS.SETTINGS_OPENED);
+        }
+
+        this.render();
+    }
+
+    setTab(tab) {
+        this.switchTab(tab);
+    }
+
+    selectCategory(categoryId) {
+        this.state.currentCategory = categoryId;
+        this.state.currentPhraseIndex = 0;
+        this.showModeSelector(categoryId);
+    }
+
+    showModeSelector(categoryId) {
+        this.state.selectedCategoryForMode = categoryId;
+        this.render();
+    }
+
+    showCategorySelector(mode) {
+        this.state.selectedModeForCategory = mode;
+        this.render();
+    }
+
+    closeModeSelector() {
+        this.state.selectedCategoryForMode = null;
+        this.render();
+    }
+
+    closeCategorySelector() {
+        this.state.selectedModeForCategory = null;
+        this.render();
+    }
+
+    startMode(mode) {
+        const category = this.state.selectedCategoryForMode;
+        this.state.currentCategory = category;
+        this.state.currentPhraseIndex = 0;
+        this.state.selectedCategoryForMode = null;
+        this.state.selectedModeForCategory = null;
+
+        if (mode === 'practice') {
+            this.state.currentTab = TABS.PRACTICE;
+        } else if (mode === 'writing') {
+            this.state.writingCategory = category;
+            this.state.currentWritingIndex = 0;
+            this.state.currentTab = TABS.WRITING;
+        } else if (mode === 'flashcards') {
+            this.state.flashcardCategory = category;
+            this.state.currentFlashcardIndex = 0;
+            this.state.currentTab = TABS.FLASHCARDS;
+        }
+
+        this.render();
+    }
+
+    // =====================
+    // User Settings
+    // =====================
+
+    async updateDisplayName() {
+        const newName = window.prompt('Nieuwe naam:', this.state.stats.displayName);
+        if (newName && newName.trim()) {
+            this.state.stats.displayName = newName.trim();
+            await this.saveUserData();
+            this.render();
+            window.alert('Naam succesvol gewijzigd!');
+        }
+    }
+
+    async toggleCategory(categoryId) {
+        if (!this.state.stats.categoryPreferences) {
+            this.state.stats.categoryPreferences = Object.keys(this.categories);
+        }
+
+        const index = this.state.stats.categoryPreferences.indexOf(categoryId);
+        if (index > -1) {
+            this.state.stats.categoryPreferences.splice(index, 1);
+        } else {
+            this.state.stats.categoryPreferences.push(categoryId);
+        }
+
+        this.generateDailyProgram();
+        await this.saveUserData();
+        this.render();
+    }
+
+    async toggleLeaderboardVisibility() {
+        this.state.stats.leaderboardVisible = this.state.stats.leaderboardVisible === false;
+        await this.saveUserData();
+        this.render();
+    }
+
+    // =====================
+    // Tour/Onboarding
+    // =====================
+
+    startTour() {
+        this.state.showOnboarding = true;
+        this.state.onboardingStep = 0;
+        this.state.currentTab = TABS.HOME;
+        localStorage.setItem('onboardingCompleted', 'false');
+        this.render();
+    }
+
+    // =====================
+    // Login Form Handling
+    // =====================
+
+    toggleSignUp() {
+        toggleSignUp();
+    }
+
+    async handleLogin() {
+        const email = document.getElementById('email')?.value;
+        const password = document.getElementById('password')?.value;
+        const rememberMe = document.getElementById('rememberMe')?.checked ?? true;
+        const displayNameField = document.getElementById('displayNameField');
+
+        if (!email || !password) {
+            alert('Vul email en wachtwoord in');
+            return;
+        }
+
+        if (displayNameField && displayNameField.style.display !== 'none') {
+            const displayName = document.getElementById('displayName')?.value;
+            if (!displayName) {
+                alert('Vul een naam in');
+                return;
+            }
+            await this.signUp(email, password, displayName, rememberMe);
+        } else {
+            await this.signIn(email, password, rememberMe);
+        }
+    }
+
+    // =====================
+    // Rendering
+    // =====================
+
+    render() {
+        const appElement = document.getElementById('app');
+        if (!appElement) {
+            return;
+        }
+
+        // Check if Supabase is configured
+        if (!isSupabaseEnabled() && this.state.currentTab === TABS.LOGIN) {
+            appElement.innerHTML = renderSetup();
+            return;
+        }
+
+        // Login view (no nav)
+        if (this.state.currentTab === TABS.LOGIN) {
+            appElement.innerHTML = renderLogin();
+            return;
+        }
+
+        // Main app with navigation
+        const content = this.renderCurrentTab();
+
+        appElement.innerHTML = `
+            ${this.state.showUpdateNotification ? this.renderUpdateNotification() : ''}
+            ${this.state.newBadge ? this.renderNewBadge() : ''}
+            ${this.state.showDailyProgramModal ? this.renderDailyProgramModal() : ''}
+            ${this.state.selectedCategoryForMode ? this.renderModeSelector() : ''}
+            ${this.state.selectedModeForCategory ? this.renderCategorySelector() : ''}
+
+            <div class="min-h-screen pb-20">
+                ${this.renderAppHeader()}
+                <main class="max-w-lg mx-auto p-4">
+                    ${content}
+                </main>
+            </div>
+
+            ${renderNavigation(this.state.currentTab)}
+        `;
+    }
+
+    renderCurrentTab() {
+        const filterFn = this.getFilteredPhrases.bind(this);
+        switch (this.state.currentTab) {
+            case TABS.HOME:
+                return renderHome(this.state, filterFn);
+            case TABS.PRACTICE:
+                return renderPractice(this.state, filterFn);
+            case TABS.WRITING:
+                return renderWriting(this.state, filterFn);
+            case TABS.FLASHCARDS:
+                return renderFlashcards(this.state, filterFn);
+            case TABS.GRAMMAR:
+                return renderGrammar(this.state);
+            case TABS.BADGES:
+                return renderBadges(this.state, this.badges);
+            case TABS.LEADERBOARD:
+                return renderLeaderboard(this.state);
+            case TABS.SETTINGS:
+                return renderSettings(this.state);
+            default:
+                return renderHome(this.state, filterFn);
+        }
+    }
+
+    renderAppHeader() {
+        const tabTitles = {
+            [TABS.HOME]: 'Svenska Kat',
+            [TABS.PRACTICE]: 'Uitspraak',
+            [TABS.WRITING]: 'Schrijven',
+            [TABS.FLASHCARDS]: 'Flashcards',
+            [TABS.GRAMMAR]: 'Grammatica',
+            [TABS.BADGES]: 'Badges',
+            [TABS.LEADERBOARD]: 'Leaderboard',
+            [TABS.SETTINGS]: 'Instellingen'
+        };
+
+        return renderHeader({
+            title: tabTitles[this.state.currentTab] || 'Svenska Kat',
+            showVersion: this.state.currentTab === TABS.HOME,
+            showBack: ![TABS.HOME].includes(this.state.currentTab),
+            backAction: "app.setTab('home')"
+        });
+    }
+
+    renderUpdateNotification() {
+        return `
+            <div class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 animate-slideDown">
+                <div class="bg-blue-600 text-white px-6 py-3 rounded-xl shadow-lg flex items-center gap-3">
+                    <i class="fas fa-gift"></i>
+                    <span>Nieuwe versie ${APP_VERSION} beschikbaar!</span>
+                    <button onclick="app.dismissUpdate()" class="ml-2 hover:bg-blue-700 px-2 py-1 rounded">
+                        OK
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    renderNewBadge() {
+        const badge = this.state.newBadge;
+        if (!badge) {
+            return '';
+        }
+
+        setTimeout(() => {
+            this.state.newBadge = null;
+            this.render();
+        }, 3000);
+
+        return `
+            <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fadeIn">
+                <div class="bg-white rounded-2xl p-8 mx-4 text-center animate-slideUp max-w-sm">
+                    <div class="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce bg-yellow-100">
+                        <i class="fas fa-${badge.icon} text-4xl text-yellow-600"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">Badge Behaald!</h2>
+                    <h3 class="text-xl font-semibold text-yellow-600 mb-2">${badge.name}</h3>
+                    <p class="text-gray-600">${badge.description}</p>
+                </div>
+            </div>
+        `;
+    }
+
+    renderDailyProgramModal() {
+        const phrases = this.state.dailyPhrases;
+        const completedCount = phrases.filter(p =>
+            this.state.completedPhrases.includes(`${p.categoryId}-${p.id}`)
+        ).length;
+
+        return `
+            <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onclick="if(event.target === this) app.closeDailyProgramModal()">
+                <div class="bg-white rounded-2xl p-6 max-w-md w-full max-h-[80vh] overflow-y-auto animate-slideUp">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-bold text-gray-800">Dagelijks Programma</h2>
+                        <button onclick="app.closeDailyProgramModal()" class="p-2 hover:bg-gray-100 rounded-lg">
+                            <i class="fas fa-times text-gray-500"></i>
+                        </button>
+                    </div>
+
+                    <p class="text-gray-600 mb-4">${completedCount} van ${phrases.length} voltooid</p>
+
+                    <div class="space-y-2">
+                        ${phrases
+                            .map((phrase, index) => {
+                                const isCompleted = this.state.completedPhrases.includes(
+                                    `${phrase.categoryId}-${phrase.id}`
+                                );
+                                return `
+                                <button onclick="app.startDailyPhrase(${index})"
+                                        class="w-full p-3 rounded-xl text-left transition-all ${
+                                            isCompleted
+                                                ? 'bg-green-50 border-2 border-green-200'
+                                                : 'bg-gray-50 hover:bg-gray-100'
+                                        }">
+                                    <div class="flex items-center gap-3">
+                                        <span class="text-lg">${phrase.exerciseType === 'practice' ? '🎤' : '⌨️'}</span>
+                                        <div class="flex-1">
+                                            <p class="font-medium text-gray-800">${escapeHtml(phrase.swedish)}</p>
+                                            <p class="text-sm text-gray-500">${phrase.categoryName}</p>
+                                        </div>
+                                        ${isCompleted ? '<i class="fas fa-check-circle text-green-500"></i>' : ''}
+                                    </div>
+                                </button>
+                            `;
+                            })
+                            .join('')}
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    startDailyPhrase(index) {
+        const phrase = this.state.dailyPhrases[index];
+        if (!phrase) {
+            return;
+        }
+
+        this.state.fromDailyProgram = true;
+        this.state.currentDailyPhraseIndex = index;
+        this.state.currentCategory = phrase.categoryId;
+        this.state.showDailyProgramModal = false;
+
+        if (phrase.exerciseType === 'practice') {
+            this.state.currentTab = TABS.PRACTICE;
+        } else {
+            this.state.writingCategory = phrase.categoryId;
+            this.state.currentTab = TABS.WRITING;
+        }
+
+        this.render();
+    }
+
+    renderModeSelector() {
+        const category = this.categories[this.state.selectedCategoryForMode];
+        if (!category) {
+            return '';
+        }
+
+        return `
+            <div class="mode-selector-overlay" onclick="if(event.target === this) app.closeModeSelector()">
+                <div class="mode-selector-modal">
+                    <div class="mode-selector-header">
+                        <p class="mode-selector-title">${category.name}</p>
+                        <p class="mode-selector-subtitle">Kies hoe je wilt oefenen</p>
+                    </div>
+
+                    <button onclick="app.startMode('practice')" class="mode-option">
+                        <div class="mode-option-icon" style="background: var(--scandi-blue);">
+                            <i class="fas fa-microphone text-white"></i>
+                        </div>
+                        <p class="mode-option-title">Uitspraak</p>
+                        <p class="mode-option-description">Luister en spreek de zinnen na</p>
+                    </button>
+
+                    <button onclick="app.startMode('writing')" class="mode-option">
+                        <div class="mode-option-icon" style="background: var(--scandi-teal);">
+                            <i class="fas fa-keyboard text-white"></i>
+                        </div>
+                        <p class="mode-option-title">Spelling</p>
+                        <p class="mode-option-description">Type de Zweedse vertaling</p>
+                    </button>
+
+                    <button onclick="app.startMode('flashcards')" class="mode-option">
+                        <div class="mode-option-icon" style="background: var(--scandi-green);">
+                            <i class="fas fa-layer-group text-white"></i>
+                        </div>
+                        <p class="mode-option-title">Flashcards</p>
+                        <p class="mode-option-description">Oefen met geheugenkaarten</p>
+                    </button>
+
+                    <button onclick="app.closeModeSelector()" class="mode-selector-cancel">
+                        Annuleren
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    renderCategorySelector() {
+        const mode = this.state.selectedModeForCategory;
+        const modeNames = {
+            practice: 'Uitspraak',
+            writing: 'Spelling',
+            flashcards: 'Flashcards'
+        };
+
+        return `
+            <div class="category-selector-overlay" onclick="if(event.target === this) app.closeCategorySelector()">
+                <div class="category-selector-modal">
+                    <div class="mode-selector-header">
+                        <p class="mode-selector-title">${modeNames[mode] || 'Oefenen'}</p>
+                        <p class="mode-selector-subtitle">Kies een categorie</p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        ${Object.entries(this.categories)
+                            .map(([id, cat]) => {
+                                return `
+                                <button onclick="app.state.selectedCategoryForMode = '${id}'; app.state.selectedModeForCategory = null; app.startMode('${mode}')"
+                                        class="p-3 rounded-xl text-white text-left"
+                                        style="background: var(--${cat.color === 'amber' ? 'scandi-amber' : cat.color === 'blue' ? 'scandi-blue' : cat.color === 'green' ? 'scandi-green' : cat.color});">
+                                    <i class="fas ${cat.icon} text-2xl mb-1"></i>
+                                    <p class="font-semibold text-sm">${cat.name}</p>
+                                </button>
+                            `;
+                            })
+                            .join('')}
+                    </div>
+
+                    <button onclick="app.closeCategorySelector()" class="mode-selector-cancel mt-4">
+                        Annuleren
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    // =====================
+    // Audio Methods
+    // =====================
+
+    speakSwedish(text) {
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'sv-SE';
+            utterance.rate = 0.8;
+
+            // Try to find a Swedish voice
+            const voices = window.speechSynthesis.getVoices();
+            const swedishVoice = voices.find(
+                v => v.lang === 'sv-SE' || v.lang === 'sv' || v.lang.startsWith('sv')
+            );
+            if (swedishVoice) {
+                utterance.voice = swedishVoice;
+            }
+
+            window.speechSynthesis.speak(utterance);
+        }
+    }
+
+    // Initialize voices (needed for some browsers)
+    initVoices() {
+        if ('speechSynthesis' in window) {
+            // Voices may not be available immediately
+            window.speechSynthesis.getVoices();
+            window.speechSynthesis.onvoiceschanged = () => {
+                window.speechSynthesis.getVoices();
+            };
+        }
+    }
+
+    async toggleRecording() {
+        if (this.state.isRecording) {
+            this.stopRecording();
+        } else {
+            await this.startRecording();
+        }
+    }
+
+    async startRecording() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            this.audioStream = stream;
+            this.audioChunks = [];
+
+            // Determine best MIME type
+            const mimeTypes = [
+                'audio/mp4',
+                'audio/webm;codecs=opus',
+                'audio/webm',
+                'audio/ogg',
+                'audio/wav'
+            ];
+            let mimeType = '';
+            for (const type of mimeTypes) {
+                if (MediaRecorder.isTypeSupported(type)) {
+                    mimeType = type;
+                    break;
+                }
+            }
+
+            this.mediaRecorder = new MediaRecorder(stream, mimeType ? { mimeType } : {});
+            this.state.audioMimeType = mimeType || 'audio/wav';
+
+            this.mediaRecorder.ondataavailable = event => {
+                if (event.data.size > 0) {
+                    this.audioChunks.push(event.data);
+                }
+            };
+
+            this.mediaRecorder.onstop = () => {
+                const blob = new Blob(this.audioChunks, { type: this.state.audioMimeType });
+                this.state.audioBlob = blob;
+                this.state.audioURL = URL.createObjectURL(blob);
+                this.render();
+            };
+
+            this.mediaRecorder.start();
+            this.state.isRecording = true;
+            this.render();
+        } catch (error) {
+            console.error('Recording error:', error);
+            window.alert('Kon microfoon niet gebruiken. Controleer je permissies.');
+        }
+    }
+
+    stopRecording() {
+        if (this.mediaRecorder && this.state.isRecording) {
+            this.mediaRecorder.stop();
+            this.state.isRecording = false;
+
+            if (this.audioStream) {
+                this.audioStream.getTracks().forEach(track => track.stop());
+            }
+        }
+    }
+
+    playRecording() {
+        if (this.state.audioURL) {
+            const audio = new Audio(this.state.audioURL);
+            audio.play();
+        }
+    }
+
+    // =====================
+    // Practice Methods
+    // =====================
+
+    toggleAnswer() {
+        this.state.showAnswer = !this.state.showAnswer;
+        this.render();
+    }
+
+    async markPhraseComplete() {
+        const category = this.categories[this.state.currentCategory];
+        if (!category) {
+            return;
+        }
+
+        const phrases = this.getFilteredPhrases(category.phrases);
+        const phrase = phrases[this.state.currentPhraseIndex];
+        if (!phrase) {
+            return;
+        }
+
+        const phraseId = `${this.state.currentCategory}-${phrase.id}`;
+
+        if (!this.state.completedPhrases.includes(phraseId)) {
+            this.state.completedPhrases.push(phraseId);
+
+            // Award points
+            const points =
+                phrase.difficulty === 'hard' ? 20 : phrase.difficulty === 'medium' ? 15 : 10;
+            this.state.stats.totalPoints += points;
+            this.state.stats.level = Math.floor(this.state.stats.totalPoints / 100) + 1;
+            this.state.stats.phrasesCompleted = (this.state.stats.phrasesCompleted || 0) + 1;
+            this.state.stats.dailyGoal = (this.state.stats.dailyGoal || 0) + 1;
+
+            this.checkStreak();
+            await this.saveUserData();
+        }
+
+        // Move to next phrase
+        if (this.state.currentPhraseIndex < phrases.length - 1) {
+            this.state.currentPhraseIndex++;
+            this.state.showAnswer = false;
+            this.state.audioURL = null;
+        }
+
+        this.render();
+    }
+
+    previousPhrase() {
+        if (this.state.currentPhraseIndex > 0) {
+            this.state.currentPhraseIndex--;
+            this.state.showAnswer = false;
+            this.state.audioURL = null;
+            this.render();
+        }
+    }
+
+    nextPhrase() {
+        const category = this.categories[this.state.currentCategory];
+        if (!category) {
+            return;
+        }
+
+        const phrases = this.getFilteredPhrases(category.phrases);
+        if (this.state.currentPhraseIndex < phrases.length - 1) {
+            this.state.currentPhraseIndex++;
+            this.state.showAnswer = false;
+            this.state.audioURL = null;
+            this.render();
+        }
+    }
+
+    // =====================
+    // Writing Methods
+    // =====================
+
+    updateWritingInput(value) {
+        this.state.writingInput = value;
+    }
+
+    checkWriting() {
+        const category = this.categories[this.state.writingCategory || this.state.currentCategory];
+        if (!category) {
+            return;
+        }
+
+        const phrases = this.getFilteredPhrases(category.phrases);
+        const phraseIndex = this.state.currentWritingIndex || 0;
+        const phrase = phrases[phraseIndex];
+        if (!phrase) {
+            return;
+        }
+
+        const input = this.state.writingInput || '';
+        const isCorrect = input.trim().toLowerCase() === phrase.swedish.toLowerCase();
+
+        this.state.showWritingFeedback = true;
+        this.state.writingCorrect = isCorrect;
+
+        if (isCorrect) {
+            const phraseId = `${this.state.writingCategory || this.state.currentCategory}-${phrase.id}`;
+            if (!this.state.completedPhrases.includes(phraseId)) {
+                this.state.completedPhrases.push(phraseId);
+                const points =
+                    phrase.difficulty === 'hard' ? 20 : phrase.difficulty === 'medium' ? 15 : 10;
+                this.state.stats.totalPoints += points;
+                this.state.stats.level = Math.floor(this.state.stats.totalPoints / 100) + 1;
+                this.state.stats.phrasesCompleted = (this.state.stats.phrasesCompleted || 0) + 1;
+                this.state.stats.dailyGoal = (this.state.stats.dailyGoal || 0) + 1;
+                this.checkStreak();
+                this.saveUserData();
+            }
+        }
+
+        this.render();
+    }
+
+    showWritingHint() {
+        const category = this.categories[this.state.writingCategory || this.state.currentCategory];
+        if (!category) {
+            return;
+        }
+
+        const phrases = this.getFilteredPhrases(category.phrases);
+        const phraseIndex = this.state.currentWritingIndex || 0;
+        const phrase = phrases[phraseIndex];
+        if (!phrase) {
+            return;
+        }
+
+        // Show first letters of each word
+        const hint = phrase.swedish
+            .split(' ')
+            .map(word => word[0] + '...')
+            .join(' ');
+        this.state.writingInput = hint;
+        this.render();
+
+        // Focus input
+        setTimeout(() => {
+            const input = document.getElementById('writingInput');
+            if (input) {
+                input.focus();
+            }
+        }, 100);
+    }
+
+    nextWritingPhrase() {
+        const category = this.categories[this.state.writingCategory || this.state.currentCategory];
+        if (!category) {
+            return;
+        }
+
+        const phrases = this.getFilteredPhrases(category.phrases);
+        if ((this.state.currentWritingIndex || 0) < phrases.length - 1) {
+            this.state.currentWritingIndex = (this.state.currentWritingIndex || 0) + 1;
+        }
+
+        this.state.writingInput = '';
+        this.state.showWritingFeedback = false;
+        this.state.writingCorrect = false;
+        this.render();
+    }
+
+    previousWritingPhrase() {
+        if ((this.state.currentWritingIndex || 0) > 0) {
+            this.state.currentWritingIndex = (this.state.currentWritingIndex || 0) - 1;
+            this.state.writingInput = '';
+            this.state.showWritingFeedback = false;
+            this.state.writingCorrect = false;
+            this.render();
+        }
+    }
+
+    // =====================
+    // Flashcard Methods
+    // =====================
+
+    flipFlashcard() {
+        this.state.showFlashcardAnswer = !this.state.showFlashcardAnswer;
+        this.render();
+    }
+
+    rateFlashcard(_rating) {
+        // Move to next flashcard
+        this.nextFlashcard();
+    }
+
+    nextFlashcard() {
+        const category =
+            this.categories[this.state.flashcardCategory || this.state.currentCategory];
+        if (!category) {
+            return;
+        }
+
+        const phrases = this.getFilteredPhrases(category.phrases);
+        if ((this.state.currentFlashcardIndex || 0) < phrases.length - 1) {
+            this.state.currentFlashcardIndex = (this.state.currentFlashcardIndex || 0) + 1;
+        }
+
+        this.state.showFlashcardAnswer = false;
+        this.render();
+    }
+
+    previousFlashcard() {
+        if ((this.state.currentFlashcardIndex || 0) > 0) {
+            this.state.currentFlashcardIndex = (this.state.currentFlashcardIndex || 0) - 1;
+            this.state.showFlashcardAnswer = false;
+            this.render();
+        }
+    }
+
+    shuffleFlashcards() {
+        // Reset to start with shuffled order
+        this.state.currentFlashcardIndex = 0;
+        this.state.showFlashcardAnswer = false;
+        this.render();
+    }
+
+    // =====================
+    // Grammar Methods
+    // =====================
+
+    openGrammarTopic(topicKey) {
+        this.state.grammarType = topicKey;
+        this.render();
+    }
+
+    closeGrammarTopic() {
+        this.state.grammarType = null;
+        this.render();
+    }
+}

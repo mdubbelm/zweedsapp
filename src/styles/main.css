@@ -1,0 +1,369 @@
+/* Tailwind CSS v4 */
+@import 'tailwindcss';
+
+/* CSS Custom Properties - Scandinavian Design System */
+:root {
+    /* Primary Colors */
+    --scandi-blue: #5b9bd5;
+    --scandi-green: #5aad5a;
+    --scandi-amber: #f4a261;
+    --scandi-teal: #2d9da8;
+    --scandi-red: #ef4444;
+    --scandi-grey: #f5f7fa;
+
+    /* Category Colors */
+    --dusty-rose: #d4a5a5;
+    --steel-blue: #6b8cae;
+    --lavender-grey: #9fa8bc;
+    --coral: #e89e8d;
+    --clay: #c9826b;
+}
+
+/* Base Styles */
+body {
+    font-family:
+        'Inter',
+        system-ui,
+        -apple-system,
+        sans-serif;
+    -webkit-tap-highlight-color: transparent;
+    background-color: var(--scandi-grey);
+}
+
+/* Glass Effect for Cards */
+.glass-effect {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* Card Shadow */
+.card-shadow {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* Card Hover Effect */
+.card-hover {
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.card-hover:active {
+    transform: translateY(0);
+}
+
+/* Animations */
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+@keyframes bounce {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+}
+
+@keyframes pulse {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Animation Utility Classes */
+.animate-slideUp {
+    animation: slideUp 0.4s ease-out;
+}
+
+.animate-slideDown {
+    animation: slideDown 0.3s ease-out;
+}
+
+.animate-fadeIn {
+    animation: fadeIn 0.3s ease-out;
+}
+
+.animate-scaleIn {
+    animation: scaleIn 0.3s ease-out;
+}
+
+.animate-bounce {
+    animation: bounce 1s ease-in-out infinite;
+}
+
+.animate-pulse {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+/* Mobile Optimization */
+@supports (-webkit-overflow-scrolling: touch) {
+    .scroll-container {
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* Perspective for Flashcard Flip */
+.perspective-1000 {
+    perspective: 1000px;
+}
+
+/* Hide Scrollbar (but keep functionality) */
+.hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+/* Safe Area Insets for iOS */
+.safe-bottom {
+    padding-bottom: env(safe-area-inset-bottom, 20px);
+}
+
+/* Input Focus Styles */
+input:focus,
+textarea:focus {
+    outline: none;
+}
+
+/* Button Active State */
+button:active {
+    transform: scale(0.98);
+}
+
+/* Badge Notification Animation */
+@keyframes badgePopIn {
+    0% {
+        opacity: 0;
+        transform: scale(0) rotate(-20deg);
+    }
+    50% {
+        transform: scale(1.2) rotate(5deg);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
+    }
+}
+
+.animate-badge-pop {
+    animation: badgePopIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+/* Progress Bar Shimmer */
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.shimmer {
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+}
+
+/* Recording Pulse Animation */
+@keyframes recordingPulse {
+    0%,
+    100% {
+        box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
+    }
+    50% {
+        box-shadow: 0 0 0 15px rgba(239, 68, 68, 0);
+    }
+}
+
+.recording-pulse {
+    animation: recordingPulse 1.5s ease-in-out infinite;
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Mode Selector Modal */
+.mode-selector-overlay,
+.category-selector-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 1rem;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.mode-selector-modal,
+.category-selector-modal {
+    background: white;
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 400px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: scaleIn 0.2s ease-out;
+}
+
+.mode-selector-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.mode-selector-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.25rem;
+}
+
+.mode-selector-subtitle {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.mode-option {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    border-radius: 1rem;
+    background: #f9fafb;
+    border: 2px solid transparent;
+    text-align: left;
+    margin-bottom: 0.75rem;
+    transition: all 0.2s ease;
+}
+
+.mode-option:hover {
+    border-color: var(--scandi-blue);
+    background: #f0f9ff;
+}
+
+.mode-option-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.mode-option-title {
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 0.125rem;
+}
+
+.mode-option-description {
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.mode-selector-cancel {
+    width: 100%;
+    padding: 0.75rem;
+    border-radius: 0.75rem;
+    font-weight: 600;
+    color: #6b7280;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.mode-selector-cancel:hover {
+    background: #f3f4f6;
+}
+
+/* Daily Program Modal */
+.daily-program-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 1rem;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.daily-program-modal {
+    background: white;
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 500px;
+    max-height: 80vh;
+    overflow-y: auto;
+    animation: scaleIn 0.2s ease-out;
+}

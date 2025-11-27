@@ -288,8 +288,18 @@
 
     <script>
         // App Version
-        const APP_VERSION = '1.10.3';
+        const APP_VERSION = '1.10.4';
         const RELEASE_NOTES = {
+            '1.10.4': {
+                date: '2025-11-27',
+                features: [
+                    '♿ WCAG: Font sizes 12px→14px voor betere leesbaarheid',
+                    '🔒 Privacy: Leaderboard zichtbaarheid toggle in Settings',
+                    '🎯 Categories tonen nu gefilterde aantallen bij actief filter',
+                    '🐛 Fix: Loginscherm layout (emoji elementen)',
+                    '🎨 Shuffle buttons en nav labels verbeterd'
+                ]
+            },
             '1.10.3': {
                 date: '2025-11-26',
                 features: [
@@ -1372,10 +1382,15 @@
                         .from('user_progress')
                         .select('stats')
                         .order('stats->totalPoints', { ascending: false })
-                        .limit(10);
+                        .limit(20); // Fetch more to account for hidden users
 
                     if (data) {
-                        this.state.leaderboard = data.map(item => item.stats);
+                        // Filter out users who have hidden themselves from leaderboard
+                        // and take top 10 visible users
+                        this.state.leaderboard = data
+                            .map(item => item.stats)
+                            .filter(stats => stats.leaderboardVisible !== false)
+                            .slice(0, 10);
                     }
                 } catch (error) {
                     console.error('Error loading leaderboard:', error);
@@ -1551,6 +1566,17 @@
 
                 // Regenerate daily program with new preferences
                 this.generateDailyProgram();
+
+                // Save to database
+                await this.saveUserData();
+
+                // Re-render
+                this.render();
+            }
+
+            async toggleLeaderboardVisibility() {
+                // Toggle leaderboard visibility (default is true/visible)
+                this.state.stats.leaderboardVisible = this.state.stats.leaderboardVisible === false ? true : false;
 
                 // Save to database
                 await this.saveUserData();
@@ -1858,11 +1884,11 @@
                             <div class="grid grid-cols-2 gap-4 mb-6">
                                 <div class="bg-blue-100 rounded-xl p-4">
                                     <div class="text-3xl font-bold text-blue-600">${this.state.dailyPhrases.length}</div>
-                                    <div class="text-xs text-gray-600 mt-1">Zinnen voltooid</div>
+                                    <div class="text-sm text-gray-600 mt-1">Zinnen voltooid</div>
                                 </div>
                                 <div class="bg-green-100 rounded-xl p-4">
                                     <div class="text-3xl font-bold text-green-600">+${this.state.dailyPhrases.length * 10}</div>
-                                    <div class="text-xs text-gray-600 mt-1">Punten verdiend</div>
+                                    <div class="text-sm text-gray-600 mt-1">Punten verdiend</div>
                                 </div>
                             </div>
 
@@ -1950,7 +1976,7 @@
                                             </span>
                                         </div>
                                         <button onclick="app.closeDailyProgramModal(); app.switchTab('settings');"
-                                                class="text-xs px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-full transition-all">
+                                                class="text-sm px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-full transition-all">
                                             <i class="fas fa-cog mr-1"></i>Wijzig
                                         </button>
                                     </div>
@@ -1965,7 +1991,7 @@
                                             </span>
                                         </div>
                                         <button onclick="app.closeDailyProgramModal(); app.switchTab('settings');"
-                                                class="text-xs px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-all">
+                                                class="text-sm px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-all">
                                                 <i class="fas fa-sliders-h mr-1"></i>Instellingen
                                         </button>
                                     </div>
@@ -2001,7 +2027,7 @@
                                                 </div>
                                                 <div class="flex-1 min-w-0">
                                                     <p class="font-semibold text-gray-800 truncate">${phrase.swedish}</p>
-                                                    <p class="text-xs text-gray-500 truncate">${phrase.dutch}</p>
+                                                    <p class="text-sm text-gray-500 truncate">${phrase.dutch}</p>
                                                 </div>
                                                 <div class="flex items-center gap-2 flex-shrink-0">
                                                     <span class="text-xs px-2 py-1 rounded-full ${difficultyColors[phrase.difficulty]}">${
@@ -2052,7 +2078,7 @@
                             <div class="bg-white rounded-2xl p-6 card-shadow">
                                 <!-- Progress Bar -->
                                 <div class="mb-4">
-                                    <div class="flex justify-between text-xs text-gray-500 mb-1">
+                                    <div class="flex justify-between text-sm text-gray-500 mb-1">
                                         <span>Stap ${this.state.onboardingStep + 1} van ${this.tourSteps.length}</span>
                                         <span>${Math.round(progress)}%</span>
                                     </div>
@@ -2584,11 +2610,10 @@ create policy "Users can update own progress"
                                 <i class="fas fa-user-plus mr-2"></i>Nog geen account? Registreer
                             </button>
 
-                                <button onclick="app.resetPassword()"
-                                        class="w-full py-2 text-sm text-gray-600 hover:text-blue-600 font-semibold">
-                                    <i class="fas fa-key mr-1"></i>Wachtwoord vergeten?
-                                </button>
-                            </div>
+                            <button onclick="app.resetPassword()"
+                                    class="w-full py-2 text-sm text-gray-600 hover:text-blue-600 font-semibold mt-2">
+                                <i class="fas fa-key mr-1"></i>Wachtwoord vergeten?
+                            </button>
 
                             <div class="mt-6 text-center text-sm text-gray-600">
                                 <p>✨ Sync tussen apparaten</p>
@@ -2658,7 +2683,7 @@ create policy "Users can update own progress"
                             <i class="fas ${badge.icon} ${badge.color} text-6xl mb-3" aria-hidden="true"></i>
                             <h3 class="font-bold text-gray-800 text-lg mb-1">Nieuwe Badge!</h3>
                             <p class="text-sm font-semibold text-gray-700">${badge.name}</p>
-                            <p class="text-xs text-gray-600 mt-2">${badge.description}</p>
+                            <p class="text-sm text-gray-600 mt-2">${badge.description}</p>
                         </div>
                     </div>
                 `;
@@ -2675,7 +2700,7 @@ create policy "Users can update own progress"
                                     <i class="fas fa-sign-out-alt mr-1" aria-hidden="true"></i>Uitloggen
                                 </button>
                             </div>
-                            <div class="flex items-center gap-2 text-xs text-gray-600 mb-2">
+                            <div class="flex items-center gap-2 text-sm text-gray-600 mb-2">
                                 <i class="fas fa-user" aria-hidden="true"></i>
                                 <span>${this.escapeHtml(this.state.stats.displayName) || this.escapeHtml(this.state.user?.email) || 'Gebruiker'}</span>
                             </div>
@@ -2765,7 +2790,7 @@ create policy "Users can update own progress"
                                         <div class="flex items-center gap-4">
                                             <div class="text-right">
                                                 <p class="text-3xl font-bold" style="color: var(--scandi-blue);">${completedToday}/${total}</p>
-                                                <p class="text-xs text-gray-600 font-medium">voltooid</p>
+                                                <p class="text-sm text-gray-600 font-medium">voltooid</p>
                                             </div>
                                             <i class="fas fa-chevron-right text-gray-400 text-lg"></i>
                                         </div>
@@ -2792,7 +2817,7 @@ create policy "Users can update own progress"
                                         <i class="fas fa-microphone text-xl text-white"></i>
                                     </div>
                                     <p class="text-sm font-bold text-gray-800 mb-1">Uitspraak</p>
-                                    <p class="text-xs text-gray-500">Luister & spreek</p>
+                                    <p class="text-sm text-gray-500">Luister & spreek</p>
                                 </button>
 
                                 <!-- Spelling -->
@@ -2806,7 +2831,7 @@ create policy "Users can update own progress"
                                         <i class="fas fa-keyboard text-xl text-white"></i>
                                     </div>
                                     <p class="text-sm font-bold text-gray-800 mb-1">Spelling</p>
-                                    <p class="text-xs text-gray-500">Type zinnen</p>
+                                    <p class="text-sm text-gray-500">Type zinnen</p>
                                 </button>
 
                                 <!-- Flashcards -->
@@ -2817,7 +2842,7 @@ create policy "Users can update own progress"
                                         <i class="fas fa-layer-group text-xl text-white"></i>
                                     </div>
                                     <p class="text-sm font-bold text-gray-800 mb-1">Flashcards</p>
-                                    <p class="text-xs text-gray-500">Herhalen</p>
+                                    <p class="text-sm text-gray-500">Herhalen</p>
                                 </button>
 
                                 <!-- Grammatica -->
@@ -2828,7 +2853,7 @@ create policy "Users can update own progress"
                                         <i class="fas fa-book text-xl text-white"></i>
                                     </div>
                                     <p class="text-sm font-bold text-gray-800 mb-1">Grammatica</p>
-                                    <p class="text-xs text-gray-500">Leer regels</p>
+                                    <p class="text-sm text-gray-500">Leer regels</p>
                                 </button>
                             </div>
                         </div>
@@ -2838,12 +2863,15 @@ create policy "Users can update own progress"
                             <h3 class="font-bold text-gray-800 mb-3">Kies een categorie</h3>
                             <div class="grid grid-cols-2 gap-3">
                                 ${Object.entries(categories).map(([key, category]) => {
-                                    const totalPhrases = category.phrases.length;
-                                    const completed = category.phrases.filter(p =>
+                                    // Use filtered phrases if difficulty preference is set
+                                    const filteredPhrases = this.getFilteredPhrases(category.phrases);
+                                    const totalPhrases = filteredPhrases.length;
+                                    const completed = filteredPhrases.filter(p =>
                                         this.state.completedPhrases.includes(`${key}-${p.id}`)
                                     ).length;
-                                    const isFullyCompleted = completed === totalPhrases;
-                                    const progress = (completed / totalPhrases) * 100;
+                                    const isFullyCompleted = completed === totalPhrases && totalPhrases > 0;
+                                    const progress = totalPhrases > 0 ? (completed / totalPhrases) * 100 : 0;
+                                    const hasFilter = this.state.stats.difficultyPreference;
 
                                     const colors = {
                                         'dusty-rose': 'var(--dusty-rose)',
@@ -2867,7 +2895,7 @@ create policy "Users can update own progress"
                                                 ${isFullyCompleted ? '<i class="fas fa-crown text-yellow-700 text-xl" aria-hidden="true"></i>' : ''}
                                             </div>
                                             <p class="text-sm font-bold text-left mb-1">${category.name}</p>
-                                            <p class="text-xs opacity-90 text-left mb-2">${completed}/${totalPhrases} voltooid</p>
+                                            <p class="text-sm opacity-90 text-left mb-2">${totalPhrases > 0 ? `${completed}/${totalPhrases} voltooid` : 'Geen zinnen'}${hasFilter ? ' <span title="Filter actief">🎯</span>' : ''}</p>
                                             <div class="bg-white/30 rounded-full h-1.5 overflow-hidden">
                                                 <div class="bg-white rounded-full h-1.5 progress-bar" style="width: ${progress}%"></div>
                                             </div>
@@ -3085,7 +3113,7 @@ create policy "Users can update own progress"
                                 <div class="flex items-center gap-3">
                                     ${this.state.currentCategory !== 'all' ? `
                                         <button onclick="app.toggleShuffle()"
-                                                class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all
+                                                class="px-3 py-1.5 rounded-lg text-sm font-semibold transition-all
                                                        ${this.state.isShuffled ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}"
                                                 title="${this.state.isShuffled ? 'Shuffle uitgeschakeld' : 'Shuffle ingeschakeld'}">
                                             <i class="fas fa-random"></i> ${this.state.isShuffled ? 'Shuffle' : 'Volgorde'}
@@ -3373,7 +3401,7 @@ create policy "Users can update own progress"
                                 <div class="flex items-center gap-3">
                                     ${this.state.writingCategory !== 'all' ? `
                                         <button onclick="app.toggleShuffleWriting()"
-                                                class="px-3 py-1.5 rounded-lg text-xs font-semibold transition-all
+                                                class="px-3 py-1.5 rounded-lg text-sm font-semibold transition-all
                                                        ${this.state.isShuffled ? 'bg-blue-600 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}"
                                                 title="${this.state.isShuffled ? 'Shuffle uitgeschakeld' : 'Shuffle ingeschakeld'}">
                                             <i class="fas fa-random"></i> ${this.state.isShuffled ? 'Shuffle' : 'Volgorde'}
@@ -3539,7 +3567,7 @@ create policy "Users can update own progress"
                                                 </div>
                                                 <div class="flex-1">
                                                     <p class="font-bold text-gray-800">${section.name}</p>
-                                                    <p class="text-xs text-gray-500">${section.items.length} items</p>
+                                                    <p class="text-sm text-gray-500">${section.items.length} items</p>
                                                 </div>
                                                 <i class="fas fa-chevron-right text-gray-400"></i>
                                             </div>
@@ -3596,15 +3624,15 @@ create policy "Users can update own progress"
                                     </h4>
                                     <div class="grid grid-cols-3 gap-3">
                                         <div class="glass-effect rounded-xl p-3 text-center">
-                                            <p class="text-xs text-gray-500 mb-1">Presens</p>
+                                            <p class="text-sm text-gray-500 mb-1">Presens</p>
                                             <p class="font-bold text-purple-700">${item.tenses.present}</p>
                                         </div>
                                         <div class="glass-effect rounded-xl p-3 text-center">
-                                            <p class="text-xs text-gray-500 mb-1">Imperfectum</p>
+                                            <p class="text-sm text-gray-500 mb-1">Imperfectum</p>
                                             <p class="font-bold text-purple-700">${item.tenses.past}</p>
                                         </div>
                                         <div class="glass-effect rounded-xl p-3 text-center">
-                                            <p class="text-xs text-gray-500 mb-1">Supinum</p>
+                                            <p class="text-sm text-gray-500 mb-1">Supinum</p>
                                             <p class="font-bold text-purple-700">${item.tenses.supine}</p>
                                         </div>
                                     </div>
@@ -3726,12 +3754,12 @@ create policy "Users can update own progress"
                                             <h4 class="font-bold text-sm text-center mb-1 text-gray-800">
                                                 ${badge.name}
                                             </h4>
-                                            <p class="text-xs text-center text-gray-600">
+                                            <p class="text-sm text-center text-gray-600">
                                                 ${badge.description}
                                             </p>
                                             ${!earned ? `
                                                 <div class="mt-2 text-center">
-                                                    <span class="text-xs bg-gray-200 px-2 py-1 rounded-full font-semibold text-gray-600">
+                                                    <span class="text-sm bg-gray-200 px-2 py-1 rounded-full font-semibold text-gray-600">
                                                         ${badge.requirement} ${badge.type === 'phrases' ? 'zinnen' : 
                                                           badge.type === 'perfect' ? 'perfect' : 
                                                           badge.type === 'streak' ? 'dagen' : 
@@ -3803,7 +3831,7 @@ create policy "Users can update own progress"
                                                 <div class="flex-1">
                                                     <p class="font-bold text-gray-800">
                                                         ${this.escapeHtml(player.displayName) || 'Anoniem'}
-                                                        ${isCurrentUser ? '<span class="text-xs text-blue-700 ml-2">(jij)</span>' : ''}
+                                                        ${isCurrentUser ? '<span class="text-sm text-blue-700 ml-2">(jij)</span>' : ''}
                                                     </p>
                                                     <p class="text-sm text-gray-600">
                                                         Level ${player.level} • ${player.phrasesCompleted} zinnen
@@ -3811,7 +3839,7 @@ create policy "Users can update own progress"
                                                 </div>
                                                 <div class="text-right">
                                                     <p class="font-bold text-blue-700 text-lg">${player.totalPoints}</p>
-                                                    <p class="text-xs text-gray-600">punten</p>
+                                                    <p class="text-sm text-gray-600">punten</p>
                                                 </div>
                                             </div>
                                         `;
@@ -3946,7 +3974,7 @@ create policy "Users can update own progress"
                                                 <i class="fas ${category.icon} text-2xl text-gray-700" aria-hidden="true"></i>
                                                 <div>
                                                     <p class="font-semibold text-gray-800">${category.name}</p>
-                                                    <p class="text-xs text-gray-500">${category.phrases.length} zinnen</p>
+                                                    <p class="text-sm text-gray-500">${category.phrases.length} zinnen</p>
                                                 </div>
                                             </div>
                                             <label class="relative inline-flex items-center cursor-pointer">
@@ -3986,13 +4014,38 @@ create policy "Users can update own progress"
                                                 <i class="fas ${option.icon} text-2xl ${isActive ? 'text-amber-600' : 'text-gray-600'}" aria-hidden="true"></i>
                                                 <div class="flex-1">
                                                     <p class="font-semibold ${isActive ? 'text-amber-900' : 'text-gray-800'}">${option.label}</p>
-                                                    <p class="text-xs ${isActive ? 'text-amber-700' : 'text-gray-500'}">${option.description}</p>
+                                                    <p class="text-sm ${isActive ? 'text-amber-700' : 'text-gray-500'}">${option.description}</p>
                                                 </div>
                                                 ${isActive ? '<i class="fas fa-check-circle text-amber-600 text-xl" aria-hidden="true"></i>' : ''}
                                             </div>
                                         </button>
                                     `;
                                 }).join('')}
+                            </div>
+                        </div>
+
+                        <div class="glass-effect rounded-2xl p-5 card-shadow">
+                            <h4 class="font-bold text-gray-800 mb-3 flex items-center gap-2">
+                                <i class="fas fa-shield-alt text-purple-700 text-lg" aria-hidden="true"></i> Privacy
+                            </h4>
+                            <p class="text-sm text-gray-600 mb-4">
+                                Beheer je zichtbaarheid op het leaderboard.
+                            </p>
+                            <div class="flex items-center justify-between bg-gray-50 rounded-xl p-4">
+                                <div class="flex items-center gap-3">
+                                    <i class="fas fa-trophy text-2xl text-gray-700" aria-hidden="true"></i>
+                                    <div>
+                                        <p class="font-semibold text-gray-800">Toon mij op leaderboard</p>
+                                        <p class="text-sm text-gray-500">${this.state.stats.leaderboardVisible !== false ? 'Je bent zichtbaar voor anderen' : 'Je bent verborgen op het leaderboard'}</p>
+                                    </div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox"
+                                           ${this.state.stats.leaderboardVisible !== false ? 'checked' : ''}
+                                           onchange="app.toggleLeaderboardVisibility()"
+                                           class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
+                                </label>
                             </div>
                         </div>
 
@@ -4099,9 +4152,9 @@ create policy "Users can update own progress"
                                         <div class="flex items-center justify-between mb-2">
                                             <h5 class="font-bold text-gray-800">
                                                 Versie ${version}
-                                                ${version === APP_VERSION ? '<span class="ml-2 text-xs bg-blue-500 text-white px-2 py-1 rounded-full">Huidig</span>' : ''}
+                                                ${version === APP_VERSION ? '<span class="ml-2 text-sm bg-blue-500 text-white px-2 py-1 rounded-full">Huidig</span>' : ''}
                                             </h5>
-                                            <span class="text-xs text-gray-500">${notes.date}</span>
+                                            <span class="text-sm text-gray-500">${notes.date}</span>
                                         </div>
                                         <ul class="space-y-1">
                                             ${notes.features.map(feature => `
@@ -4156,7 +4209,7 @@ create policy "Users can update own progress"
                                             : 'text-gray-600 hover:text-gray-600'
                                     }">
                                 <i class="fas fa-home text-xl" aria-hidden="true"></i>
-                                <span class="text-xs font-bold">Home</span>
+                                <span class="text-sm font-bold">Home</span>
                             </button>
                             <button id="nav-badges" onclick="app.switchTab('badges')"
                                     class="flex-1 py-4 flex flex-col items-center gap-1 relative transition-all ${
@@ -4165,7 +4218,7 @@ create policy "Users can update own progress"
                                             : 'text-gray-600 hover:text-gray-600'
                                     }">
                                 <i class="fas fa-trophy text-xl" aria-hidden="true"></i>
-                                <span class="text-xs font-bold">Badges</span>
+                                <span class="text-sm font-bold">Badges</span>
                                 ${this.state.stats.badges.length > 0 ? `
                                     <span class="absolute top-2 right-1/4 rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold text-white"
                                           style="background: var(--scandi-blue);">
@@ -4180,7 +4233,7 @@ create policy "Users can update own progress"
                                             : 'text-gray-600 hover:text-gray-600'
                                     }">
                                 <i class="fas fa-ranking-star text-xl" aria-hidden="true"></i>
-                                <span class="text-xs font-bold">Rank</span>
+                                <span class="text-sm font-bold">Rank</span>
                             </button>
                             <button id="nav-settings" onclick="app.switchTab('settings')"
                                     class="flex-1 py-4 flex flex-col items-center gap-1 transition-all ${
@@ -4189,7 +4242,7 @@ create policy "Users can update own progress"
                                             : 'text-gray-600 hover:text-gray-600'
                                     }">
                                 <i class="fas fa-cog text-xl" aria-hidden="true"></i>
-                                <span class="text-xs font-bold">Setup</span>
+                                <span class="text-sm font-bold">Setup</span>
                             </button>
                         </div>
                     </div>
@@ -4798,7 +4851,7 @@ create policy "Users can update own progress"
                     <i class="fas fa-sync-alt text-2xl" aria-hidden="true"></i>
                     <div class="flex-1">
                         <p class="font-bold text-sm">Nieuwe versie beschikbaar!</p>
-                        <p class="text-xs opacity-90">Versie ${APP_VERSION} is klaar om te gebruiken</p>
+                        <p class="text-sm opacity-90">Versie ${APP_VERSION} is klaar om te gebruiken</p>
                     </div>
                     <button onclick="applyUpdate()" class="bg-white text-blue-700 px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-50 transition-colors">
                         Update Nu

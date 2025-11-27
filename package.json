@@ -1,6 +1,6 @@
 {
   "name": "svenska-kat",
-  "version": "1.10.1",
+  "version": "1.10.4",
   "description": "Swedish language learning web application",
   "main": "index.html",
   "scripts": {

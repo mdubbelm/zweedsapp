@@ -1,7 +1,7 @@
 // Service Worker for Svenska Kat PWA
-// Version 1.10.3 - Uitspraak Gating + Bug Fixes
+// Version 1.10.4 - WCAG Quick Wins + Privacy Toggle
 
-const CACHE_VERSION = '1.10.3';
+const CACHE_VERSION = '1.10.4';
 const CACHE_NAME = `svenska-kat-v${CACHE_VERSION}`;
 const CDN_CACHE = `svenska-kat-cdn-v${CACHE_VERSION}`;
 

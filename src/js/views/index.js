@@ -36,7 +36,7 @@ export function renderBadges(state, badges) {
                             <div class="p-4 rounded-xl ${isEarned ? 'bg-green-50 border-2 border-green-200' : 'bg-gray-50 opacity-60'}">
                                 <div class="flex items-center gap-4">
                                     <div class="w-12 h-12 rounded-full flex items-center justify-center ${isEarned ? 'bg-green-100' : 'bg-gray-200'}">
-                                        <i class="fas fa-${badge.icon} text-xl ${isEarned ? 'text-green-600' : 'text-gray-400'}"></i>
+                                        <i class="fas ${badge.icon} text-xl ${isEarned ? 'text-green-600' : 'text-gray-400'}"></i>
                                     </div>
                                     <div>
                                         <p class="font-semibold text-gray-800">${badge.name}</p>

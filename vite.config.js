@@ -71,6 +71,9 @@ export default defineConfig({
         })
     ],
 
+    // GitHub Pages base path
+    base: '/zweedsapp/',
+
     root: 'src',
     publicDir: '../public',
     envDir: '..',  // Load .env from project root, not from src/

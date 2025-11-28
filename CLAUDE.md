@@ -1165,6 +1165,124 @@ When working with phrase navigation, always consider:
 - Assuming phrase index in one context equals index in another
 - Not resetting state when switching between modes
 
+### XSS Security - User Input Escaping
+
+**Bug**: Malicious JavaScript injection via user-controlled fields (displayName, etc.)
+
+**Fix** (commit `e6325c9`): Always use `escapeHtml()` for user-generated content.
+
+**Locations to escape** (in `src/js/utils/helpers.js`):
+```javascript
+import { escapeHtml } from '../utils/helpers.js';
+
+// Always escape:
+- displayName in header, home greeting, leaderboard, settings
+- Any user email displayed
+- Any content from Supabase that users can edit
+```
+
+**Red flags**:
+- `${state.stats.displayName}` without escapeHtml → XSS vulnerability
+- Template literals with user data without escaping
+
+### Empty Phrases Array Handling
+
+**Bug**: App crashes with "undefined is not an object" when difficulty filter returns no phrases.
+
+**Fix** (commit `a4044c2`): Always check for empty arrays before accessing phrases.
+
+**Pattern**:
+```javascript
+const phrases = getFilteredPhrases(category.phrases);
+
+// ALWAYS check before accessing
+if (phrases.length === 0) {
+    return `<div>Geen zinnen beschikbaar met huidige filter</div>`;
+}
+
+const phrase = phrases[phraseIndex]; // Safe now
+```
+
+**Red flags**:
+- Accessing `phrases[index]` without checking `phrases.length`
+- Not handling the case where filter excludes all phrases
+
+### Render vs Validation Consistency
+
+**Bug**: Writing mode validates against wrong phrase because `checkWriting()` used unfiltered array while `renderWriting()` used filtered array.
+
+**Fix** (commit `d91be1e`): Both render and validation must use the same filtered phrases.
+
+**Pattern**:
+```javascript
+// In checkWriting() - MUST match renderWriting()
+const phrases = this.getFilteredPhrases(category.phrases);
+const phrase = phrases[this.state.currentWritingIndex];
+```
+
+**Red flags**:
+- `checkWriting()` using different phrase source than `renderWriting()`
+- Any validation logic not using `getFilteredPhrases()`
+
+### iOS Safari Audio Issues
+
+**Bug**: Audio recording/playback fails on iOS Safari, repeated microphone permission requests.
+
+**Fix** (commit `f50f6d0`): Proper MIME type detection and stream cleanup.
+
+**MIME type priority** (iOS needs mp4 first):
+```javascript
+const mimeTypes = [
+    'audio/mp4',           // iOS Safari priority
+    'audio/webm;codecs=opus',
+    'audio/webm',
+    'audio/ogg',
+    'audio/wav'            // Fallback
+];
+```
+
+**Stream cleanup pattern**:
+```javascript
+// ALWAYS clean up streams when:
+// - Stopping recording
+// - Changing category/phrase
+// - Leaving practice mode
+
+if (this.audioStream) {
+    this.audioStream.getTracks().forEach(track => track.stop());
+    this.audioStream = null;
+}
+if (this.state.audioURL) {
+    URL.revokeObjectURL(this.state.audioURL);
+    this.state.audioURL = null;
+}
+```
+
+**Red flags**:
+- Not stopping audio tracks after recording
+- Not revoking object URLs
+- Assuming webm works on all browsers
+
+### Categories Undefined Error
+
+**Bug**: App crashes when accessing `categories[currentCategory]` when category doesn't exist (e.g., "all" mode).
+
+**Fix** (commit `d91be1e`): Always check category exists before accessing.
+
+**Pattern**:
+```javascript
+// ALWAYS check before accessing category
+const category = this.categories[this.state.currentCategory];
+if (!category) {
+    // Handle gracefully - return early or show error
+    return;
+}
+```
+
+**Red flags**:
+- `categories[state.currentCategory].phrases` without null check
+- Assuming currentCategory always maps to valid category
+
 ## File Reference
 
 - **index.html** (~2690 lines) - Main application file

@@ -842,11 +842,30 @@ export class SwedishApp {
         this.state.currentCategory = phrase.categoryId;
         this.state.showDailyProgramModal = false;
 
+        // CRITICAL: Find index in FILTERED phrases, not full category
+        // This bug has occurred multiple times - see commit 487752d
+        const category = this.categories[phrase.categoryId];
+        const filteredPhrases = this.getFilteredPhrases(category.phrases);
+        const phraseIndexInFiltered = filteredPhrases.findIndex(p => p.id === phrase.id);
+
         if (phrase.exerciseType === 'practice') {
+            // Set correct index in filtered phrases (fallback to 0 if not found)
+            this.state.currentPhraseIndex =
+                phraseIndexInFiltered !== -1 ? phraseIndexInFiltered : 0;
             this.state.currentTab = TABS.PRACTICE;
+            // Reset practice mode state
+            this.state.showAnswer = false;
+            this.state.audioURL = null;
+            this.state.hasListenedToAudio = false;
         } else {
             this.state.writingCategory = phrase.categoryId;
+            // Set correct index in filtered phrases (fallback to 0 if not found)
+            this.state.currentWritingIndex =
+                phraseIndexInFiltered !== -1 ? phraseIndexInFiltered : 0;
             this.state.currentTab = TABS.WRITING;
+            // Reset writing mode state
+            this.state.writingInput = '';
+            this.state.showWritingFeedback = false;
         }
 
         this.render();

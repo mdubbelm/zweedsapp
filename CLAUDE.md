@@ -1115,6 +1115,56 @@ caches.keys().then(names => {
 navigator.serviceWorker.getRegistration().then(reg => reg.update())
 ```
 
+## ⚠️ Known Bugs & Recurring Patterns
+
+**CRITICAL: Read this section before modifying Daily Program or phrase navigation code!**
+
+### Daily Program Phrase Index Bug (RECURRING)
+
+**Bug**: When clicking a phrase in the Daily Program modal, a **different phrase** opens than the one clicked.
+
+**Root Cause**: `startDailyPhrase()` must find the phrase index in the **FILTERED** phrase array, not the full category array. When a user has difficulty filtering enabled (e.g., "Alleen Makkelijk"), the filtered array has different indices than the full array.
+
+**Previous occurrences**:
+- Commit `487752d` (Nov 2025): Original fix
+- Vite migration (Nov 2025): Fix was lost, reintroduced
+
+**Correct implementation** (in `app.js`):
+```javascript
+startDailyPhrase(index) {
+    const phrase = this.state.dailyPhrases[index];
+    // ...
+
+    // CRITICAL: Find index in FILTERED phrases, not full category
+    const category = this.categories[phrase.categoryId];
+    const filteredPhrases = this.getFilteredPhrases(category.phrases);
+    const phraseIndexInFiltered = filteredPhrases.findIndex(p => p.id === phrase.id);
+
+    // Use phraseIndexInFiltered, NOT the daily program index
+    this.state.currentPhraseIndex = phraseIndexInFiltered !== -1 ? phraseIndexInFiltered : 0;
+}
+```
+
+**Testing checklist for Daily Program changes**:
+- [ ] Set difficulty filter to "Alleen Makkelijk"
+- [ ] Open Daily Program modal
+- [ ] Click on a specific phrase
+- [ ] Verify the SAME phrase opens in practice/writing mode
+- [ ] Test both practice (🎤) and writing (⌨️) exercise types
+
+### Phrase Navigation Index Patterns
+
+When working with phrase navigation, always consider:
+
+1. **Filtered vs Unfiltered Arrays**: Users may have difficulty filters active
+2. **Category vs Daily Program**: Different data sources with different structures
+3. **Exercise Type Matters**: Practice mode uses `currentPhraseIndex`, Writing mode uses `currentWritingIndex`
+
+**Red flags to watch for**:
+- Using `categories[id].phrases` without `getFilteredPhrases()`
+- Assuming phrase index in one context equals index in another
+- Not resetting state when switching between modes
+
 ## File Reference
 
 - **index.html** (~2690 lines) - Main application file

@@ -6,7 +6,15 @@
 import { categories } from './data/phrases.js';
 import { badges } from './data/badges.js';
 import { APP_VERSION, TABS } from './utils/constants.js';
-import { escapeHtml, shuffleArray, isToday, isYesterday } from './utils/helpers.js';
+import {
+    escapeHtml,
+    shuffleArray,
+    isToday,
+    isYesterday,
+    hasSpeechRecognition,
+    getSpeechRecognition,
+    calculateSimilarity
+} from './utils/helpers.js';
 
 // Services
 import {
@@ -91,12 +99,18 @@ export class SwedishApp {
             shuffledPhrases: [],
             phraseHistory: {},
             grammarType: null,
-            grammarItemIndex: 0
+            grammarItemIndex: 0,
+            // Speech Recognition state
+            isListening: false,
+            speechResult: null,
+            speechSimilarity: null,
+            speechError: null
         };
 
         this.mediaRecorder = null;
         this.audioChunks = [];
         this.audioStream = null;
+        this.speechRecognition = null;
 
         // Data references
         this.categories = categories;
@@ -1071,6 +1085,118 @@ export class SwedishApp {
     }
 
     // =====================
+    // Speech Recognition Methods
+    // =====================
+
+    /**
+     * Check if speech recognition is available
+     * Not supported on iOS Safari (Apple platform restriction)
+     */
+    canUseSpeechRecognition() {
+        return hasSpeechRecognition();
+    }
+
+    /**
+     * Start speech recognition for pronunciation comparison
+     * @param {string} expectedText - The Swedish text to compare against
+     */
+    startSpeechRecognition(expectedText) {
+        const SpeechRecognition = getSpeechRecognition();
+        if (!SpeechRecognition) {
+            this.state.speechError = 'Speech recognition niet beschikbaar op dit apparaat';
+            this.render();
+            return;
+        }
+
+        // Stop any existing recognition
+        this.stopSpeechRecognition();
+
+        // Reset state
+        this.state.speechResult = null;
+        this.state.speechSimilarity = null;
+        this.state.speechError = null;
+        this.state.isListening = true;
+        this.render();
+
+        // Create new recognition instance
+        this.speechRecognition = new SpeechRecognition();
+        this.speechRecognition.lang = 'sv-SE'; // Swedish
+        this.speechRecognition.continuous = false;
+        this.speechRecognition.interimResults = false;
+        this.speechRecognition.maxAlternatives = 1;
+
+        this.speechRecognition.onresult = event => {
+            const result = event.results[0][0].transcript;
+            this.state.speechResult = result;
+            this.state.speechSimilarity = calculateSimilarity(result, expectedText);
+            this.state.isListening = false;
+
+            // Mark as listened for practice mode unlock
+            if (!this.state.hasListenedToAudio) {
+                this.state.hasListenedToAudio = true;
+            }
+
+            this.render();
+        };
+
+        this.speechRecognition.onerror = event => {
+            console.error('Speech recognition error:', event.error);
+            this.state.isListening = false;
+
+            // User-friendly error messages
+            const errorMessages = {
+                'no-speech': 'Geen spraak gedetecteerd. Probeer opnieuw.',
+                'audio-capture': 'Microfoon niet beschikbaar. Controleer permissies.',
+                'not-allowed': 'Microfoon toegang geweigerd. Sta toegang toe in je browser.',
+                aborted: 'Spraakherkenning geannuleerd.',
+                network: 'Netwerkfout. Controleer je internetverbinding.'
+            };
+
+            this.state.speechError = errorMessages[event.error] || `Fout: ${event.error}`;
+            this.render();
+        };
+
+        this.speechRecognition.onend = () => {
+            this.state.isListening = false;
+            this.render();
+        };
+
+        try {
+            this.speechRecognition.start();
+        } catch (error) {
+            console.error('Failed to start speech recognition:', error);
+            this.state.isListening = false;
+            this.state.speechError = 'Kon spraakherkenning niet starten';
+            this.render();
+        }
+    }
+
+    /**
+     * Stop speech recognition
+     */
+    stopSpeechRecognition() {
+        if (this.speechRecognition) {
+            try {
+                this.speechRecognition.stop();
+            } catch {
+                // Ignore errors when stopping
+            }
+            this.speechRecognition = null;
+        }
+        this.state.isListening = false;
+    }
+
+    /**
+     * Clear speech recognition results
+     */
+    clearSpeechResult() {
+        this.state.speechResult = null;
+        this.state.speechSimilarity = null;
+        this.state.speechError = null;
+        this.render();
+    }
+
+    // =====================
     // Practice Methods
     // =====================
 
@@ -1125,6 +1251,10 @@ export class SwedishApp {
             this.state.showAnswer = false;
             this.state.audioURL = null;
             this.state.hasListenedToAudio = false;
+            // Reset speech recognition state
+            this.state.speechResult = null;
+            this.state.speechSimilarity = null;
+            this.state.speechError = null;
             this.render();
         }
     }
@@ -1141,6 +1271,10 @@ export class SwedishApp {
             this.state.showAnswer = false;
             this.state.audioURL = null;
             this.state.hasListenedToAudio = false;
+            // Reset speech recognition state
+            this.state.speechResult = null;
+            this.state.speechSimilarity = null;
+            this.state.speechError = null;
             this.render();
         }
     }

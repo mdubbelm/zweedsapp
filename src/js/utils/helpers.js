@@ -168,3 +168,69 @@ export function isYesterday(date) {
     yesterday.setDate(yesterday.getDate() - 1);
     return isSameDay(date, yesterday);
 }
+
+/**
+ * Check if Speech Recognition API is available
+ * Note: Not supported on iOS Safari (Apple platform restriction)
+ * @returns {boolean} Whether speech recognition is available
+ */
+export function hasSpeechRecognition() {
+    return 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
+}
+
+/**
+ * Get the SpeechRecognition constructor
+ * @returns {SpeechRecognition|null} SpeechRecognition constructor or null
+ */
+export function getSpeechRecognition() {
+    if ('webkitSpeechRecognition' in window) {
+        return window.webkitSpeechRecognition;
+    }
+    if ('SpeechRecognition' in window) {
+        return window.SpeechRecognition;
+    }
+    return null;
+}
+
+/**
+ * Normalize text for comparison (lowercase, remove punctuation)
+ * @param {string} text - Text to normalize
+ * @returns {string} Normalized text
+ */
+export function normalizeText(text) {
+    if (!text) {
+        return '';
+    }
+    return text
+        .toLowerCase()
+        .replace(/[.,!?;:'"()-]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+}
+
+/**
+ * Calculate similarity between two strings (simple word match)
+ * @param {string} str1 - First string
+ * @param {string} str2 - Second string
+ * @returns {number} Similarity score 0-100
+ */
+export function calculateSimilarity(str1, str2) {
+    const words1 = normalizeText(str1).split(' ').filter(Boolean);
+    const words2 = normalizeText(str2).split(' ').filter(Boolean);
+
+    if (words1.length === 0 || words2.length === 0) {
+        return 0;
+    }
+
+    let matches = 0;
+    words1.forEach(word => {
+        if (words2.includes(word)) {
+            matches++;
+        }
+    });
+
+    // Average of both directions
+    const score1 = (matches / words1.length) * 100;
+    const score2 = (matches / words2.length) * 100;
+    return Math.round((score1 + score2) / 2);
+}

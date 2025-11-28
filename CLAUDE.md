@@ -67,7 +67,8 @@ The live app URL is GitHub Pages, NOT a local file. Local changes are invisible 
 - **Technology**: Vanilla JavaScript (ES6 modules)
 - **Styling**: Tailwind CSS (build-time) + Custom CSS variables
 - **Backend**: Supabase (PostgreSQL + Auth)
-- **APIs**: MediaRecorder, Web Speech API, Web Audio API
+- **APIs**: MediaRecorder, Web Speech API (TTS + Recognition*), Web Audio API
+  - *Speech Recognition not available on iOS Safari (Apple restriction)
 - **PWA**: Workbox-powered Service Worker with auto-update
 - **Testing**: Vitest for unit tests
 - **Linting**: ESLint 9 (flat config) + Prettier
@@ -1282,6 +1283,44 @@ if (!category) {
 **Red flags**:
 - `categories[state.currentCategory].phrases` without null check
 - Assuming currentCategory always maps to valid category
+
+### Speech Recognition iOS Limitation (NOT A BUG)
+
+**Behavior**: Speech Recognition ("Vergelijk uitspraak") is not available on iOS Safari.
+
+**Reason**: Apple does not support the Web Speech Recognition API on iOS. This is a **platform restriction**, not a browser bug.
+
+**Browser support**:
+| Platform | Support |
+|----------|---------|
+| Chrome (desktop) | ✅ |
+| Chrome (Android) | ✅ |
+| Safari (macOS) | ✅ |
+| Firefox | ⚠️ Limited |
+| Safari (iOS) | ❌ Not supported |
+
+**Implementation**:
+```javascript
+// Feature detection in helpers.js
+export function hasSpeechRecognition() {
+    return 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window;
+}
+
+// iOS detection for showing fallback message
+function isIOS() {
+    return /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+           (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+}
+```
+
+**User experience**:
+- Desktop/Android: Full speech recognition with similarity scoring
+- iOS: Friendly message explaining limitation + manual comparison suggestion
+
+**Do NOT**:
+- Try to "fix" iOS speech recognition - it's not possible without cloud APIs
+- Remove the feature because it doesn't work on iOS
+- Use expensive cloud APIs (Whisper, Google) unless budget allows
 
 ## File Reference
 

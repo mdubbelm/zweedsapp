@@ -3,8 +3,170 @@
  * Audio recording and pronunciation practice
  */
 
-import { escapeHtml } from '../utils/helpers.js';
+import { escapeHtml, hasSpeechRecognition } from '../utils/helpers.js';
 import { categories } from '../data/phrases.js';
+
+/**
+ * Check if we're on iOS (for showing fallback message)
+ */
+function isIOS() {
+    if (typeof window === 'undefined') {
+        return false;
+    }
+    return (
+        /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+    );
+}
+
+/**
+ * Get similarity color based on score
+ */
+function getSimilarityColor(score) {
+    if (score >= 80) {
+        return 'text-green-600';
+    }
+    if (score >= 50) {
+        return 'text-yellow-600';
+    }
+    return 'text-red-600';
+}
+
+/**
+ * Get similarity label based on score
+ */
+function getSimilarityLabel(score) {
+    if (score >= 80) {
+        return 'Uitstekend!';
+    }
+    if (score >= 60) {
+        return 'Goed!';
+    }
+    if (score >= 40) {
+        return 'Redelijk';
+    }
+    return 'Probeer opnieuw';
+}
+
+/**
+ * Render speech recognition section
+ * Shows either the button, listening state, result, or iOS fallback
+ */
+function renderSpeechRecognitionSection(state, phrase) {
+    const canUse = hasSpeechRecognition();
+    const onIOS = isIOS();
+
+    // Show iOS fallback message
+    if (!canUse && onIOS) {
+        return `
+            <div class="mt-4 p-4 bg-amber-50 rounded-xl border border-amber-200">
+                <div class="flex items-start gap-3">
+                    <i class="fas fa-info-circle text-amber-500 mt-1"></i>
+                    <div>
+                        <p class="text-sm font-medium text-amber-800">Spraakherkenning niet beschikbaar op iOS</p>
+                        <p class="text-xs text-amber-600 mt-1">Luister naar het voorbeeld en vergelijk zelf je uitspraak met de opname.</p>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+
+    // Not available and not iOS (rare case)
+    if (!canUse) {
+        return '';
+    }
+
+    // Currently listening
+    if (state.isListening) {
+        return `
+            <div class="mt-4 p-4 bg-blue-50 rounded-xl border border-blue-200">
+                <div class="flex items-center justify-center gap-3">
+                    <div class="animate-pulse">
+                        <i class="fas fa-microphone-alt text-2xl text-blue-500"></i>
+                    </div>
+                    <div>
+                        <p class="font-medium text-blue-800">Luisteren...</p>
+                        <p class="text-xs text-blue-600">Spreek de zin uit</p>
+                    </div>
+                    <button onclick="app.stopSpeechRecognition()"
+                            class="ml-auto px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200">
+                        Stop
+                    </button>
+                </div>
+            </div>
+        `;
+    }
+
+    // Show error
+    if (state.speechError) {
+        return `
+            <div class="mt-4 p-4 bg-red-50 rounded-xl border border-red-200">
+                <div class="flex items-start gap-3">
+                    <i class="fas fa-exclamation-circle text-red-500 mt-1"></i>
+                    <div class="flex-1">
+                        <p class="text-sm font-medium text-red-800">${escapeHtml(state.speechError)}</p>
+                    </div>
+                    <button onclick="app.clearSpeechResult()"
+                            class="text-red-500 hover:text-red-700">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </div>
+            <button onclick="app.startSpeechRecognition('${escapeHtml(phrase.swedish).replace(/'/g, "\\'")}')"
+                    class="w-full mt-2 py-3 rounded-xl font-semibold text-white card-hover card-shadow flex items-center justify-center gap-3"
+                    style="background: var(--scandi-amber);">
+                <i class="fas fa-redo text-lg"></i>
+                <span>Opnieuw proberen</span>
+            </button>
+        `;
+    }
+
+    // Show result
+    if (state.speechResult !== null) {
+        const colorClass = getSimilarityColor(state.speechSimilarity);
+        const label = getSimilarityLabel(state.speechSimilarity);
+
+        return `
+            <div class="mt-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
+                <div class="flex items-center justify-between mb-3">
+                    <span class="text-sm font-medium text-gray-600">Jouw uitspraak:</span>
+                    <button onclick="app.clearSpeechResult()"
+                            class="text-gray-400 hover:text-gray-600">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <p class="text-lg text-gray-800 mb-3">"${escapeHtml(state.speechResult)}"</p>
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-2">
+                        <div class="w-24 bg-gray-200 rounded-full h-2">
+                            <div class="h-2 rounded-full transition-all duration-500 ${state.speechSimilarity >= 80 ? 'bg-green-500' : state.speechSimilarity >= 50 ? 'bg-yellow-500' : 'bg-red-500'}"
+                                 style="width: ${state.speechSimilarity}%;"></div>
+                        </div>
+                        <span class="text-sm font-bold ${colorClass}">${state.speechSimilarity}%</span>
+                    </div>
+                    <span class="text-sm font-semibold ${colorClass}">${label}</span>
+                </div>
+            </div>
+            <button onclick="app.startSpeechRecognition('${escapeHtml(phrase.swedish).replace(/'/g, "\\'")}')"
+                    class="w-full mt-2 py-3 rounded-xl font-semibold text-white card-hover card-shadow flex items-center justify-center gap-3"
+                    style="background: var(--scandi-amber);">
+                <i class="fas fa-redo text-lg"></i>
+                <span>Opnieuw proberen</span>
+            </button>
+        `;
+    }
+
+    // Default: show button to start
+    return `
+        <button onclick="app.startSpeechRecognition('${escapeHtml(phrase.swedish).replace(/'/g, "\\'")}')"
+                class="w-full mt-4 py-4 rounded-xl font-semibold text-white card-hover card-shadow flex items-center justify-center gap-3"
+                style="background: var(--scandi-amber);">
+            <i class="fas fa-comments text-xl"></i>
+            <span>Vergelijk uitspraak</span>
+        </button>
+        <p class="text-xs text-gray-500 text-center mt-1">Spreek de zin uit en krijg feedback</p>
+    `;
+}
 
 /**
  * Handle click on disabled complete button
@@ -156,6 +318,9 @@ export function renderPractice(state, getFilteredPhrases) {
                     `
                             : ''
                     }
+
+                    <!-- Speech Recognition Section -->
+                    ${renderSpeechRecognitionSection(state, phrase)}
                 </div>
 
                 <!-- Show/Hide Answer -->

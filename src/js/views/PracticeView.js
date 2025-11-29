@@ -104,8 +104,8 @@ function renderSpeechRecognitionSection(state, phrase) {
     const canUse = hasSpeechRecognition();
     const onIOS = isIOS();
 
-    // iOS fallback message
-    if (!canUse && onIOS) {
+    // iOS: ALWAYS show fallback, even if API exists (Apple blocks it anyway)
+    if (onIOS) {
         return `
             <div class="mt-4 p-4 bg-amber-50 rounded-xl border border-amber-200">
                 <div class="flex items-start gap-3">

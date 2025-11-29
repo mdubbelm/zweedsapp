@@ -52,16 +52,28 @@ mediaRecorder = new MediaRecorder(stream, { mimeType });
 
 **Context**: Wilde speech-to-text toevoegen voor uitspraak feedback.
 
-**Probleem**: `webkitSpeechRecognition` bestaat niet in iOS Safari (Apple beperking).
+**Probleem**: iOS Safari **exposeert** `webkitSpeechRecognition` in de window, maar Apple **blokkeert** het daadwerkelijk gebruiken. Feature detection (`'webkitSpeechRecognition' in window`) retourneert `true`, maar de API werkt niet.
 
-**Oplossing**: Geen client-side oplossing mogelijk. Alternatieven:
-1. Server-side speech recognition (Whisper API) - te duur
-2. Alleen TTS gebruiken (Web Speech Synthesis) - werkt wel
-3. Accepteren als platform limitatie
+**Fout**: Alleen checken of API bestaat:
+```javascript
+// Dit werkt NIET op iOS - retourneert true maar API is geblokkeerd
+if (hasSpeechRecognition()) { ... }
+```
 
-**Waarom**: Apple blokkeert Web Speech Recognition API op iOS om privacy redenen. Dit is een platform-level beslissing.
+**Oplossing**: Altijd iOS detecteren en blokkeren, ongeacht feature detection:
+```javascript
+const onIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+              (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
 
-**Tags**: #browser-quirks #ios #safari #speech-api #limitation
+// iOS: ALTIJD fallback tonen, negeer feature detection
+if (onIOS) {
+    return showFallbackMessage();
+}
+```
+
+**Waarom**: Apple blokkeert Web Speech Recognition API op iOS om privacy redenen. De API object bestaat wel in de browser, maar throws errors bij gebruik.
+
+**Tags**: #browser-quirks #ios #safari #speech-api #limitation #feature-detection
 
 ---
 

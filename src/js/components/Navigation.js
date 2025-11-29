@@ -42,7 +42,7 @@ export function renderNavigation(currentTab) {
     const navItems = [
         { tab: TABS.HOME, icon: 'fa-home', label: 'Home' },
         { tab: TABS.CATEGORIES, icon: 'fa-folder', label: 'Categorieën' },
-        { tab: TABS.BADGES, icon: 'fa-trophy', label: 'Badges' },
+        { tab: TABS.BADGES, icon: 'fa-trophy', label: 'Voortgang' },
         { tab: TABS.SETTINGS, icon: 'fa-cog', label: 'Instellingen' }
     ];
 

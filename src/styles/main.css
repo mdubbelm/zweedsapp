@@ -367,3 +367,302 @@ button:active {
     overflow-y: auto;
     animation: scaleIn 0.2s ease-out;
 }
+
+/* =====================
+   Practice View - Hero Button & Sticky Controls
+   ===================== */
+
+/* Practice View Container */
+.practice-view {
+    padding-bottom: 10rem; /* Space for sticky controls + bottom nav */
+}
+
+/* Collapsible Translation */
+.practice-view details summary {
+    list-style: none;
+}
+
+.practice-view details summary::-webkit-details-marker {
+    display: none;
+}
+
+.practice-view details[open] summary {
+    color: var(--scandi-blue);
+}
+
+.practice-view details[open] summary span {
+    display: none;
+}
+
+.practice-view details[open] summary::after {
+    content: 'Verberg vertaling';
+}
+
+/* Hero Recording Button */
+.hero-record-btn {
+    width: 100%;
+    padding: 1.5rem;
+    border-radius: 1.5rem;
+    font-weight: 700;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+    position: relative;
+    border: none;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.hero-record-btn:active {
+    transform: scale(0.98);
+}
+
+/* State: Ready to record */
+.hero-record-btn[data-state='ready'] {
+    background: linear-gradient(135deg, var(--scandi-green) 0%, #4a9c4a 100%);
+    color: white;
+}
+
+.hero-record-btn[data-state='ready']:hover {
+    box-shadow: 0 6px 20px rgba(90, 173, 90, 0.3);
+}
+
+/* State: Recording */
+.hero-record-btn[data-state='recording'] {
+    background: linear-gradient(135deg, var(--scandi-red) 0%, #dc2626 100%);
+    color: white;
+    animation: recordingPulse 1.5s ease-in-out infinite;
+}
+
+/* State: Playback */
+.hero-record-btn[data-state='playback'] {
+    background: linear-gradient(135deg, var(--scandi-blue) 0%, #4a7aa7 100%);
+    color: white;
+}
+
+.hero-record-btn[data-state='playback']:hover {
+    box-shadow: 0 6px 20px rgba(91, 155, 213, 0.3);
+}
+
+/* Redo Button (overlayed on playback state) */
+.redo-btn {
+    position: absolute;
+    top: 0.75rem;
+    right: 0.75rem;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.redo-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Compare Section (after recording) */
+.compare-section {
+    background: white;
+}
+
+.compare-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    border-radius: 1rem;
+    font-weight: 600;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.compare-btn[data-type='native'] {
+    background: linear-gradient(135deg, rgba(91, 155, 213, 0.1) 0%, rgba(91, 155, 213, 0.05) 100%);
+    color: var(--scandi-blue);
+    border-color: var(--scandi-blue);
+}
+
+.compare-btn[data-type='native']:hover {
+    background: linear-gradient(135deg, rgba(91, 155, 213, 0.2) 0%, rgba(91, 155, 213, 0.1) 100%);
+}
+
+.compare-btn[data-type='recording'] {
+    background: linear-gradient(135deg, rgba(90, 173, 90, 0.1) 0%, rgba(90, 173, 90, 0.05) 100%);
+    color: var(--scandi-green);
+    border-color: var(--scandi-green);
+}
+
+.compare-btn[data-type='recording']:hover {
+    background: linear-gradient(135deg, rgba(90, 173, 90, 0.2) 0%, rgba(90, 173, 90, 0.1) 100%);
+}
+
+.compare-btn:active {
+    transform: scale(0.98);
+}
+
+/* Points Toast Notification */
+.points-toast {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    background: linear-gradient(135deg, var(--scandi-amber) 0%, #e8923b 100%);
+    color: white;
+    padding: 1rem 2rem;
+    border-radius: 2rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    box-shadow: 0 10px 40px rgba(244, 162, 97, 0.4);
+    z-index: 1000;
+    animation: toastPopIn 2s ease-out forwards;
+}
+
+.points-toast i {
+    font-size: 1.5rem;
+}
+
+@keyframes toastPopIn {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+    }
+    15% {
+        transform: translate(-50%, -50%) scale(1.2);
+        opacity: 1;
+    }
+    25% {
+        transform: translate(-50%, -50%) scale(1);
+    }
+    75% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(0.8);
+        opacity: 0;
+    }
+}
+
+/* Sticky Practice Controls - positioned above bottom nav */
+.practice-controls {
+    position: fixed;
+    bottom: 4rem; /* Space for bottom navigation bar */
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 1px solid #e5e7eb;
+    padding: 0.75rem 1rem;
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    z-index: 40; /* Below bottom nav (z-50) */
+    box-shadow: 0 -4px 15px rgba(0, 0, 0, 0.05);
+}
+
+/* Navigation Buttons */
+.nav-btn {
+    flex: 0 0 auto;
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0.75rem 1rem;
+    background: var(--scandi-grey);
+    border-radius: 0.75rem;
+    font-weight: 600;
+    color: #4b5563;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: background 0.2s ease;
+}
+
+.nav-btn:hover:not(.disabled):not(:disabled) {
+    background: #e5e7eb;
+}
+
+.nav-btn.disabled,
+.nav-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.nav-btn .nav-label {
+    display: none;
+}
+
+@media (min-width: 640px) {
+    .nav-btn .nav-label {
+        display: inline;
+    }
+}
+
+/* Complete Toggle Button */
+.complete-toggle {
+    flex: 1;
+    min-height: 44px;
+    padding: 0.75rem 1rem;
+    border-radius: 0.75rem;
+    font-weight: 700;
+    border: 2px solid var(--scandi-green);
+    color: var(--scandi-green);
+    background: white;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+.complete-toggle:hover:not(.disabled):not(.completed):not(:disabled) {
+    background: #f0fdf4;
+}
+
+.complete-toggle.completed {
+    background: var(--scandi-green);
+    color: white;
+    cursor: default;
+}
+
+.complete-toggle.disabled,
+.complete-toggle:disabled:not(.completed) {
+    border-color: #d1d5db;
+    color: #9ca3af;
+    background: #f9fafb;
+    cursor: not-allowed;
+}
+
+.complete-toggle i {
+    font-size: 1.25rem;
+}
+
+/* Show text on larger screens */
+@media (min-width: 480px) {
+    .complete-toggle span {
+        display: inline;
+    }
+}
+
+/* Hide text on very small screens */
+@media (max-width: 479px) {
+    .complete-toggle span {
+        display: none;
+    }
+}

@@ -11,7 +11,6 @@ import {
     shuffleArray,
     isToday,
     isYesterday,
-    hasSpeechRecognition,
     getSpeechRecognition,
     calculateSimilarity
 } from './utils/helpers.js';
@@ -50,8 +49,7 @@ import {
     renderWriting,
     renderFlashcards,
     renderGrammar,
-    renderBadges,
-    renderLeaderboard
+    renderBadges
 } from './views/index.js';
 
 // Components
@@ -354,6 +352,34 @@ export class SwedishApp {
             // Streak broken
             this.state.stats.streak = 0;
         }
+    }
+
+    /**
+     * Show points toast notification
+     * @param {number} points - Points earned
+     */
+    showPointsToast(points) {
+        // Remove existing toast if any
+        const existing = document.getElementById('points-toast');
+        if (existing) {
+            existing.remove();
+        }
+
+        // Create toast element
+        const toast = document.createElement('div');
+        toast.id = 'points-toast';
+        toast.className = 'points-toast';
+        toast.innerHTML = `
+            <i class="fas fa-star"></i>
+            <span>+${points} punten</span>
+        `;
+
+        document.body.appendChild(toast);
+
+        // Remove after animation
+        setTimeout(() => {
+            toast.remove();
+        }, 2000);
     }
 
     checkForUpdates() {
@@ -725,8 +751,6 @@ export class SwedishApp {
                 return renderGrammar(this.state);
             case TABS.BADGES:
                 return renderBadges(this.state, this.badges);
-            case TABS.LEADERBOARD:
-                return renderLeaderboard(this.state);
             case TABS.SETTINGS:
                 return renderSettings(this.state);
             default:
@@ -1084,26 +1108,35 @@ export class SwedishApp {
         }
     }
 
+    /**
+     * Clear current recording to re-record
+     */
+    clearRecording() {
+        if (this.state.audioURL) {
+            URL.revokeObjectURL(this.state.audioURL);
+        }
+        this.state.audioURL = null;
+        this.state.audioBlob = null;
+        // Also reset speech recognition when re-recording
+        this.state.speechResult = null;
+        this.state.speechSimilarity = null;
+        this.state.speechError = null;
+        this.render();
+    }
+
     // =====================
     // Speech Recognition Methods
     // =====================
 
     /**
-     * Check if speech recognition is available
-     * Not supported on iOS Safari (Apple platform restriction)
-     */
-    canUseSpeechRecognition() {
-        return hasSpeechRecognition();
-    }
-
-    /**
      * Start speech recognition for pronunciation comparison
+     * Only works on desktop/Android, not iOS
      * @param {string} expectedText - The Swedish text to compare against
      */
     startSpeechRecognition(expectedText) {
         const SpeechRecognition = getSpeechRecognition();
         if (!SpeechRecognition) {
-            this.state.speechError = 'Speech recognition niet beschikbaar op dit apparaat';
+            this.state.speechError = 'Spraakherkenning niet beschikbaar op dit apparaat';
             this.render();
             return;
         }
@@ -1161,18 +1194,19 @@ export class SwedishApp {
             this.render();
         };
 
+        // Start listening
         try {
             this.speechRecognition.start();
         } catch (error) {
             console.error('Failed to start speech recognition:', error);
-            this.state.isListening = false;
             this.state.speechError = 'Kon spraakherkenning niet starten';
+            this.state.isListening = false;
             this.render();
         }
     }
 
     /**
-     * Stop speech recognition
+     * Stop active speech recognition
      */
     stopSpeechRecognition() {
         if (this.speechRecognition) {
@@ -1187,7 +1221,7 @@ export class SwedishApp {
     }
 
     /**
-     * Clear speech recognition results
+     * Clear speech recognition result
      */
     clearSpeechResult() {
         this.state.speechResult = null;
@@ -1229,6 +1263,9 @@ export class SwedishApp {
             this.state.stats.level = Math.floor(this.state.stats.totalPoints / 100) + 1;
             this.state.stats.phrasesCompleted = (this.state.stats.phrasesCompleted || 0) + 1;
             this.state.stats.dailyGoal = (this.state.stats.dailyGoal || 0) + 1;
+
+            // Show points toast
+            this.showPointsToast(points);
 
             this.checkStreak();
             await this.saveUserData();

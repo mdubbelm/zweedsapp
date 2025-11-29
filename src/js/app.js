@@ -719,6 +719,7 @@ export class SwedishApp {
         appElement.innerHTML = `
             ${this.state.showUpdateNotification ? this.renderUpdateNotification() : ''}
             ${this.state.newBadge ? this.renderNewBadge() : ''}
+            ${this.state.showDailyCompletion ? this.renderDailyCompletionMessage() : ''}
             ${this.state.showDailyProgramModal ? this.renderDailyProgramModal() : ''}
             ${this.state.selectedCategoryForMode ? this.renderModeSelector() : ''}
             ${this.state.selectedModeForCategory ? this.renderCategorySelector() : ''}
@@ -815,6 +816,25 @@ export class SwedishApp {
                     <h2 class="text-2xl font-bold text-gray-800 mb-2">Badge Behaald!</h2>
                     <h3 class="text-xl font-semibold text-yellow-600 mb-2">${badge.name}</h3>
                     <p class="text-gray-600">${badge.description}</p>
+                </div>
+            </div>
+        `;
+    }
+
+    renderDailyCompletionMessage() {
+        return `
+            <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fadeIn">
+                <div class="bg-white rounded-2xl p-8 mx-4 text-center animate-slideUp max-w-sm">
+                    <div class="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 bg-green-100">
+                        <i class="fas fa-check-circle text-5xl text-green-500"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-800 mb-2">Gefeliciteerd!</h2>
+                    <p class="text-lg text-gray-600 mb-4">
+                        Je hebt je dagelijkse oefeningen voltooid!
+                    </p>
+                    <p class="text-sm text-gray-500">
+                        Kom morgen terug voor nieuwe zinnen
+                    </p>
                 </div>
             </div>
         `;
@@ -1271,7 +1291,13 @@ export class SwedishApp {
             await this.saveUserData();
         }
 
-        // Move to next phrase
+        // If from Daily Program, navigate to next uncompleted daily phrase
+        if (this.state.fromDailyProgram) {
+            this.navigateToNextDailyPhrase();
+            return;
+        }
+
+        // Normal mode: Move to next phrase in category
         if (this.state.currentPhraseIndex < phrases.length - 1) {
             this.state.currentPhraseIndex++;
             this.state.showAnswer = false;
@@ -1280,6 +1306,54 @@ export class SwedishApp {
         }
 
         this.render();
+    }
+
+    /**
+     * Find and navigate to the next uncompleted daily phrase
+     * Shows completion message if all daily phrases are done
+     */
+    navigateToNextDailyPhrase() {
+        const dailyPhrases = this.state.dailyPhrases;
+
+        // Find next uncompleted daily phrase
+        const nextIndex = dailyPhrases.findIndex(p => {
+            const phraseId = `${p.categoryId}-${p.id}`;
+            return !this.state.completedPhrases.includes(phraseId);
+        });
+
+        if (nextIndex !== -1) {
+            // Navigate to next uncompleted phrase
+            this.startDailyPhrase(nextIndex);
+        } else {
+            // All daily phrases completed!
+            this.showDailyProgramComplete();
+        }
+    }
+
+    /**
+     * Show completion message when all daily phrases are done
+     */
+    showDailyProgramComplete() {
+        // Reset daily program state
+        this.state.fromDailyProgram = false;
+        this.state.currentDailyPhraseIndex = -1;
+        this.state.showDailyCompletion = true;
+
+        // Clear practice state
+        this.state.audioURL = null;
+        this.state.hasListenedToAudio = false;
+        this.state.speechResult = null;
+        this.state.speechSimilarity = null;
+
+        // Go to home and show completion
+        this.state.currentTab = TABS.HOME;
+        this.render();
+
+        // Show success message (will auto-dismiss)
+        setTimeout(() => {
+            this.state.showDailyCompletion = false;
+            this.render();
+        }, 5000);
     }
 
     previousPhrase() {
@@ -1392,6 +1466,16 @@ export class SwedishApp {
     }
 
     nextWritingPhrase() {
+        // If from Daily Program and phrase was completed correctly, go to next daily phrase
+        if (this.state.fromDailyProgram && this.state.writingCorrect) {
+            this.state.writingInput = '';
+            this.state.showWritingFeedback = false;
+            this.state.writingCorrect = false;
+            this.navigateToNextDailyPhrase();
+            return;
+        }
+
+        // Normal mode: go to next phrase in category
         const category = this.categories[this.state.writingCategory || this.state.currentCategory];
         if (!category) {
             return;

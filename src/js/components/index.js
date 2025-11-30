@@ -11,3 +11,4 @@ export { renderHeader } from './Header.js';
 export { renderCategoryCard, renderCategoryGrid } from './CategoryCard.js';
 export { renderPhraseCard, renderFlashcard } from './PhraseCard.js';
 export { renderBadgeCard, renderBadgeGrid, renderBadgePopup } from './BadgeCard.js';
+export { renderStreakCalendar, renderStreakIndicator } from './StreakCalendar.js';

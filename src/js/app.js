@@ -102,7 +102,10 @@ export class SwedishApp {
             isListening: false,
             speechResult: null,
             speechSimilarity: null,
-            speechError: null
+            speechError: null,
+            // Streak Calendar state
+            calendarMonth: new Date().getMonth(),
+            calendarYear: new Date().getFullYear()
         };
 
         this.mediaRecorder = null;
@@ -342,15 +345,41 @@ export class SwedishApp {
 
     checkStreak() {
         const lastDate = this.state.stats.lastPracticeDate;
+        const today = new Date().toISOString().split('T')[0];
+
         if (!lastDate) {
+            // First practice ever - start streak
+            this.state.stats.streak = 1;
+            this.state.stats.lastPracticeDate = today;
+            this.updateLongestStreak();
+            return;
+        }
+
+        if (isToday(lastDate)) {
+            // Already practiced today - streak unchanged
             return;
         }
 
         if (isYesterday(lastDate)) {
-            // Streak continues
-        } else if (!isToday(lastDate)) {
-            // Streak broken
-            this.state.stats.streak = 0;
+            // Streak continues - increment
+            this.state.stats.streak = (this.state.stats.streak || 0) + 1;
+            this.state.stats.lastPracticeDate = today;
+            this.updateLongestStreak();
+        } else {
+            // Streak broken - reset to 1 (today counts)
+            this.state.stats.streak = 1;
+            this.state.stats.lastPracticeDate = today;
+        }
+    }
+
+    /**
+     * Update longest streak if current streak is higher
+     */
+    updateLongestStreak() {
+        const currentStreak = this.state.stats.streak || 0;
+        const longestStreak = this.state.stats.longestStreak || 0;
+        if (currentStreak > longestStreak) {
+            this.state.stats.longestStreak = currentStreak;
         }
     }
 
@@ -1331,6 +1360,49 @@ export class SwedishApp {
     }
 
     /**
+     * Skip current daily phrase and move to the next one
+     * Used when user wants to skip a difficult phrase
+     */
+    skipDailyPhrase() {
+        // Reset writing state
+        this.state.writingInput = '';
+        this.state.showWritingFeedback = false;
+        this.state.writingCorrect = false;
+
+        // Find next daily phrase (can be uncompleted or the next one after current)
+        const currentIndex = this.state.currentDailyPhraseIndex;
+        const dailyPhrases = this.state.dailyPhrases;
+
+        // Look for next uncompleted phrase after current index
+        let nextIndex = -1;
+        for (let i = currentIndex + 1; i < dailyPhrases.length; i++) {
+            const phraseId = `${dailyPhrases[i].categoryId}-${dailyPhrases[i].id}`;
+            if (!this.state.completedPhrases.includes(phraseId)) {
+                nextIndex = i;
+                break;
+            }
+        }
+
+        // If no uncompleted phrase after current, look from the beginning
+        if (nextIndex === -1) {
+            for (let i = 0; i < currentIndex; i++) {
+                const phraseId = `${dailyPhrases[i].categoryId}-${dailyPhrases[i].id}`;
+                if (!this.state.completedPhrases.includes(phraseId)) {
+                    nextIndex = i;
+                    break;
+                }
+            }
+        }
+
+        if (nextIndex !== -1) {
+            this.startDailyPhrase(nextIndex);
+        } else {
+            // All other phrases completed, stay on current or show completion
+            this.showDailyProgramComplete();
+        }
+    }
+
+    /**
      * Show completion message when all daily phrases are done
      */
     showDailyProgramComplete() {
@@ -1345,6 +1417,9 @@ export class SwedishApp {
         this.state.speechResult = null;
         this.state.speechSimilarity = null;
 
+        // Track completed day for streak calendar
+        this.markDayAsCompleted();
+
         // Go to home and show completion
         this.state.currentTab = TABS.HOME;
         this.render();
@@ -1354,6 +1429,42 @@ export class SwedishApp {
             this.state.showDailyCompletion = false;
             this.render();
         }, 5000);
+    }
+
+    /**
+     * Mark today as a completed day (Daily Program 100% done)
+     */
+    markDayAsCompleted() {
+        const today = new Date().toISOString().split('T')[0];
+
+        // Initialize completedDays array if it doesn't exist
+        if (!this.state.stats.completedDays) {
+            this.state.stats.completedDays = [];
+        }
+
+        // Add today if not already added
+        if (!this.state.stats.completedDays.includes(today)) {
+            this.state.stats.completedDays.push(today);
+            this.saveUserData();
+        }
+    }
+
+    /**
+     * Change the calendar month for the streak calendar
+     * @param {number} year - Year to display
+     * @param {number} month - Month to display (0-indexed)
+     */
+    changeCalendarMonth(year, month) {
+        // Don't allow navigation to future months
+        const now = new Date();
+        const targetDate = new Date(year, month, 1);
+        if (targetDate > now) {
+            return;
+        }
+
+        this.state.calendarYear = year;
+        this.state.calendarMonth = month;
+        this.render();
     }
 
     previousPhrase() {
@@ -1472,6 +1583,15 @@ export class SwedishApp {
             this.state.showWritingFeedback = false;
             this.state.writingCorrect = false;
             this.navigateToNextDailyPhrase();
+            return;
+        }
+
+        // If from Daily Program but answer was wrong, stay on current phrase to retry
+        if (this.state.fromDailyProgram && !this.state.writingCorrect) {
+            this.state.writingInput = '';
+            this.state.showWritingFeedback = false;
+            this.state.writingCorrect = false;
+            this.render();
             return;
         }
 

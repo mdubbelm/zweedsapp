@@ -178,7 +178,29 @@ export function renderWriting(state, getFilteredPhrases) {
                         <i class="fas fa-check mr-2"></i>Controleer
                     </button>
                 `
-                        : `
+                        : state.writingCorrect
+                          ? `
+                    <button onclick="app.nextWritingPhrase()"
+                            class="w-full mt-4 py-4 rounded-xl font-bold text-white card-hover card-shadow"
+                            style="background: var(--scandi-teal);">
+                        <i class="fas fa-arrow-right mr-2"></i>Volgende zin
+                    </button>
+                `
+                          : state.fromDailyProgram
+                            ? `
+                    <div class="flex gap-3 mt-4">
+                        <button onclick="app.nextWritingPhrase()"
+                                class="flex-1 py-4 rounded-xl font-bold text-white card-hover card-shadow"
+                                style="background: var(--scandi-teal);">
+                            <i class="fas fa-redo mr-2"></i>Opnieuw proberen
+                        </button>
+                        <button onclick="app.skipDailyPhrase()"
+                                class="flex-1 py-4 rounded-xl font-bold text-gray-600 bg-gray-200 card-hover card-shadow">
+                            <i class="fas fa-forward mr-2"></i>Overslaan
+                        </button>
+                    </div>
+                `
+                            : `
                     <button onclick="app.nextWritingPhrase()"
                             class="w-full mt-4 py-4 rounded-xl font-bold text-white card-hover card-shadow"
                             style="background: var(--scandi-teal);">

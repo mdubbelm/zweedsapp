@@ -3,7 +3,7 @@
  */
 
 // App version - synced with package.json via Vite
-export const APP_VERSION = __APP_VERSION__ || '1.11.0';
+export const APP_VERSION = __APP_VERSION__ || '1.12.0';
 
 // Supabase configuration from environment variables
 export const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;

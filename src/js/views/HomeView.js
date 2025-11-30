@@ -4,6 +4,7 @@
  */
 
 import { escapeHtml } from '../utils/helpers.js';
+import { renderStreakCalendar } from '../components/StreakCalendar.js';
 
 /**
  * Render stats row
@@ -173,6 +174,14 @@ export function renderHome(state) {
 
             <!-- Learning Modes -->
             ${renderLearningModes()}
+
+            <!-- Streak Calendar -->
+            <div class="mt-6">
+                <h3 class="text-xl font-bold text-gray-800 mb-3">
+                    <i class="fas fa-calendar-check mr-2 text-green-600"></i>Je voortgang
+                </h3>
+                ${renderStreakCalendar(state.stats, state.calendarMonth, state.calendarYear)}
+            </div>
 
             <!-- View All Progress Link -->
             <div class="mt-6 text-center">

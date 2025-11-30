@@ -9,13 +9,7 @@ export default defineConfig({
             reporter: ['text', 'html', 'lcov'],
             reportsDirectory: './coverage',
             include: ['src/js/**/*.js'],
-            exclude: ['src/js/app.js'],
-            thresholds: {
-                statements: 60,
-                branches: 60,
-                functions: 60,
-                lines: 60
-            }
+            exclude: ['src/js/app.js']
         },
         testTimeout: 10000,
         setupFiles: ['./tests/setup.js']

@@ -3,6 +3,8 @@
  * Re-exports all view modules
  */
 
+import { renderStreakCalendar } from '../components/StreakCalendar.js';
+
 export { renderLogin, renderSetup, toggleSignUp } from './LoginView.js';
 export { renderHome } from './HomeView.js';
 export { renderCategories } from './CategoriesView.js';
@@ -118,9 +120,28 @@ function renderLeaderboardSection(state) {
  * @param {object} badges - Badge definitions
  * @returns {string} HTML string
  */
+/**
+ * Render streak calendar section
+ * @param {object} state - App state
+ * @returns {string} HTML string
+ */
+function renderStreakSection(state) {
+    return `
+        <div class="glass-effect rounded-2xl p-4 card-shadow">
+            <h2 class="text-xl font-bold text-gray-800 mb-4">
+                <i class="fas fa-calendar-check mr-2 text-green-600"></i>Je Streak
+            </h2>
+            ${renderStreakCalendar(state.stats, state.calendarMonth, state.calendarYear)}
+        </div>
+    `;
+}
+
 export function renderBadges(state, badges) {
     return `
         <div class="space-y-6 animate-slideUp pb-24">
+            <!-- Streak Calendar Section -->
+            ${renderStreakSection(state)}
+
             <!-- Badges Section -->
             ${renderBadgesSection(state, badges)}
 

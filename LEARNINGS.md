@@ -140,6 +140,55 @@ Plus secrets toevoegen via: `gh secret set VITE_SUPABASE_URL`
 
 ---
 
+### [2025-11-30] ALTIJD feature branch + lokaal testen voor push
+
+**Context**: Streak kalender feature direct naar main gepusht zonder review of lokaal testen.
+
+**Probleem**:
+- Feature direct op main = geen review mogelijk
+- Geen lokaal testen = bugs in productie
+- UX/UI feedback achteraf = rework nodig
+- Dit is HERHAALDELIJK fout gegaan
+
+**Correcte workflow**:
+```bash
+# 1. ALTIJD feature branch
+git checkout -b feat/feature-naam
+
+# 2. Bouw de feature
+# ...
+
+# 3. LOKAAL TESTEN (npm run dev)
+npm run dev
+# Open browser, test handmatig!
+
+# 4. Vraag UX/UI feedback VOORDAT je klaar bent
+
+# 5. Lint + test + build
+npm run lint && npm run test && npm run build
+
+# 6. Commit naar feature branch
+git add . && git commit -m "feat: ..."
+
+# 7. Push feature branch
+git push -u origin feat/feature-naam
+
+# 8. Maak PR voor review
+gh pr create
+
+# 9. PAS NA GOEDKEURING merge naar main
+```
+
+**Waarom**:
+- Feature branches maken review mogelijk
+- Lokaal testen vangt bugs voor productie
+- UX/UI feedback vooraf voorkomt rework
+- PRs documenteren changes en rationale
+
+**Tags**: #workflow #git #discipline #herhaling
+
+---
+
 ## Index per Tag
 
 ### Browser Quirks
@@ -160,6 +209,9 @@ Plus secrets toevoegen via: `gh secret set VITE_SUPABASE_URL`
 
 ### CI/CD
 - GitHub Actions secrets voor build
+
+### Workflow
+- ALTIJD feature branch + lokaal testen voor push
 
 ---
 

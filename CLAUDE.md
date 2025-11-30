@@ -2,6 +2,34 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## ⛔ STOP - VOORDAT JE CODE SCHRIJFT
+
+**Deze checklist is VERPLICHT bij elke feature/wijziging:**
+
+1. **Feature branch** - NOOIT direct op main werken
+   ```bash
+   git checkout -b feat/feature-naam
+   ```
+
+2. **Design principles lezen** - Bij UI/UX wijzigingen
+   ```
+   ~/Projecten/DESIGN_PRINCIPLES.md
+   ```
+   - Geen modals! Gebruik inline schermen
+   - Raadpleeg Veerle (UX) en Kehrana (UI) bij twijfel
+
+3. **UX/UI feedback VOORAF** - Niet achteraf
+   - Beschrijf wat je wilt bouwen
+   - Vraag of het past bij de design richtlijnen
+
+4. **Lokaal testen** - `npm run dev` en IN DE BROWSER testen
+
+5. **PR maken** - Niet direct naar main pushen
+
+**Dit is HERHAALDELIJK fout gegaan. Volg dit proces.**
+
+---
+
 ## ⚠️ CRITICAL: Deployment Workflow
 
 **THIS APP IS DEPLOYED VIA GITHUB PAGES**

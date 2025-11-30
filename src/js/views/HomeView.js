@@ -4,7 +4,6 @@
  */
 
 import { escapeHtml } from '../utils/helpers.js';
-import { renderStreakCalendar } from '../components/StreakCalendar.js';
 
 /**
  * Render stats row
@@ -149,6 +148,35 @@ function renderLearningModes() {
 }
 
 /**
+ * Render compact streak indicator
+ * @param {object} stats - User stats
+ * @returns {string} HTML string
+ */
+function renderCompactStreak(stats) {
+    const streak = stats.streak || 0;
+    const longestStreak = stats.longestStreak || 0;
+    const completedDays = stats.completedDays || [];
+
+    return `
+        <button onclick="app.switchTab('badges')"
+                class="w-full mt-4 glass-effect rounded-xl p-4 card-shadow card-hover text-left flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-lg flex items-center justify-center bg-orange-100">
+                    <i class="fas fa-fire text-orange-500 text-lg"></i>
+                </div>
+                <div>
+                    <p class="font-bold text-gray-800">${streak} ${streak === 1 ? 'dag' : 'dagen'} streak</p>
+                    <p class="text-sm text-gray-500">
+                        ${longestStreak > streak ? `Beste: ${longestStreak} · ` : ''}${completedDays.length} dagen voltooid
+                    </p>
+                </div>
+            </div>
+            <i class="fas fa-chevron-right text-gray-400"></i>
+        </button>
+    `;
+}
+
+/**
  * Render home view
  * @param {object} state - App state
  * @returns {string} HTML string
@@ -175,13 +203,8 @@ export function renderHome(state) {
             <!-- Learning Modes -->
             ${renderLearningModes()}
 
-            <!-- Streak Calendar -->
-            <div class="mt-6">
-                <h3 class="text-xl font-bold text-gray-800 mb-3">
-                    <i class="fas fa-calendar-check mr-2 text-green-600"></i>Je voortgang
-                </h3>
-                ${renderStreakCalendar(state.stats, state.calendarMonth, state.calendarYear)}
-            </div>
+            <!-- Compact Streak Indicator -->
+            ${renderCompactStreak(state.stats)}
 
             <!-- View All Progress Link -->
             <div class="mt-6 text-center">

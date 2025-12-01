@@ -81,6 +81,7 @@ export class SwedishApp {
             showOnboarding: false,
             onboardingStep: 0,
             dailyPhrases: [],
+            dailyCompletedPhrases: [], // Phrases completed TODAY in daily program
             fromDailyProgram: false,
             currentDailyPhraseIndex: -1,
             showDailyCompletion: false,
@@ -477,11 +478,20 @@ export class SwedishApp {
         if (storedDate === today && localStorage.getItem('dailyProgram')) {
             try {
                 this.state.dailyPhrases = JSON.parse(localStorage.getItem('dailyProgram'));
+                // Load today's completed phrases (not the global completedPhrases!)
+                const storedDailyCompleted = localStorage.getItem('dailyCompletedPhrases');
+                this.state.dailyCompletedPhrases = storedDailyCompleted
+                    ? JSON.parse(storedDailyCompleted)
+                    : [];
                 return;
             } catch {
                 // Regenerate if parsing fails
             }
         }
+
+        // New day: reset daily completed phrases
+        this.state.dailyCompletedPhrases = [];
+        localStorage.setItem('dailyCompletedPhrases', '[]');
 
         // Get enabled categories
         const enabledCategories =
@@ -871,8 +881,9 @@ export class SwedishApp {
 
     renderDailyProgramModal() {
         const phrases = this.state.dailyPhrases;
+        // Use dailyCompletedPhrases for today's progress, not global completedPhrases
         const completedCount = phrases.filter(p =>
-            this.state.completedPhrases.includes(`${p.categoryId}-${p.id}`)
+            this.state.dailyCompletedPhrases.includes(`${p.categoryId}-${p.id}`)
         ).length;
 
         return `
@@ -890,7 +901,7 @@ export class SwedishApp {
                     <div class="space-y-2">
                         ${phrases
                             .map((phrase, index) => {
-                                const isCompleted = this.state.completedPhrases.includes(
+                                const isCompleted = this.state.dailyCompletedPhrases.includes(
                                     `${phrase.categoryId}-${phrase.id}`
                                 );
                                 return `
@@ -1320,6 +1331,16 @@ export class SwedishApp {
             await this.saveUserData();
         }
 
+        // Track daily completion separately (for daily program progress)
+        // This resets each day, unlike completedPhrases which is cumulative
+        if (this.state.fromDailyProgram && !this.state.dailyCompletedPhrases.includes(phraseId)) {
+            this.state.dailyCompletedPhrases.push(phraseId);
+            localStorage.setItem(
+                'dailyCompletedPhrases',
+                JSON.stringify(this.state.dailyCompletedPhrases)
+            );
+        }
+
         // If from Daily Program, navigate to next uncompleted daily phrase
         if (this.state.fromDailyProgram) {
             this.navigateToNextDailyPhrase();
@@ -1344,10 +1365,10 @@ export class SwedishApp {
     navigateToNextDailyPhrase() {
         const dailyPhrases = this.state.dailyPhrases;
 
-        // Find next uncompleted daily phrase
+        // Find next uncompleted daily phrase (check dailyCompletedPhrases, not global)
         const nextIndex = dailyPhrases.findIndex(p => {
             const phraseId = `${p.categoryId}-${p.id}`;
-            return !this.state.completedPhrases.includes(phraseId);
+            return !this.state.dailyCompletedPhrases.includes(phraseId);
         });
 
         if (nextIndex !== -1) {
@@ -1373,11 +1394,11 @@ export class SwedishApp {
         const currentIndex = this.state.currentDailyPhraseIndex;
         const dailyPhrases = this.state.dailyPhrases;
 
-        // Look for next uncompleted phrase after current index
+        // Look for next uncompleted phrase after current index (check dailyCompletedPhrases)
         let nextIndex = -1;
         for (let i = currentIndex + 1; i < dailyPhrases.length; i++) {
             const phraseId = `${dailyPhrases[i].categoryId}-${dailyPhrases[i].id}`;
-            if (!this.state.completedPhrases.includes(phraseId)) {
+            if (!this.state.dailyCompletedPhrases.includes(phraseId)) {
                 nextIndex = i;
                 break;
             }
@@ -1387,7 +1408,7 @@ export class SwedishApp {
         if (nextIndex === -1) {
             for (let i = 0; i < currentIndex; i++) {
                 const phraseId = `${dailyPhrases[i].categoryId}-${dailyPhrases[i].id}`;
-                if (!this.state.completedPhrases.includes(phraseId)) {
+                if (!this.state.dailyCompletedPhrases.includes(phraseId)) {
                     nextIndex = i;
                     break;
                 }
@@ -1540,6 +1561,19 @@ export class SwedishApp {
                 this.state.stats.dailyGoal = (this.state.stats.dailyGoal || 0) + 1;
                 this.checkStreak();
                 this.saveUserData();
+            }
+
+            // Track daily completion separately (for daily program progress)
+            // This resets each day, unlike completedPhrases which is cumulative
+            if (
+                this.state.fromDailyProgram &&
+                !this.state.dailyCompletedPhrases.includes(phraseId)
+            ) {
+                this.state.dailyCompletedPhrases.push(phraseId);
+                localStorage.setItem(
+                    'dailyCompletedPhrases',
+                    JSON.stringify(this.state.dailyCompletedPhrases)
+                );
             }
         }
 

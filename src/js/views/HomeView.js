@@ -198,7 +198,7 @@ export function renderHome(state) {
             ${renderStatsRow(state.stats)}
 
             <!-- Daily Program -->
-            ${renderDailyProgram(state.dailyPhrases || [], state.completedPhrases)}
+            ${renderDailyProgram(state.dailyPhrases || [], state.dailyCompletedPhrases || [])}
 
             <!-- Learning Modes -->
             ${renderLearningModes()}

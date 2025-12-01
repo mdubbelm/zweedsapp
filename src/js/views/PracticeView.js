@@ -280,8 +280,67 @@ function renderRecordingButton(state, phrase) {
 
 /**
  * Render sticky bottom controls
+ * When fromDailyProgram=true, show Skip button instead of Vorige/Volgende
  */
-function renderStickyControls(phraseIndex, totalPhrases, isCompleted, canComplete) {
+function renderStickyControls(
+    phraseIndex,
+    totalPhrases,
+    isCompleted,
+    canComplete,
+    fromDailyProgram
+) {
+    // Daily program mode: simplified controls with Skip option
+    if (fromDailyProgram) {
+        return `
+            <div class="practice-controls safe-bottom" role="navigation" aria-label="Dagprogramma navigatie">
+                <button onclick="app.skipDailyPhrase()"
+                        class="nav-btn"
+                        aria-label="Overslaan">
+                    <i class="fas fa-forward"></i>
+                    <span class="nav-label">Overslaan</span>
+                </button>
+
+                ${
+                    isCompleted
+                        ? `
+                        <button disabled
+                                class="complete-toggle completed"
+                                aria-pressed="true">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Voltooid</span>
+                        </button>
+                    `
+                        : canComplete
+                          ? `
+                        <button onclick="app.markPhraseComplete()"
+                                class="complete-toggle"
+                                aria-pressed="false">
+                            <i class="far fa-circle"></i>
+                            <span>Voltooid</span>
+                        </button>
+                    `
+                          : `
+                        <button disabled
+                                class="complete-toggle disabled"
+                                title="Luister eerst naar de uitspraak"
+                                aria-pressed="false">
+                            <i class="fas fa-lock"></i>
+                            <span>Voltooid</span>
+                        </button>
+                    `
+                }
+
+                <button onclick="app.openDailyProgramModal()"
+                        class="nav-btn"
+                        aria-label="Terug naar overzicht">
+                    <span class="nav-label">Overzicht</span>
+                    <i class="fas fa-list"></i>
+                </button>
+            </div>
+        `;
+    }
+
+    // Normal category mode: full navigation
     return `
         <div class="practice-controls safe-bottom" role="navigation" aria-label="Navigatie en voortgang">
             <button onclick="app.previousPhrase()"
@@ -372,7 +431,10 @@ export function renderPractice(state, getFilteredPhrases) {
     const phraseIndex = Math.min(state.currentPhraseIndex, phrases.length - 1);
     const phrase = phrases[phraseIndex];
     const phraseId = `${state.currentCategory}-${phrase.id}`;
-    const isCompleted = state.completedPhrases.includes(phraseId);
+    // Use dailyCompletedPhrases when coming from daily program, otherwise global completedPhrases
+    const isCompleted = state.fromDailyProgram
+        ? state.dailyCompletedPhrases.includes(phraseId)
+        : state.completedPhrases.includes(phraseId);
     const canComplete = state.hasListenedToAudio || state.audioURL;
     const progress = ((phraseIndex + 1) / phrases.length) * 100;
 
@@ -409,6 +471,6 @@ export function renderPractice(state, getFilteredPhrases) {
         </div>
 
         <!-- ZONE 3: Sticky Controls (outside animated container) -->
-        ${renderStickyControls(phraseIndex, phrases.length, isCompleted, canComplete)}
+        ${renderStickyControls(phraseIndex, phrases.length, isCompleted, canComplete, state.fromDailyProgram)}
     `;
 }

@@ -1562,6 +1562,19 @@ export class SwedishApp {
                 this.checkStreak();
                 this.saveUserData();
             }
+
+            // Track daily completion separately (for daily program progress)
+            // This resets each day, unlike completedPhrases which is cumulative
+            if (
+                this.state.fromDailyProgram &&
+                !this.state.dailyCompletedPhrases.includes(phraseId)
+            ) {
+                this.state.dailyCompletedPhrases.push(phraseId);
+                localStorage.setItem(
+                    'dailyCompletedPhrases',
+                    JSON.stringify(this.state.dailyCompletedPhrases)
+                );
+            }
         }
 
         this.render();

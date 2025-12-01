@@ -1,0 +1,33 @@
+#!/bin/sh
+
+# Pre-push hook - blokkeert push als tests of build falen
+# Kopieer naar: .husky/pre-push
+# Maak executable: chmod +x .husky/pre-push
+
+echo "🔍 Pre-push checks starten..."
+echo ""
+
+# Run tests
+echo "📋 Tests runnen..."
+npm run test
+if [ $? -ne 0 ]; then
+  echo ""
+  echo "❌ Tests gefaald! Push geblokkeerd."
+  echo "   Fix de tests en probeer opnieuw."
+  exit 1
+fi
+
+# Run build
+echo ""
+echo "🏗️  Build runnen..."
+npm run build
+if [ $? -ne 0 ]; then
+  echo ""
+  echo "❌ Build gefaald! Push geblokkeerd."
+  echo "   Fix de build errors en probeer opnieuw."
+  exit 1
+fi
+
+echo ""
+echo "✅ Alle pre-push checks geslaagd!"
+echo "   Push gaat door..."

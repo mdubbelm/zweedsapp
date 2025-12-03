@@ -307,7 +307,7 @@ function renderStickyControls(
                                 class="complete-toggle completed"
                                 aria-pressed="true">
                             <i class="fas fa-check-circle"></i>
-                            <span>Voltooid</span>
+                            <span>Geleerd</span>
                         </button>
                     `
                         : canComplete
@@ -315,8 +315,8 @@ function renderStickyControls(
                         <button onclick="app.markPhraseComplete()"
                                 class="complete-toggle"
                                 aria-pressed="false">
-                            <i class="far fa-circle"></i>
-                            <span>Voltooid</span>
+                            <i class="fas fa-check"></i>
+                            <span>Geleerd</span>
                         </button>
                     `
                           : `
@@ -325,7 +325,7 @@ function renderStickyControls(
                                 title="Luister eerst naar de uitspraak"
                                 aria-pressed="false">
                             <i class="fas fa-lock"></i>
-                            <span>Voltooid</span>
+                            <span>Luister eerst</span>
                         </button>
                     `
                 }
@@ -358,7 +358,7 @@ function renderStickyControls(
                             class="complete-toggle completed"
                             aria-pressed="true">
                         <i class="fas fa-check-circle"></i>
-                        <span>Voltooid</span>
+                        <span>Geleerd</span>
                     </button>
                 `
                     : canComplete
@@ -366,8 +366,8 @@ function renderStickyControls(
                     <button onclick="app.markPhraseComplete()"
                             class="complete-toggle"
                             aria-pressed="false">
-                        <i class="far fa-circle"></i>
-                        <span>Voltooid</span>
+                        <i class="fas fa-check"></i>
+                        <span>Geleerd</span>
                     </button>
                 `
                       : `
@@ -376,7 +376,7 @@ function renderStickyControls(
                             title="Luister eerst naar de uitspraak"
                             aria-pressed="false">
                         <i class="fas fa-lock"></i>
-                        <span>Voltooid</span>
+                        <span>Luister eerst</span>
                     </button>
                 `
             }

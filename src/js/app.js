@@ -5,6 +5,7 @@
 
 import { categories } from './data/phrases.js';
 import { badges } from './data/badges.js';
+import { getRandomGrammarExercises } from './data/grammarExercises.js';
 import { APP_VERSION, TABS } from './utils/constants.js';
 import {
     escapeHtml,
@@ -99,6 +100,12 @@ export class SwedishApp {
             phraseHistory: {},
             grammarType: null,
             grammarItemIndex: 0,
+            // Grammar Exercise state (from Daily Program)
+            grammarExerciseMode: false,
+            currentGrammarExercise: null,
+            grammarInput: '',
+            showGrammarFeedback: false,
+            grammarCorrect: false,
             // Speech Recognition state
             isListening: false,
             speechResult: null,
@@ -536,12 +543,45 @@ export class SwedishApp {
             }
         });
 
-        // Shuffle and pick 10
+        // Shuffle phrases
         allPhrases = shuffleArray(allPhrases);
-        const dailyPhrases = allPhrases.slice(0, 10).map((phrase, index) => ({
+
+        // Get difficulty based on user level (Lotte's framework)
+        const level = this.state.stats?.level || 1;
+        let difficultyFilter = null;
+        if (level <= 5) {
+            difficultyFilter = 'easy';
+        } else if (level <= 10) {
+            difficultyFilter = 'easy-medium';
+        } else if (level <= 15) {
+            difficultyFilter = 'medium';
+        } else if (level <= 20) {
+            difficultyFilter = 'hard';
+        }
+
+        // Build daily program according to Lotte's framework:
+        // 8 phrases (4 practice, 4 writing) + 2 grammar exercises
+        const phraseItems = allPhrases.slice(0, 8).map((phrase, index) => ({
             ...phrase,
             exerciseType: index % 2 === 0 ? 'practice' : 'writing'
         }));
+
+        // Get 2 grammar exercises
+        const grammarItems = getRandomGrammarExercises(2, difficultyFilter).map(exercise => ({
+            ...exercise,
+            exerciseType: 'grammar',
+            categoryId: 'grammar',
+            categoryName: 'Grammatica'
+        }));
+
+        // Combine: 8 phrases + 2 grammar = 10 items total
+        // Interleave grammar at positions 4 and 8 for variety
+        const dailyPhrases = [
+            ...phraseItems.slice(0, 4),
+            grammarItems[0],
+            ...phraseItems.slice(4, 8),
+            grammarItems[1]
+        ].filter(Boolean); // Remove undefined if less grammar exercises
 
         this.state.dailyPhrases = dailyPhrases;
         localStorage.setItem('dailyProgram', JSON.stringify(dailyPhrases));
@@ -927,18 +967,28 @@ export class SwedishApp {
                                 const isCompleted = this.state.dailyCompletedPhrases.includes(
                                     `${phrase.categoryId}-${phrase.id}`
                                 );
+                                const isGrammar = phrase.exerciseType === 'grammar';
+                                const icon = isGrammar
+                                    ? '📝'
+                                    : phrase.exerciseType === 'practice'
+                                      ? '🎤'
+                                      : '⌨️';
+                                const displayText = isGrammar ? phrase.prompt : phrase.swedish;
+
                                 return `
                                 <button onclick="app.startDailyPhrase(${index})"
                                         class="w-full p-3 rounded-xl text-left transition-all ${
                                             isCompleted
                                                 ? 'bg-green-50 border-2 border-green-200'
-                                                : 'bg-gray-50 hover:bg-gray-100'
+                                                : isGrammar
+                                                  ? 'bg-amber-50 hover:bg-amber-100'
+                                                  : 'bg-gray-50 hover:bg-gray-100'
                                         }">
                                     <div class="flex items-center gap-3">
-                                        <span class="text-lg">${phrase.exerciseType === 'practice' ? '🎤' : '⌨️'}</span>
+                                        <span class="text-lg">${icon}</span>
                                         <div class="flex-1">
-                                            <p class="font-medium text-gray-800">${escapeHtml(phrase.swedish)}</p>
-                                            <p class="text-sm text-gray-500">${phrase.categoryName}</p>
+                                            <p class="font-medium text-gray-800">${escapeHtml(displayText)}</p>
+                                            <p class="text-sm text-gray-500">${phrase.categoryName}${isGrammar ? ' - ' + phrase.type : ''}</p>
                                         </div>
                                         ${isCompleted ? '<i class="fas fa-check-circle text-green-500"></i>' : ''}
                                     </div>
@@ -960,8 +1010,20 @@ export class SwedishApp {
 
         this.state.fromDailyProgram = true;
         this.state.currentDailyPhraseIndex = index;
-        this.state.currentCategory = phrase.categoryId;
         this.state.showDailyProgramModal = false;
+
+        // Handle grammar exercises differently
+        if (phrase.exerciseType === 'grammar') {
+            this.state.currentGrammarExercise = phrase;
+            this.state.grammarInput = '';
+            this.state.showGrammarFeedback = false;
+            this.state.currentTab = TABS.GRAMMAR;
+            this.state.grammarExerciseMode = true;
+            this.render();
+            return;
+        }
+
+        this.state.currentCategory = phrase.categoryId;
 
         // CRITICAL: Find index in FILTERED phrases, not full category
         // This bug has occurred multiple times - see commit 487752d
@@ -1735,6 +1797,88 @@ export class SwedishApp {
 
     closeGrammarTopic() {
         this.state.grammarType = null;
+        this.render();
+    }
+
+    // =====================
+    // Grammar Exercises (Daily Program)
+    // =====================
+
+    updateGrammarInput(value) {
+        this.state.grammarInput = value;
+        // Don't re-render to avoid losing focus
+    }
+
+    checkGrammarAnswer(selectedOption = null) {
+        const exercise = this.state.currentGrammarExercise;
+        if (!exercise) {
+            return;
+        }
+
+        // For multiple choice, use the selected option
+        // For text input, use the grammarInput state
+        const userAnswer = selectedOption || this.state.grammarInput;
+        this.state.grammarInput = userAnswer;
+
+        // Check if answer is correct
+        const correctAnswer = exercise.answer.toLowerCase().trim();
+        const userAnswerLower = userAnswer.toLowerCase().trim();
+
+        // Check main answer and alternatives
+        const isCorrect =
+            userAnswerLower === correctAnswer ||
+            (exercise.alternatives &&
+                exercise.alternatives.some(alt => alt.toLowerCase().trim() === userAnswerLower));
+
+        this.state.grammarCorrect = isCorrect;
+        this.state.showGrammarFeedback = true;
+
+        // Award points if correct
+        if (isCorrect) {
+            const points =
+                exercise.difficulty === 'hard' ? 20 : exercise.difficulty === 'medium' ? 15 : 10;
+            this.state.stats.totalPoints += points;
+            this.state.stats.level = Math.floor(this.state.stats.totalPoints / 100) + 1;
+        }
+
+        this.render();
+    }
+
+    completeGrammarExercise() {
+        const exercise = this.state.currentGrammarExercise;
+
+        // Mark as completed in daily program
+        if (this.state.fromDailyProgram && exercise) {
+            const exerciseId = `${exercise.categoryId}-${exercise.id}`;
+            if (!this.state.dailyCompletedPhrases.includes(exerciseId)) {
+                this.state.dailyCompletedPhrases.push(exerciseId);
+                localStorage.setItem(
+                    'dailyCompletedPhrases',
+                    JSON.stringify(this.state.dailyCompletedPhrases)
+                );
+            }
+
+            // Navigate to next daily item
+            this.navigateToNextDailyPhrase();
+        } else {
+            // Exit exercise mode and go back to grammar overview
+            this.exitGrammarExercise();
+        }
+    }
+
+    exitGrammarExercise() {
+        this.state.grammarExerciseMode = false;
+        this.state.currentGrammarExercise = null;
+        this.state.grammarInput = '';
+        this.state.showGrammarFeedback = false;
+        this.state.grammarCorrect = false;
+
+        if (this.state.fromDailyProgram) {
+            this.state.fromDailyProgram = false;
+            this.state.currentTab = TABS.HOME;
+            this.state.showDailyProgramModal = true;
+        }
+
         this.render();
     }
 }

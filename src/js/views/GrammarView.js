@@ -417,11 +417,146 @@ function renderTopicDetail(topicKey) {
 }
 
 /**
+ * Render grammar exercise from Daily Program
+ * @param {object} state - App state
+ * @returns {string} HTML string
+ */
+function renderGrammarExercise(state) {
+    const exercise = state.currentGrammarExercise;
+    if (!exercise) {
+        return '';
+    }
+
+    const isMultipleChoice = exercise.options && exercise.options.length > 0;
+
+    return `
+        <div class="space-y-4 animate-slideUp pb-24">
+            <!-- Header with back button -->
+            <div class="flex items-center gap-3 mb-4">
+                <button onclick="app.exitGrammarExercise()"
+                        class="w-10 h-10 rounded-xl flex items-center justify-center bg-gray-100 hover:bg-gray-200">
+                    <i class="fas fa-arrow-left text-gray-600"></i>
+                </button>
+                <div>
+                    <h2 class="font-bold text-gray-800 text-xl">Grammatica oefening</h2>
+                    <p class="text-sm text-gray-600">${
+                        exercise.type === 'conjugation'
+                            ? 'Werkwoordvervoeging'
+                            : exercise.type === 'pronoun'
+                              ? 'Voornaamwoord'
+                              : exercise.type === 'article'
+                                ? 'Lidwoord'
+                                : 'Vertaling'
+                    }</p>
+                </div>
+            </div>
+
+            <!-- Exercise Card -->
+            <div class="bg-white rounded-2xl p-6 card-shadow">
+                <p class="text-lg font-medium text-gray-800 mb-2">${escapeHtml(exercise.prompt)}</p>
+                ${exercise.hint ? `<p class="text-sm text-gray-500 mb-4">${escapeHtml(exercise.hint)}</p>` : ''}
+
+                ${
+                    isMultipleChoice
+                        ? `
+                    <!-- Multiple Choice -->
+                    <div class="space-y-2 mt-4">
+                        ${exercise.options
+                            .map(
+                                option => `
+                            <button onclick="app.checkGrammarAnswer('${option}')"
+                                    class="w-full p-3 rounded-xl text-left transition-all
+                                           ${
+                                               state.showGrammarFeedback
+                                                   ? option === exercise.answer
+                                                       ? 'bg-green-100 border-2 border-green-400'
+                                                       : state.grammarInput === option
+                                                         ? 'bg-red-100 border-2 border-red-400'
+                                                         : 'bg-gray-100'
+                                                   : 'bg-gray-100 hover:bg-gray-200'
+                                           }"
+                                    ${state.showGrammarFeedback ? 'disabled' : ''}>
+                                ${escapeHtml(option)}
+                            </button>
+                        `
+                            )
+                            .join('')}
+                    </div>
+                `
+                        : `
+                    <!-- Text Input -->
+                    <input type="text"
+                           id="grammar-input"
+                           value="${escapeHtml(state.grammarInput || '')}"
+                           oninput="app.updateGrammarInput(this.value)"
+                           onkeypress="if(event.key === 'Enter') app.checkGrammarAnswer()"
+                           placeholder="Typ je antwoord..."
+                           class="w-full p-3 rounded-xl border-2 border-gray-200 focus:border-blue-400 focus:outline-none mt-4"
+                           ${state.showGrammarFeedback ? 'disabled' : ''}>
+                    ${
+                        !state.showGrammarFeedback
+                            ? `
+                        <button onclick="app.checkGrammarAnswer()"
+                                class="w-full mt-3 p-3 rounded-xl font-medium text-white transition-all"
+                                style="background: var(--scandi-blue);">
+                            Controleer
+                        </button>
+                    `
+                            : ''
+                    }
+                `
+                }
+
+                <!-- Feedback -->
+                ${
+                    state.showGrammarFeedback
+                        ? `
+                    <div class="mt-4 p-4 rounded-xl ${state.grammarCorrect ? 'bg-green-50' : 'bg-red-50'}">
+                        <p class="font-medium ${state.grammarCorrect ? 'text-green-700' : 'text-red-700'}">
+                            ${state.grammarCorrect ? 'Correct!' : 'Helaas, niet correct'}
+                        </p>
+                        ${
+                            !state.grammarCorrect
+                                ? `
+                            <p class="text-sm text-gray-600 mt-1">
+                                Het juiste antwoord is: <strong>${escapeHtml(exercise.answer)}</strong>
+                            </p>
+                        `
+                                : ''
+                        }
+                        ${
+                            exercise.translation
+                                ? `
+                            <p class="text-sm text-gray-500 mt-2">${escapeHtml(exercise.translation)}</p>
+                        `
+                                : ''
+                        }
+                    </div>
+
+                    <button onclick="app.completeGrammarExercise()"
+                            class="w-full mt-4 p-3 rounded-xl font-medium text-white transition-all"
+                            style="background: var(--scandi-green);">
+                        ${state.fromDailyProgram ? 'Volgende' : 'Terug naar grammatica'}
+                    </button>
+                `
+                        : ''
+                }
+            </div>
+        </div>
+    `;
+}
+
+/**
  * Render grammar view
  * @param {object} state - App state
  * @returns {string} HTML string
  */
 export function renderGrammar(state) {
+    // If in exercise mode from Daily Program
+    if (state.grammarExerciseMode && state.currentGrammarExercise) {
+        return renderGrammarExercise(state);
+    }
+
     // If a topic is selected, show detail view
     if (state.grammarType) {
         return renderTopicDetail(state.grammarType);

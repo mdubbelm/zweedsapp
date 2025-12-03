@@ -179,6 +179,15 @@ export function hasSpeechRecognition() {
 }
 
 /**
+ * Check if current browser is Safari (macOS or iOS)
+ * @returns {boolean} Whether browser is Safari
+ */
+export function isSafari() {
+    const ua = navigator.userAgent;
+    return /^((?!chrome|android).)*safari/i.test(ua);
+}
+
+/**
  * Get the SpeechRecognition constructor
  * @returns {SpeechRecognition|null} SpeechRecognition constructor or null
  */

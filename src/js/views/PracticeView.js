@@ -4,50 +4,11 @@
  * Redesigned with 3-zone progressive disclosure pattern
  */
 
-import { escapeHtml, hasSpeechRecognition } from '../utils/helpers.js';
+import { escapeHtml } from '../utils/helpers.js';
 import { categories } from '../data/phrases.js';
 
-/**
- * Check if we're on iOS (for showing fallback message)
- */
-function isIOS() {
-    if (typeof window === 'undefined') {
-        return false;
-    }
-    return (
-        /iPad|iPhone|iPod/.test(navigator.userAgent) ||
-        (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
-    );
-}
-
-/**
- * Get similarity color based on score
- */
-function getSimilarityColor(score) {
-    if (score >= 80) {
-        return 'text-green-600';
-    }
-    if (score >= 50) {
-        return 'text-yellow-600';
-    }
-    return 'text-red-600';
-}
-
-/**
- * Get similarity label based on score
- */
-function getSimilarityLabel(score) {
-    if (score >= 80) {
-        return 'Uitstekend!';
-    }
-    if (score >= 60) {
-        return 'Goed!';
-    }
-    if (score >= 40) {
-        return 'Redelijk';
-    }
-    return 'Probeer opnieuw';
-}
+// NOTE: Speech recognition helpers (isIOS, getSimilarityColor, getSimilarityLabel, hasSpeechRecognition)
+// removed - feature disabled until we have a reliable cross-browser solution (see issue #81)
 
 /**
  * Get difficulty badge HTML
@@ -98,117 +59,14 @@ function renderPhraseHero(phrase) {
 }
 
 /**
- * Render speech recognition section (conditional: not on iOS)
+ * Render speech recognition section
+ * DISABLED: Web Speech API is unreliable across browsers (see issue #81)
+ * Keeping the function for future use when we have a better solution
  */
-function renderSpeechRecognitionSection(state, phrase) {
-    const canUse = hasSpeechRecognition();
-    const onIOS = isIOS();
-
-    // iOS: ALWAYS show fallback, even if API exists (Apple blocks it anyway)
-    if (onIOS) {
-        return `
-            <div class="mt-4 p-4 bg-amber-50 rounded-xl border border-amber-200">
-                <div class="flex items-start gap-3">
-                    <i class="fas fa-info-circle text-amber-500 mt-1"></i>
-                    <div>
-                        <p class="text-sm font-medium text-amber-800">Spraakherkenning niet beschikbaar op iOS</p>
-                        <p class="text-xs text-amber-600 mt-1">Vergelijk handmatig: luister naar het origineel en jouw opname hierboven.</p>
-                    </div>
-                </div>
-            </div>
-        `;
-    }
-
-    // Not available (non-iOS) - hide silently
-    if (!canUse) {
-        return '';
-    }
-
-    // Currently listening
-    if (state.isListening) {
-        return `
-            <div class="mt-4 p-4 bg-blue-50 rounded-xl border border-blue-200">
-                <div class="flex items-center justify-center gap-3">
-                    <div class="animate-pulse">
-                        <i class="fas fa-microphone-alt text-2xl text-blue-500"></i>
-                    </div>
-                    <div>
-                        <p class="font-medium text-blue-800">Luisteren...</p>
-                        <p class="text-xs text-blue-600">Spreek de zin uit</p>
-                    </div>
-                    <button onclick="app.stopSpeechRecognition()"
-                            class="ml-auto px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200">
-                        Stop
-                    </button>
-                </div>
-            </div>
-        `;
-    }
-
-    // Show error
-    if (state.speechError) {
-        return `
-            <div class="mt-4 p-4 bg-red-50 rounded-xl border border-red-200">
-                <div class="flex items-start gap-3">
-                    <i class="fas fa-exclamation-circle text-red-500 mt-1"></i>
-                    <div class="flex-1">
-                        <p class="text-sm font-medium text-red-800">${escapeHtml(state.speechError)}</p>
-                    </div>
-                    <button onclick="app.clearSpeechResult()"
-                            class="text-red-500 hover:text-red-700">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            </div>
-            <button onclick="app.startSpeechRecognition('${escapeHtml(phrase.swedish).replace(/'/g, "\\'")}')"
-                    class="w-full mt-2 py-3 rounded-xl font-semibold text-white card-hover card-shadow flex items-center justify-center gap-3"
-                    style="background: var(--scandi-amber);">
-                <i class="fas fa-redo text-lg"></i>
-                <span>Opnieuw proberen</span>
-            </button>
-        `;
-    }
-
-    // Show result
-    if (state.speechResult !== null && state.speechResult !== undefined) {
-        const colorClass = getSimilarityColor(state.speechSimilarity);
-        const label = getSimilarityLabel(state.speechSimilarity);
-
-        return `
-            <div class="mt-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
-                <div class="flex items-center justify-between mb-3">
-                    <span class="text-sm font-medium text-gray-600">Jouw uitspraak:</span>
-                    <button onclick="app.clearSpeechResult()"
-                            class="text-gray-400 hover:text-gray-600">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-                <p class="text-lg text-gray-800 mb-3">"${escapeHtml(state.speechResult)}"</p>
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <span class="text-2xl font-bold ${colorClass}">${state.speechSimilarity}%</span>
-                        <span class="text-sm ${colorClass}">${label}</span>
-                    </div>
-                </div>
-            </div>
-            <button onclick="app.startSpeechRecognition('${escapeHtml(phrase.swedish).replace(/'/g, "\\'")}')"
-                    class="w-full mt-2 py-3 rounded-xl font-semibold text-white card-hover card-shadow flex items-center justify-center gap-3"
-                    style="background: var(--scandi-amber);">
-                <i class="fas fa-redo text-lg"></i>
-                <span>Opnieuw proberen</span>
-            </button>
-        `;
-    }
-
-    // Initial state - show button to start speech recognition
-    return `
-        <button onclick="app.startSpeechRecognition('${escapeHtml(phrase.swedish).replace(/'/g, "\\'")}')"
-                class="w-full mt-4 py-3 rounded-xl font-semibold text-white card-hover card-shadow flex items-center justify-center gap-3"
-                style="background: var(--scandi-amber);">
-            <i class="fas fa-robot text-lg"></i>
-            <span>Vergelijk met spraakherkenning</span>
-        </button>
-    `;
+function renderSpeechRecognitionSection() {
+    // Feature disabled until we have a reliable cross-browser solution
+    // See: https://github.com/mdubbelm/zweedsapp/issues/81
+    return '';
 }
 
 /**
@@ -232,7 +90,7 @@ function renderRecordingButton(state, phrase) {
     }
 
     if (state.audioURL) {
-        // State 3: Playback - Compare mode with speech recognition
+        // State 3: Playback - Compare mode
         return `
             <div class="compare-section glass-effect rounded-2xl p-4 card-shadow">
                 <p class="text-center text-sm font-medium text-gray-600 mb-4">
@@ -252,9 +110,6 @@ function renderRecordingButton(state, phrase) {
                         <span>Jouw opname</span>
                     </button>
                 </div>
-
-                <!-- Speech Recognition Section (conditional) -->
-                ${renderSpeechRecognitionSection(state, phrase)}
 
                 <button onclick="app.clearRecording()"
                         class="w-full mt-3 py-2 text-sm text-gray-500 hover:text-gray-700 transition-colors">
@@ -467,6 +322,11 @@ export function renderPractice(state, getFilteredPhrases) {
             <!-- ZONE 2: Recording Button (Hero Action) -->
             <div class="my-6">
                 ${renderRecordingButton(state, phrase)}
+            </div>
+
+            <!-- ZONE 3: Speech Recognition (separate from recording) -->
+            <div class="mb-6">
+                ${renderSpeechRecognitionSection(state, phrase)}
             </div>
         </div>
 

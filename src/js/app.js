@@ -13,7 +13,8 @@ import {
     isToday,
     isYesterday,
     getSpeechRecognition,
-    calculateSimilarity
+    calculateSimilarity,
+    isSafari
 } from './utils/helpers.js';
 
 // Services
@@ -1219,6 +1220,17 @@ export class SwedishApp {
         }
     }
 
+    /**
+     * Mark audio as listened (unlocks "Geleerd" button)
+     * Called from TTS button in practice mode
+     */
+    markAudioListened() {
+        if (!this.state.hasListenedToAudio) {
+            this.state.hasListenedToAudio = true;
+            this.render();
+        }
+    }
+
     async toggleRecording() {
         if (this.state.isRecording) {
             this.stopRecording();
@@ -1342,7 +1354,23 @@ export class SwedishApp {
         this.speechRecognition.interimResults = false;
         this.speechRecognition.maxAlternatives = 1;
 
+        // Safari-specific: Add timeout because Safari may silently fail
+        const safariTimeout = isSafari()
+            ? setTimeout(() => {
+                  if (this.state.isListening) {
+                      console.warn('Safari speech recognition timeout');
+                      this.state.isListening = false;
+                      this.state.speechError =
+                          'Spraakherkenning timeout. Safari vereist dat Dictation is ingeschakeld in Systeemvoorkeuren > Toetsenbord > Dictation.';
+                      this.render();
+                  }
+              }, 10000)
+            : null;
+
         this.speechRecognition.onresult = event => {
+            if (safariTimeout) {
+                clearTimeout(safariTimeout);
+            }
             const result = event.results[0][0].transcript;
             this.state.speechResult = result;
             this.state.speechSimilarity = calculateSimilarity(result, expectedText);
@@ -1357,16 +1385,26 @@ export class SwedishApp {
         };
 
         this.speechRecognition.onerror = event => {
+            if (safariTimeout) {
+                clearTimeout(safariTimeout);
+            }
             console.error('Speech recognition error:', event.error);
             this.state.isListening = false;
 
-            // User-friendly error messages
+            // User-friendly error messages with Safari-specific hints
             const errorMessages = {
-                'no-speech': 'Geen spraak gedetecteerd. Probeer opnieuw.',
-                'audio-capture': 'Microfoon niet beschikbaar. Controleer permissies.',
-                'not-allowed': 'Microfoon toegang geweigerd. Sta toegang toe in je browser.',
+                'no-speech': 'Geen spraak gedetecteerd. Spreek duidelijk en probeer opnieuw.',
+                'audio-capture': isSafari()
+                    ? 'Microfoon niet beschikbaar. Controleer permissies in Safari > Instellingen > Websites > Microfoon.'
+                    : 'Microfoon niet beschikbaar. Controleer permissies.',
+                'not-allowed': isSafari()
+                    ? 'Microfoon toegang geweigerd. Ga naar Safari > Instellingen > Websites > Microfoon en sta toegang toe.'
+                    : 'Microfoon toegang geweigerd. Sta toegang toe in je browser.',
                 aborted: 'Spraakherkenning geannuleerd.',
-                network: 'Netwerkfout. Controleer je internetverbinding.'
+                network: 'Netwerkfout. Controleer je internetverbinding.',
+                'service-not-allowed': isSafari()
+                    ? 'Spraakherkenning geblokkeerd. Schakel Dictation in via Systeemvoorkeuren > Toetsenbord > Dictation.'
+                    : 'Spraakherkenning service niet beschikbaar.'
             };
 
             this.state.speechError = errorMessages[event.error] || `Fout: ${event.error}`;
@@ -1374,6 +1412,9 @@ export class SwedishApp {
         };
 
         this.speechRecognition.onend = () => {
+            if (safariTimeout) {
+                clearTimeout(safariTimeout);
+            }
             this.state.isListening = false;
             this.render();
         };
@@ -1381,9 +1422,15 @@ export class SwedishApp {
         // Start listening
         try {
             this.speechRecognition.start();
+            console.log('Speech recognition started', { browser: isSafari() ? 'Safari' : 'Other' });
         } catch (error) {
+            if (safariTimeout) {
+                clearTimeout(safariTimeout);
+            }
             console.error('Failed to start speech recognition:', error);
-            this.state.speechError = 'Kon spraakherkenning niet starten';
+            this.state.speechError = isSafari()
+                ? 'Kon spraakherkenning niet starten. Controleer of Dictation is ingeschakeld in Systeemvoorkeuren.'
+                : 'Kon spraakherkenning niet starten';
             this.state.isListening = false;
             this.render();
         }

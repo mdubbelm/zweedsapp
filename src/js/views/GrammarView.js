@@ -36,20 +36,22 @@ const grammarTopics = {
 
             <h3 class="text-lg font-bold mb-3">Bepaalde lidwoorden (enkelvoud)</h3>
             <p class="mb-4">Het bepaalde lidwoord wordt als suffix aan het naamwoord gehecht:</p>
-            <table class="w-full text-left mb-6">
-                <thead class="bg-gray-100">
-                    <tr><th class="p-2">Type</th><th class="p-2">Suffix</th><th class="p-2">Onbepaald</th><th class="p-2">Bepaald</th><th class="p-2">Nederlands</th></tr>
-                </thead>
-                <tbody>
-                    <tr class="border-b"><td class="p-2" rowspan="4">en-woorden</td><td class="p-2">-en/-n</td><td class="p-2">en flicka</td><td class="p-2">flickan</td><td class="p-2">het meisje</td></tr>
-                    <tr class="border-b"><td class="p-2">-en/-n</td><td class="p-2">en ros</td><td class="p-2">rosen</td><td class="p-2">de roos</td></tr>
-                    <tr class="border-b"><td class="p-2">-en</td><td class="p-2">en tidning</td><td class="p-2">tidningen</td><td class="p-2">de krant</td></tr>
-                    <tr class="border-b"><td class="p-2">-n</td><td class="p-2">en sko</td><td class="p-2">skon</td><td class="p-2">de schoen</td></tr>
-                    <tr class="border-b"><td class="p-2" rowspan="3">ett-woorden</td><td class="p-2">-et/-t</td><td class="p-2">ett barn</td><td class="p-2">barnet</td><td class="p-2">het kind</td></tr>
-                    <tr class="border-b"><td class="p-2">-et</td><td class="p-2">ett hus</td><td class="p-2">huset</td><td class="p-2">het huis</td></tr>
-                    <tr><td class="p-2">-t</td><td class="p-2">ett äpple</td><td class="p-2">äpplet</td><td class="p-2">de appel</td></tr>
-                </tbody>
-            </table>
+            <div class="overflow-x-auto -mx-4 px-4 mb-6">
+                <table class="w-full text-left text-sm min-w-[400px]">
+                    <thead class="bg-gray-100">
+                        <tr><th class="p-2">Type</th><th class="p-2">Suffix</th><th class="p-2">Onbepaald</th><th class="p-2">Bepaald</th><th class="p-2">NL</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b"><td class="p-2" rowspan="4">en-woorden</td><td class="p-2">-en/-n</td><td class="p-2">en flicka</td><td class="p-2">flickan</td><td class="p-2">het meisje</td></tr>
+                        <tr class="border-b"><td class="p-2">-en/-n</td><td class="p-2">en ros</td><td class="p-2">rosen</td><td class="p-2">de roos</td></tr>
+                        <tr class="border-b"><td class="p-2">-en</td><td class="p-2">en tidning</td><td class="p-2">tidningen</td><td class="p-2">de krant</td></tr>
+                        <tr class="border-b"><td class="p-2">-n</td><td class="p-2">en sko</td><td class="p-2">skon</td><td class="p-2">de schoen</td></tr>
+                        <tr class="border-b"><td class="p-2" rowspan="3">ett-woorden</td><td class="p-2">-et/-t</td><td class="p-2">ett barn</td><td class="p-2">barnet</td><td class="p-2">het kind</td></tr>
+                        <tr class="border-b"><td class="p-2">-et</td><td class="p-2">ett hus</td><td class="p-2">huset</td><td class="p-2">het huis</td></tr>
+                        <tr><td class="p-2">-t</td><td class="p-2">ett äpple</td><td class="p-2">äpplet</td><td class="p-2">de appel</td></tr>
+                    </tbody>
+                </table>
+            </div>
 
             <h3 class="text-lg font-bold mb-3">Meer voorbeelden en-woorden</h3>
             <div class="grid grid-cols-2 gap-2 mb-6 text-sm">
@@ -185,18 +187,20 @@ const grammarTopics = {
 
             <h3 class="text-lg font-bold mt-6 mb-3">Bepaald lidwoord meervoud</h3>
             <p class="mb-4">Het bepaald lidwoord meervoud wordt ook als suffix toegevoegd:</p>
-            <table class="w-full text-left text-sm">
-                <thead class="bg-gray-100">
-                    <tr><th class="p-2">Groep</th><th class="p-2">Onbepaald mv.</th><th class="p-2">Bepaald mv.</th><th class="p-2">Nederlands</th></tr>
-                </thead>
-                <tbody>
-                    <tr class="border-b"><td class="p-2">1</td><td class="p-2">flickor</td><td class="p-2">flickorna</td><td class="p-2">de meisjes</td></tr>
-                    <tr class="border-b"><td class="p-2">2</td><td class="p-2">pojkar</td><td class="p-2">pojkarna</td><td class="p-2">de jongens</td></tr>
-                    <tr class="border-b"><td class="p-2">3</td><td class="p-2">dikter</td><td class="p-2">dikterna</td><td class="p-2">de gedichten</td></tr>
-                    <tr class="border-b"><td class="p-2">4</td><td class="p-2">äpplen</td><td class="p-2">äpplena</td><td class="p-2">de appels</td></tr>
-                    <tr><td class="p-2">5</td><td class="p-2">hus</td><td class="p-2">husen</td><td class="p-2">de huizen</td></tr>
-                </tbody>
-            </table>
+            <div class="overflow-x-auto -mx-4 px-4">
+                <table class="w-full text-left text-sm min-w-[350px]">
+                    <thead class="bg-gray-100">
+                        <tr><th class="p-2">Groep</th><th class="p-2">Onbep. mv.</th><th class="p-2">Bep. mv.</th><th class="p-2">NL</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b"><td class="p-2">1</td><td class="p-2">flickor</td><td class="p-2">flickorna</td><td class="p-2">de meisjes</td></tr>
+                        <tr class="border-b"><td class="p-2">2</td><td class="p-2">pojkar</td><td class="p-2">pojkarna</td><td class="p-2">de jongens</td></tr>
+                        <tr class="border-b"><td class="p-2">3</td><td class="p-2">dikter</td><td class="p-2">dikterna</td><td class="p-2">de gedichten</td></tr>
+                        <tr class="border-b"><td class="p-2">4</td><td class="p-2">äpplen</td><td class="p-2">äpplena</td><td class="p-2">de appels</td></tr>
+                        <tr><td class="p-2">5</td><td class="p-2">hus</td><td class="p-2">husen</td><td class="p-2">de huizen</td></tr>
+                    </tbody>
+                </table>
+            </div>
         `
     },
     verbs: {
@@ -321,20 +325,22 @@ const grammarTopics = {
         description: 'Vragen stellen',
         content: `
             <h3 class="text-lg font-bold mb-3">Vraagwoorden</h3>
-            <table class="w-full text-left mb-6">
-                <thead class="bg-gray-100">
-                    <tr><th class="p-2">Zweeds</th><th class="p-2">Nederlands</th><th class="p-2">Voorbeeld</th></tr>
-                </thead>
-                <tbody>
-                    <tr class="border-b"><td class="p-2">vad</td><td class="p-2">wat</td><td class="p-2">Vad heter du?</td></tr>
-                    <tr class="border-b"><td class="p-2">vem</td><td class="p-2">wie</td><td class="p-2">Vem är det?</td></tr>
-                    <tr class="border-b"><td class="p-2">var</td><td class="p-2">waar</td><td class="p-2">Var bor du?</td></tr>
-                    <tr class="border-b"><td class="p-2">när</td><td class="p-2">wanneer</td><td class="p-2">När kommer du?</td></tr>
-                    <tr class="border-b"><td class="p-2">hur</td><td class="p-2">hoe</td><td class="p-2">Hur mår du?</td></tr>
-                    <tr class="border-b"><td class="p-2">varför</td><td class="p-2">waarom</td><td class="p-2">Varför gråter du?</td></tr>
-                    <tr><td class="p-2">vilken/vilket</td><td class="p-2">welke</td><td class="p-2">Vilken dag?</td></tr>
-                </tbody>
-            </table>
+            <div class="overflow-x-auto -mx-4 px-4 mb-6">
+                <table class="w-full text-left text-sm min-w-[320px]">
+                    <thead class="bg-gray-100">
+                        <tr><th class="p-2">Zweeds</th><th class="p-2">NL</th><th class="p-2">Voorbeeld</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b"><td class="p-2">vad</td><td class="p-2">wat</td><td class="p-2">Vad heter du?</td></tr>
+                        <tr class="border-b"><td class="p-2">vem</td><td class="p-2">wie</td><td class="p-2">Vem är det?</td></tr>
+                        <tr class="border-b"><td class="p-2">var</td><td class="p-2">waar</td><td class="p-2">Var bor du?</td></tr>
+                        <tr class="border-b"><td class="p-2">när</td><td class="p-2">wanneer</td><td class="p-2">När kommer du?</td></tr>
+                        <tr class="border-b"><td class="p-2">hur</td><td class="p-2">hoe</td><td class="p-2">Hur mår du?</td></tr>
+                        <tr class="border-b"><td class="p-2">varför</td><td class="p-2">waarom</td><td class="p-2">Varför gråter du?</td></tr>
+                        <tr><td class="p-2">vilken/vilket</td><td class="p-2">welke</td><td class="p-2">Vilken dag?</td></tr>
+                    </tbody>
+                </table>
+            </div>
 
             <h3 class="text-lg font-bold mb-3">Ja/Nee vragen</h3>
             <p class="mb-4">Begin met het werkwoord:</p>

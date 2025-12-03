@@ -186,6 +186,19 @@ export function renderSettings(state) {
                         <span class="font-mono font-semibold">${APP_VERSION}</span>
                     </div>
 
+                    <button onclick="app.forceUpdate()"
+                            class="w-full p-3 bg-gray-50 rounded-xl text-left hover:bg-blue-50 transition-colors">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="font-medium text-gray-800">
+                                    <i class="fas fa-sync-alt mr-2"></i>Controleer op updates
+                                </span>
+                                <p class="text-sm text-gray-600">Vernieuw de app naar de nieuwste versie</p>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </button>
+
                     <button onclick="app.startTour()"
                             class="w-full p-3 bg-gray-50 rounded-xl text-left hover:bg-gray-100 transition-colors">
                         <div class="flex items-center justify-between">

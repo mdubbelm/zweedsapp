@@ -1,7 +1,7 @@
 // Service Worker for Svenska Kat PWA
-// Version 1.12.1 - TTS audio buttons in grammar sections
+// Version 1.12.2 - Force update button in settings
 
-const CACHE_VERSION = '1.12.1';
+const CACHE_VERSION = '1.12.2';
 const CACHE_NAME = `svenska-kat-v${CACHE_VERSION}`;
 const CDN_CACHE = `svenska-kat-cdn-v${CACHE_VERSION}`;
 

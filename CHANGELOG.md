@@ -5,6 +5,42 @@ All notable changes to Svenska Kat (formerly Zweeds B1) Language Learning App wi
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.12.0] - 2025-12-03
+
+### Added
+- **Uitbreiding grammatica** 📚 - Zelfstandige naamwoorden en lidwoorden
+  - Uitgebreide uitleg en-woorden (utrum) vs ett-woorden (neutrum)
+  - Bepaalde lidwoorden met suffixen (-en/-n, -et/-t)
+  - Alle 5 meervoudsgroepen met voorbeelden
+  - 32+ voorbeeldwoorden voor en- en ett-woorden
+- **Spraakherkenning** 🎤 - Vergelijk je uitspraak met de correcte uitspraak
+  - Web Speech Recognition API integratie
+  - Gelijkheidspercentage berekening
+  - Graceful fallback voor iOS (niet ondersteund door Apple)
+- **Streak kalender** 📅 - Visuele weergave van je leerstreak
+  - Verplaatst naar Voortgang tab (geen modal meer)
+  - Toont afgelopen 30 dagen met checkmarks
+- **Pre-push hook** 🔒 - Voorkomt pushen zonder tests/build
+
+### Changed
+- **Practice View redesign** 🎨 - Verbeterde UI voor oefenmodus
+  - Nieuwe Voortgang tab met gecombineerde statistieken
+  - Duidelijkere "Voltooien" knop states met feedback
+- **Categorieën naar aparte tab** 📂 - Minder cognitive load op homepage
+- **Daily Program navigatie** ⏭️ - Automatisch naar volgende zin na voltooien
+
+### Fixed
+- **Daily Program phrase index bug** 🐛 - Juiste zin opent nu bij klikken
+- **Daily Program new day reset** 🔄 - Programma reset correct bij nieuwe dag (PWA fix)
+- **Grammar tables mobile** 📱 - Tabellen scrollen nu horizontaal op smalle schermen
+- **iOS speech recognition** 🍎 - Duidelijke melding i.p.v. crash op iOS
+- **Streak kalender modal** - Verwijderd, nu inline in Voortgang tab
+
+### Technical
+- GitHub Pages deployment fixes (base path, env vars)
+- Known Bugs documentatie toegevoegd aan CLAUDE.md
+- Verbeterde foutafhandeling voor edge cases
+
 ## [1.11.0] - 2025-11-27
 
 ### Added

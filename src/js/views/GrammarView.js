@@ -274,16 +274,132 @@ const grammarTopics = {
             </table>
         `
     },
+    adjectives: {
+        name: 'Bijvoeglijke naamwoorden',
+        icon: 'fa-palette',
+        color: 'var(--scandi-amber)',
+        description: 'Verbuiging en trappen van vergelijking',
+        content: `
+            <h3 class="text-lg font-bold mb-3">Onbepaalde vorm</h3>
+            <p class="mb-4">Het bijvoeglijk naamwoord past zich aan naar geslacht en getal:</p>
+            <div class="overflow-x-auto -mx-4 px-4 mb-6">
+                <table class="w-full text-left text-sm min-w-[380px]">
+                    <thead class="bg-gray-100">
+                        <tr><th class="p-2">Type</th><th class="p-2">Vorm</th><th class="p-2">Voorbeeld</th><th class="p-2">NL</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b"><td class="p-2">en-woord</td><td class="p-2">grondvorm</td><td class="p-2">en <strong>stor</strong> stad</td><td class="p-2">een grote stad</td></tr>
+                        <tr class="border-b"><td class="p-2">ett-woord</td><td class="p-2">+t</td><td class="p-2">ett <strong>stort</strong> hus</td><td class="p-2">een groot huis</td></tr>
+                        <tr><td class="p-2">meervoud</td><td class="p-2">+a</td><td class="p-2"><strong>stora</strong> städer</td><td class="p-2">grote steden</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="text-lg font-bold mb-3">Predicatief gebruik</h3>
+            <p class="mb-4">Na werkwoorden als 'zijn' en 'worden':</p>
+            <ul class="space-y-2 mb-6 text-sm">
+                <li>Staden är <strong>stor</strong>. - De stad is groot.</li>
+                <li>Huset är <strong>stort</strong>. - Het huis is groot.</li>
+                <li>Städerna är <strong>stora</strong>. - De steden zijn groot.</li>
+            </ul>
+
+            <h3 class="text-lg font-bold mb-3">Bepaalde vorm</h3>
+            <p class="mb-4">Met losstaand lidwoord <strong>den/det/de</strong> + bijvoeglijk naamwoord op <strong>-a</strong>:</p>
+            <div class="overflow-x-auto -mx-4 px-4 mb-6">
+                <table class="w-full text-left text-sm min-w-[350px]">
+                    <thead class="bg-gray-100">
+                        <tr><th class="p-2">Lidwoord</th><th class="p-2">Voorbeeld</th><th class="p-2">NL</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b"><td class="p-2">den (en-woord)</td><td class="p-2">den stora staden</td><td class="p-2">de grote stad</td></tr>
+                        <tr class="border-b"><td class="p-2">det (ett-woord)</td><td class="p-2">det stora huset</td><td class="p-2">het grote huis</td></tr>
+                        <tr><td class="p-2">de (meervoud)</td><td class="p-2">de stora städerna</td><td class="p-2">de grote steden</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="text-lg font-bold mb-3">Vergrotende trap (-are)</h3>
+            <p class="mb-4">Eén vorm voor alle geslachten en getallen:</p>
+            <ul class="space-y-2 mb-6 text-sm">
+                <li>dyr (duur) → <strong>dyrare</strong> (duurder)</li>
+                <li>en dyrare bil - een duurdere auto</li>
+                <li>Huset är dyrare <strong>än</strong> bilen. - Het huis is duurder dan de auto.</li>
+            </ul>
+
+            <h3 class="text-lg font-bold mb-3">Overtreffende trap (-ast/-aste)</h3>
+            <p class="mb-4">Predicatief: <strong>-ast</strong>, attributief: <strong>-aste</strong>:</p>
+            <ul class="space-y-2 mb-6 text-sm">
+                <li>dyr → dyrast (predicatief): Bilen är <strong>dyrast</strong>.</li>
+                <li>dyr → dyraste (attributief): den <strong>dyraste</strong> bilen</li>
+            </ul>
+
+            <h3 class="text-lg font-bold mb-3">Onregelmatige vormen</h3>
+            <div class="overflow-x-auto -mx-4 px-4 mb-6">
+                <table class="w-full text-left text-sm min-w-[320px]">
+                    <thead class="bg-gray-100">
+                        <tr><th class="p-2">Grondvorm</th><th class="p-2">Vergrotend</th><th class="p-2">Overtreffend</th><th class="p-2">NL</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b"><td class="p-2">god/bra</td><td class="p-2">bättre</td><td class="p-2">bäst</td><td class="p-2">goed</td></tr>
+                        <tr class="border-b"><td class="p-2">dålig</td><td class="p-2">sämre</td><td class="p-2">sämst</td><td class="p-2">slecht</td></tr>
+                        <tr class="border-b"><td class="p-2">stor</td><td class="p-2">större</td><td class="p-2">störst</td><td class="p-2">groot</td></tr>
+                        <tr class="border-b"><td class="p-2">liten</td><td class="p-2">mindre</td><td class="p-2">minst</td><td class="p-2">klein</td></tr>
+                        <tr class="border-b"><td class="p-2">gammal</td><td class="p-2">äldre</td><td class="p-2">äldst</td><td class="p-2">oud</td></tr>
+                        <tr class="border-b"><td class="p-2">ung</td><td class="p-2">yngre</td><td class="p-2">yngst</td><td class="p-2">jong</td></tr>
+                        <tr class="border-b"><td class="p-2">lång</td><td class="p-2">längre</td><td class="p-2">längst</td><td class="p-2">lang</td></tr>
+                        <tr class="border-b"><td class="p-2">hög</td><td class="p-2">högre</td><td class="p-2">högst</td><td class="p-2">hoog</td></tr>
+                        <tr class="border-b"><td class="p-2">låg</td><td class="p-2">lägre</td><td class="p-2">lägst</td><td class="p-2">laag</td></tr>
+                        <tr><td class="p-2">mycket/många</td><td class="p-2">mer/flera</td><td class="p-2">mest/flest</td><td class="p-2">veel</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="text-xs text-gray-600 mb-6">Gebruik <em>mycket/mer/mest</em> bij ontelbaar, <em>många/flera/flest</em> bij telbaar.</p>
+
+            <h3 class="text-lg font-bold mb-3">Bijzonder: liten (klein)</h3>
+            <div class="overflow-x-auto -mx-4 px-4 mb-6">
+                <table class="w-full text-left text-sm min-w-[320px]">
+                    <thead class="bg-gray-100">
+                        <tr><th class="p-2">Vorm</th><th class="p-2">Onbepaald</th><th class="p-2">Bepaald</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b"><td class="p-2">en-woord</td><td class="p-2">en liten stad</td><td class="p-2">den lilla staden</td></tr>
+                        <tr class="border-b"><td class="p-2">ett-woord</td><td class="p-2">ett litet hus</td><td class="p-2">det lilla huset</td></tr>
+                        <tr><td class="p-2">meervoud</td><td class="p-2">små städer</td><td class="p-2">de små städerna</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="text-lg font-bold mb-3">Afwijkende ett-vormen</h3>
+            <ul class="space-y-2 text-sm">
+                <li><strong>medeklinker + d</strong> verliest -d: känd → känt (bekend)</li>
+                <li><strong>medeklinker + t</strong> verliest -t: svart → svart (zwart)</li>
+                <li><strong>klinker + d</strong> krijgt -tt: god → gott (goed), röd → rött (rood)</li>
+                <li><strong>-el/-er</strong> verliest -e- in mv: vacker → vackra (mooi)</li>
+                <li><strong>-en</strong> verliest -n in ett, -e- in mv: mogen → moget → mogna (rijp)</li>
+            </ul>
+
+            <h3 class="text-lg font-bold mt-6 mb-3">Onverbuigbare bijvoeglijke naamwoorden</h3>
+            <p class="mb-4">Deze woorden veranderen niet:</p>
+            <div class="grid grid-cols-2 gap-2 text-sm">
+                <div class="p-2 bg-amber-50 rounded"><strong>bra</strong> - goed</div>
+                <div class="p-2 bg-amber-50 rounded"><strong>lagom</strong> - precies goed</div>
+                <div class="p-2 bg-amber-50 rounded"><strong>gratis</strong> - gratis</div>
+                <div class="p-2 bg-amber-50 rounded"><strong>kul</strong> - leuk</div>
+                <div class="p-2 bg-amber-50 rounded"><strong>fel</strong> - verkeerd</div>
+                <div class="p-2 bg-amber-50 rounded"><strong>slut</strong> - op/afgelopen</div>
+            </div>
+        `
+    },
     numbers: {
-        name: 'Getallen',
+        name: 'Telwoorden',
         icon: 'fa-hashtag',
         color: 'var(--scandi-teal)',
-        description: 'Tellen in het Zweeds',
+        description: 'Hoofd- en rangtelwoorden, klokkijken',
         content: `
-            <h3 class="text-lg font-bold mb-3">Basis getallen (0-20)</h3>
+            <h3 class="text-lg font-bold mb-3">Hoofdtelwoorden (0-20)</h3>
             <div class="grid grid-cols-2 gap-2 mb-6">
                 <div class="p-2 bg-gray-50 rounded">0 - noll</div>
-                <div class="p-2 bg-gray-50 rounded">1 - ett/en</div>
+                <div class="p-2 bg-gray-50 rounded">1 - en/ett</div>
                 <div class="p-2 bg-gray-50 rounded">2 - två</div>
                 <div class="p-2 bg-gray-50 rounded">3 - tre</div>
                 <div class="p-2 bg-gray-50 rounded">4 - fyra</div>
@@ -304,9 +420,10 @@ const grammarTopics = {
                 <div class="p-2 bg-gray-50 rounded">19 - nitton</div>
                 <div class="p-2 bg-gray-50 rounded">20 - tjugo</div>
             </div>
+            <p class="text-xs text-gray-600 mb-6">Let op: <em>en</em> bij en-woorden, <em>ett</em> bij ett-woorden. Bijv: tjugoen rosor (21 rozen), tjugoett hus (21 huizen).</p>
 
-            <h3 class="text-lg font-bold mb-3">Tientallen</h3>
-            <div class="grid grid-cols-2 gap-2">
+            <h3 class="text-lg font-bold mb-3">Tientallen en meer</h3>
+            <div class="grid grid-cols-2 gap-2 mb-6">
                 <div class="p-2 bg-gray-50 rounded">30 - trettio</div>
                 <div class="p-2 bg-gray-50 rounded">40 - fyrtio</div>
                 <div class="p-2 bg-gray-50 rounded">50 - femtio</div>
@@ -315,7 +432,75 @@ const grammarTopics = {
                 <div class="p-2 bg-gray-50 rounded">80 - åttio</div>
                 <div class="p-2 bg-gray-50 rounded">90 - nittio</div>
                 <div class="p-2 bg-gray-50 rounded">100 - hundra</div>
+                <div class="p-2 bg-gray-50 rounded">1000 - tusen</div>
+                <div class="p-2 bg-gray-50 rounded">1.000.000 - en miljon</div>
             </div>
+
+            <h3 class="text-lg font-bold mb-3">Rangtelwoorden</h3>
+            <div class="overflow-x-auto -mx-4 px-4 mb-6">
+                <table class="w-full text-left text-sm min-w-[280px]">
+                    <thead class="bg-gray-100">
+                        <tr><th class="p-2">Getal</th><th class="p-2">Hoofdtelwoord</th><th class="p-2">Rangtelwoord</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b"><td class="p-2">1</td><td class="p-2">en/ett</td><td class="p-2">första</td></tr>
+                        <tr class="border-b"><td class="p-2">2</td><td class="p-2">två</td><td class="p-2">andra</td></tr>
+                        <tr class="border-b"><td class="p-2">3</td><td class="p-2">tre</td><td class="p-2">tredje</td></tr>
+                        <tr class="border-b"><td class="p-2">4</td><td class="p-2">fyra</td><td class="p-2">fjärde</td></tr>
+                        <tr class="border-b"><td class="p-2">5</td><td class="p-2">fem</td><td class="p-2">femte</td></tr>
+                        <tr class="border-b"><td class="p-2">6</td><td class="p-2">sex</td><td class="p-2">sjätte</td></tr>
+                        <tr class="border-b"><td class="p-2">7</td><td class="p-2">sju</td><td class="p-2">sjunde</td></tr>
+                        <tr class="border-b"><td class="p-2">8</td><td class="p-2">åtta</td><td class="p-2">åttonde</td></tr>
+                        <tr class="border-b"><td class="p-2">9</td><td class="p-2">nio</td><td class="p-2">nionde</td></tr>
+                        <tr class="border-b"><td class="p-2">10</td><td class="p-2">tio</td><td class="p-2">tionde</td></tr>
+                        <tr class="border-b"><td class="p-2">11</td><td class="p-2">elva</td><td class="p-2">elfte</td></tr>
+                        <tr class="border-b"><td class="p-2">12</td><td class="p-2">tolv</td><td class="p-2">tolfte</td></tr>
+                        <tr class="border-b"><td class="p-2">20</td><td class="p-2">tjugo</td><td class="p-2">tjugonde</td></tr>
+                        <tr><td class="p-2">100</td><td class="p-2">hundra</td><td class="p-2">hundrade</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="text-xs text-gray-600 mb-6">Gebruik bij data: <em>den första maj</em> (1 mei), <em>Gustav den tredje</em> (Gustav III).</p>
+
+            <h3 class="text-lg font-bold mb-3">Klokkijken</h3>
+            <div class="bg-teal-50 rounded-xl p-4 mb-6">
+                <p class="font-medium mb-3">Vraag: <strong>Hur mycket är klockan?</strong> / <strong>Vad är klockan?</strong></p>
+                <ul class="space-y-2 text-sm">
+                    <li>Klockan är <strong>ett</strong>. - Het is één uur.</li>
+                    <li>Klockan är <strong>sex</strong>. - Het is zes uur.</li>
+                    <li>Klockan är <strong>halv sju</strong>. - Het is half zeven.</li>
+                    <li>Klockan är <strong>kvart över tre</strong>. - Het is kwart over drie.</li>
+                    <li>Klockan är <strong>kvart i tre</strong>. - Het is kwart voor drie.</li>
+                    <li>Klockan är <strong>fem över tre</strong>. - Het is vijf over drie.</li>
+                    <li>Klockan är <strong>tjugo i fyra</strong>. - Het is twintig voor vier.</li>
+                </ul>
+            </div>
+            <p class="text-xs text-gray-600 mb-6">Net als in het Nederlands: <em>halv sju</em> = half zeven (6:30), niet 7:30!</p>
+
+            <h3 class="text-lg font-bold mb-3">Getallen als zelfstandig naamwoord</h3>
+            <p class="mb-4">Voor woningen, cijfers, tramlijnen:</p>
+            <div class="grid grid-cols-2 gap-2 mb-6 text-sm">
+                <div class="p-2 bg-teal-50 rounded">en nolla - een nul</div>
+                <div class="p-2 bg-teal-50 rounded">en etta - een één</div>
+                <div class="p-2 bg-teal-50 rounded">en tvåa - een twee</div>
+                <div class="p-2 bg-teal-50 rounded">en trea - een drie</div>
+                <div class="p-2 bg-teal-50 rounded">en fyra - een vier</div>
+                <div class="p-2 bg-teal-50 rounded">en femma - een vijf</div>
+            </div>
+            <ul class="space-y-2 text-sm mb-6">
+                <li><strong>Han har en trea.</strong> - Hij heeft een driekamerwoning.</li>
+                <li><strong>Hon fick en femma i matte.</strong> - Zij kreeg een 10 voor wiskunde.</li>
+                <li><strong>Ta 51:an till kusten.</strong> - Neem lijn 51 naar de kust.</li>
+            </ul>
+
+            <h3 class="text-lg font-bold mb-3">Breuken</h3>
+            <ul class="space-y-2 text-sm">
+                <li><strong>en halv</strong> banan - een halve banaan</li>
+                <li><strong>ett halvt</strong> äpple - een halve appel</li>
+                <li><strong>en kvarts</strong> liter - een kwart liter</li>
+                <li><strong>en fjärdedel</strong> - een kwart (1/4)</li>
+                <li><strong>tre sjundedelar</strong> - drie zevende (3/7)</li>
+            </ul>
         `
     },
     questions: {
@@ -446,7 +631,11 @@ function renderGrammarExercise(state) {
                               ? 'Voornaamwoord'
                               : exercise.type === 'article'
                                 ? 'Lidwoord'
-                                : 'Vertaling'
+                                : exercise.type === 'adjective'
+                                  ? 'Bijvoeglijk naamwoord'
+                                  : exercise.type === 'number'
+                                    ? 'Telwoord'
+                                    : 'Vertaling'
                     }</p>
                 </div>
             </div>

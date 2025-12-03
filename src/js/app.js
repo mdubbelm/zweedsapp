@@ -140,6 +140,29 @@ export class SwedishApp {
 
         // Check for app updates
         this.checkForUpdates();
+
+        // Listen for visibility changes (PWA coming back from background)
+        // This ensures daily program resets when a new day starts
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible' && this.state.user) {
+                this.checkDailyProgramDate();
+            }
+        });
+    }
+
+    /**
+     * Check if the daily program date has changed (new day)
+     * Called when app becomes visible after being in background
+     */
+    checkDailyProgramDate() {
+        const today = new Date().toDateString();
+        const storedDate = localStorage.getItem('dailyProgramDate');
+
+        if (storedDate !== today) {
+            // New day detected - regenerate daily program
+            this.generateDailyProgram();
+            this.render();
+        }
     }
 
     // =====================

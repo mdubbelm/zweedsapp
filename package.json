@@ -1,6 +1,6 @@
 {
   "name": "svenska-kat",
-  "version": "1.12.1",
+  "version": "1.12.2",
   "description": "Swedish language learning web application with gamification",
   "type": "module",
   "scripts": {

@@ -455,6 +455,45 @@ export class SwedishApp {
         this.render();
     }
 
+    async forceUpdate() {
+        const confirmed = confirm(
+            'Dit wist de app cache en herlaadt de nieuwste versie.\n\nJe voortgang blijft behouden.\n\nDoorgaan?'
+        );
+
+        if (!confirmed) {
+            return;
+        }
+
+        try {
+            // Show loading state
+            this.showToast('Update controleren...');
+
+            // Unregister all service workers
+            if ('serviceWorker' in navigator) {
+                const registrations = await navigator.serviceWorker.getRegistrations();
+                for (const registration of registrations) {
+                    await registration.unregister();
+                }
+            }
+
+            // Clear all caches
+            if ('caches' in window) {
+                const cacheNames = await window.caches.keys();
+                for (const cacheName of cacheNames) {
+                    await window.caches.delete(cacheName);
+                }
+            }
+
+            // Hard reload
+            window.location.reload(true);
+        } catch (error) {
+            console.error('Force update failed:', error);
+            alert(
+                'Update mislukt. Probeer de app handmatig te verwijderen en opnieuw te installeren.'
+            );
+        }
+    }
+
     // =====================
     // Difficulty Filtering
     // =====================

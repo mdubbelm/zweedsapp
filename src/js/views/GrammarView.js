@@ -15,30 +15,186 @@ const grammarTopics = {
         color: 'var(--scandi-blue)',
         description: 'en/ett en de/den/det',
         content: `
+            <h3 class="text-lg font-bold mb-3">Het geslacht: utrum en neutrum</h3>
+            <p class="mb-4">Het Zweeds kent twee geslachten voor zelfstandige naamwoorden:</p>
+            <ul class="space-y-2 mb-6">
+                <li><strong>Utrum</strong> (en-woorden) - vergelijkbaar met Nederlandse 'de'-woorden</li>
+                <li><strong>Neutrum</strong> (ett-woorden) - vergelijkbaar met Nederlandse 'het'-woorden</li>
+            </ul>
+            <p class="mb-4 text-sm text-gray-600">Let op: de overeenkomst gaat niet altijd op! Vergelijk: <em>en station</em> (een station) maar <em>ett äpple</em> (een appel).</p>
+
             <h3 class="text-lg font-bold mb-3">Onbepaalde lidwoorden</h3>
-            <p class="mb-4">In het Zweeds zijn er twee onbepaalde lidwoorden:</p>
-            <ul class="space-y-2 mb-6">
-                <li><strong>en</strong> - voor "en-woorden" (utrum): en bok (een boek)</li>
-                <li><strong>ett</strong> - voor "ett-woorden" (neutrum): ett hus (een huis)</li>
-            </ul>
-
-            <h3 class="text-lg font-bold mb-3">Bepaalde lidwoorden</h3>
-            <p class="mb-4">Het bepaalde lidwoord wordt als suffix aan het zelfstandig naamwoord toegevoegd:</p>
-            <ul class="space-y-2 mb-6">
-                <li><strong>-en</strong> voor en-woorden: boken (het boek)</li>
-                <li><strong>-et</strong> voor ett-woorden: huset (het huis)</li>
-            </ul>
-
-            <h3 class="text-lg font-bold mb-3">Voorbeelden</h3>
-            <table class="w-full text-left">
+            <table class="w-full text-left mb-6">
                 <thead class="bg-gray-100">
-                    <tr><th class="p-2">Onbepaald</th><th class="p-2">Bepaald</th><th class="p-2">Betekenis</th></tr>
+                    <tr><th class="p-2">Zweeds</th><th class="p-2">Nederlands</th><th class="p-2">Voorbeelden</th></tr>
                 </thead>
                 <tbody>
-                    <tr class="border-b"><td class="p-2">en katt</td><td class="p-2">katten</td><td class="p-2">een/de kat</td></tr>
-                    <tr class="border-b"><td class="p-2">ett barn</td><td class="p-2">barnet</td><td class="p-2">een/het kind</td></tr>
-                    <tr class="border-b"><td class="p-2">en flicka</td><td class="p-2">flickan</td><td class="p-2">een/het meisje</td></tr>
-                    <tr><td class="p-2">ett äpple</td><td class="p-2">äpplet</td><td class="p-2">een/de appel</td></tr>
+                    <tr class="border-b"><td class="p-2"><strong>en</strong></td><td class="p-2">een (de-woord)</td><td class="p-2">en katt, en ros, en tidning</td></tr>
+                    <tr><td class="p-2"><strong>ett</strong></td><td class="p-2">een (het-woord)</td><td class="p-2">ett hus, ett barn, ett äpple</td></tr>
+                </tbody>
+            </table>
+
+            <h3 class="text-lg font-bold mb-3">Bepaalde lidwoorden (enkelvoud)</h3>
+            <p class="mb-4">Het bepaalde lidwoord wordt als suffix aan het naamwoord gehecht:</p>
+            <table class="w-full text-left mb-6">
+                <thead class="bg-gray-100">
+                    <tr><th class="p-2">Type</th><th class="p-2">Suffix</th><th class="p-2">Onbepaald</th><th class="p-2">Bepaald</th><th class="p-2">Nederlands</th></tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b"><td class="p-2" rowspan="4">en-woorden</td><td class="p-2">-en/-n</td><td class="p-2">en flicka</td><td class="p-2">flickan</td><td class="p-2">het meisje</td></tr>
+                    <tr class="border-b"><td class="p-2">-en/-n</td><td class="p-2">en ros</td><td class="p-2">rosen</td><td class="p-2">de roos</td></tr>
+                    <tr class="border-b"><td class="p-2">-en</td><td class="p-2">en tidning</td><td class="p-2">tidningen</td><td class="p-2">de krant</td></tr>
+                    <tr class="border-b"><td class="p-2">-n</td><td class="p-2">en sko</td><td class="p-2">skon</td><td class="p-2">de schoen</td></tr>
+                    <tr class="border-b"><td class="p-2" rowspan="3">ett-woorden</td><td class="p-2">-et/-t</td><td class="p-2">ett barn</td><td class="p-2">barnet</td><td class="p-2">het kind</td></tr>
+                    <tr class="border-b"><td class="p-2">-et</td><td class="p-2">ett hus</td><td class="p-2">huset</td><td class="p-2">het huis</td></tr>
+                    <tr><td class="p-2">-t</td><td class="p-2">ett äpple</td><td class="p-2">äpplet</td><td class="p-2">de appel</td></tr>
+                </tbody>
+            </table>
+
+            <h3 class="text-lg font-bold mb-3">Meer voorbeelden en-woorden</h3>
+            <div class="grid grid-cols-2 gap-2 mb-6 text-sm">
+                <div class="p-2 bg-blue-50 rounded">en katt → katten</div>
+                <div class="p-2 bg-blue-50 rounded">en hund → hunden</div>
+                <div class="p-2 bg-blue-50 rounded">en vägg → väggen</div>
+                <div class="p-2 bg-blue-50 rounded">en bro → bron</div>
+                <div class="p-2 bg-blue-50 rounded">en pojke → pojken</div>
+                <div class="p-2 bg-blue-50 rounded">en fågel → fågeln</div>
+                <div class="p-2 bg-blue-50 rounded">en dator → datorn</div>
+                <div class="p-2 bg-blue-50 rounded">en lärare → läraren</div>
+            </div>
+
+            <h3 class="text-lg font-bold mb-3">Meer voorbeelden ett-woorden</h3>
+            <div class="grid grid-cols-2 gap-2 mb-6 text-sm">
+                <div class="p-2 bg-teal-50 rounded">ett land → landet</div>
+                <div class="p-2 bg-teal-50 rounded">ett museum → museet</div>
+                <div class="p-2 bg-teal-50 rounded">ett bageri → bageriet</div>
+                <div class="p-2 bg-teal-50 rounded">ett knä → knät</div>
+                <div class="p-2 bg-teal-50 rounded">ett öra → örat</div>
+                <div class="p-2 bg-teal-50 rounded">ett problem → problemet</div>
+                <div class="p-2 bg-teal-50 rounded">ett fönster → fönstret</div>
+                <div class="p-2 bg-teal-50 rounded">ett tecken → tecknet</div>
+            </div>
+
+            <h3 class="text-lg font-bold mb-3">Samengestelde naamwoorden</h3>
+            <p class="mb-4">Bij samengestelde naamwoorden bepaalt het <strong>laatste deel</strong> het geslacht:</p>
+            <ul class="space-y-2 text-sm">
+                <li><strong>blod</strong> (ett) + <strong>grupp</strong> (en) = <strong>en blodgrupp</strong> (een bloedgroep)</li>
+                <li><strong>bok</strong> (en) + <strong>handel</strong> (en) = <strong>en bokhandel</strong> (een boekhandel)</li>
+            </ul>
+        `
+    },
+    plurals: {
+        name: 'Meervoud',
+        icon: 'fa-clone',
+        color: 'var(--scandi-green)',
+        description: 'De 5 meervoudsgroepen',
+        content: `
+            <h3 class="text-lg font-bold mb-3">De vijf meervoudsgroepen</h3>
+            <p class="mb-4">Het Zweeds kent vijf verschillende groepen voor meervoudsvorming:</p>
+
+            <div class="space-y-6">
+                <!-- Groep 1 -->
+                <div class="bg-green-50 rounded-xl p-4">
+                    <h4 class="font-bold text-green-800 mb-2">Groep 1: meervoud op -or</h4>
+                    <p class="text-sm mb-3">Alleen <strong>en-woorden</strong>. Woorden op -a verliezen de -a in het meervoud.</p>
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-green-100">
+                            <tr><th class="p-2">Enkelvoud</th><th class="p-2">Meervoud</th><th class="p-2">Nederlands</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-green-200"><td class="p-2">en flicka</td><td class="p-2">två flickor</td><td class="p-2">meisjes</td></tr>
+                            <tr class="border-b border-green-200"><td class="p-2">en ros</td><td class="p-2">två rosor</td><td class="p-2">rozen</td></tr>
+                            <tr class="border-b border-green-200"><td class="p-2">en våg</td><td class="p-2">två vågor</td><td class="p-2">golven</td></tr>
+                            <tr><td class="p-2">en toffel</td><td class="p-2">två tofflor</td><td class="p-2">pantoffels</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Groep 2 -->
+                <div class="bg-blue-50 rounded-xl p-4">
+                    <h4 class="font-bold text-blue-800 mb-2">Groep 2: meervoud op -ar</h4>
+                    <p class="text-sm mb-3">Alleen <strong>en-woorden</strong>. Veel éénlettergrepige en tweelettergrepige woorden op -e, -el, -en, -er.</p>
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-blue-100">
+                            <tr><th class="p-2">Enkelvoud</th><th class="p-2">Meervoud</th><th class="p-2">Nederlands</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-blue-200"><td class="p-2">en tidning</td><td class="p-2">två tidningar</td><td class="p-2">kranten</td></tr>
+                            <tr class="border-b border-blue-200"><td class="p-2">en pojke</td><td class="p-2">två pojkar</td><td class="p-2">jongens</td></tr>
+                            <tr class="border-b border-blue-200"><td class="p-2">en fågel</td><td class="p-2">två fåglar</td><td class="p-2">vogels</td></tr>
+                            <tr class="border-b border-blue-200"><td class="p-2">en sommar</td><td class="p-2">två somrar</td><td class="p-2">zomers</td></tr>
+                            <tr><td class="p-2">en syster</td><td class="p-2">två systrar</td><td class="p-2">zusters</td></tr>
+                        </tbody>
+                    </table>
+                    <p class="text-xs text-blue-600 mt-2">Let op klinkerwisseling: en dotter → två döttrar, en moder → två mödrar</p>
+                </div>
+
+                <!-- Groep 3 -->
+                <div class="bg-amber-50 rounded-xl p-4">
+                    <h4 class="font-bold text-amber-800 mb-2">Groep 3: meervoud op -er</h4>
+                    <p class="text-sm mb-3">Zowel <strong>en-woorden</strong> als <strong>ett-woorden</strong>. Woorden op -nad, -(n)är, -het, -skap, -ion en leenwoorden.</p>
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-amber-100">
+                            <tr><th class="p-2">Enkelvoud</th><th class="p-2">Meervoud</th><th class="p-2">Nederlands</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-amber-200"><td class="p-2">en dikt</td><td class="p-2">två dikter</td><td class="p-2">gedichten</td></tr>
+                            <tr class="border-b border-amber-200"><td class="p-2">en byggnad</td><td class="p-2">två byggnader</td><td class="p-2">gebouwen</td></tr>
+                            <tr class="border-b border-amber-200"><td class="p-2">en station</td><td class="p-2">två stationer</td><td class="p-2">stations</td></tr>
+                            <tr class="border-b border-amber-200"><td class="p-2">ett bageri</td><td class="p-2">två bagerier</td><td class="p-2">bakkerijen</td></tr>
+                            <tr><td class="p-2">ett museum</td><td class="p-2">två museer</td><td class="p-2">musea</td></tr>
+                        </tbody>
+                    </table>
+                    <p class="text-xs text-amber-600 mt-2">Veel klinkerwisselingen: en hand → två händer, en stad → två städer, en man → två män</p>
+                </div>
+
+                <!-- Groep 4 -->
+                <div class="bg-purple-50 rounded-xl p-4">
+                    <h4 class="font-bold text-purple-800 mb-2">Groep 4: meervoud op -n</h4>
+                    <p class="text-sm mb-3">Alleen <strong>ett-woorden</strong> die eindigen op een klinker.</p>
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-purple-100">
+                            <tr><th class="p-2">Enkelvoud</th><th class="p-2">Meervoud</th><th class="p-2">Nederlands</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b border-purple-200"><td class="p-2">ett äpple</td><td class="p-2">två äpplen</td><td class="p-2">appels</td></tr>
+                            <tr class="border-b border-purple-200"><td class="p-2">ett knä</td><td class="p-2">två knän</td><td class="p-2">knieën</td></tr>
+                            <tr><td class="p-2">ett schema</td><td class="p-2">två scheman</td><td class="p-2">schema's</td></tr>
+                        </tbody>
+                    </table>
+                    <p class="text-xs text-purple-600 mt-2">Onregelmatig: ett öra → två öron, ett öga → två ögon</p>
+                </div>
+
+                <!-- Groep 5 -->
+                <div class="bg-gray-100 rounded-xl p-4">
+                    <h4 class="font-bold text-gray-800 mb-2">Groep 5: geen aparte meervoudsuitgang</h4>
+                    <p class="text-sm mb-3">Vooral <strong>ett-woorden</strong> die eindigen op een medeklinker, plus beroepen op -are, -ande, -ende.</p>
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-gray-200">
+                            <tr><th class="p-2">Enkelvoud</th><th class="p-2">Meervoud</th><th class="p-2">Nederlands</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr class="border-b"><td class="p-2">ett hus</td><td class="p-2">två hus</td><td class="p-2">huizen</td></tr>
+                            <tr class="border-b"><td class="p-2">ett problem</td><td class="p-2">två problem</td><td class="p-2">problemen</td></tr>
+                            <tr class="border-b"><td class="p-2">en lärare</td><td class="p-2">två lärare</td><td class="p-2">leraren</td></tr>
+                            <tr><td class="p-2">en resande</td><td class="p-2">två resande</td><td class="p-2">reizigers</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <h3 class="text-lg font-bold mt-6 mb-3">Bepaald lidwoord meervoud</h3>
+            <p class="mb-4">Het bepaald lidwoord meervoud wordt ook als suffix toegevoegd:</p>
+            <table class="w-full text-left text-sm">
+                <thead class="bg-gray-100">
+                    <tr><th class="p-2">Groep</th><th class="p-2">Onbepaald mv.</th><th class="p-2">Bepaald mv.</th><th class="p-2">Nederlands</th></tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b"><td class="p-2">1</td><td class="p-2">flickor</td><td class="p-2">flickorna</td><td class="p-2">de meisjes</td></tr>
+                    <tr class="border-b"><td class="p-2">2</td><td class="p-2">pojkar</td><td class="p-2">pojkarna</td><td class="p-2">de jongens</td></tr>
+                    <tr class="border-b"><td class="p-2">3</td><td class="p-2">dikter</td><td class="p-2">dikterna</td><td class="p-2">de gedichten</td></tr>
+                    <tr class="border-b"><td class="p-2">4</td><td class="p-2">äpplen</td><td class="p-2">äpplena</td><td class="p-2">de appels</td></tr>
+                    <tr><td class="p-2">5</td><td class="p-2">hus</td><td class="p-2">husen</td><td class="p-2">de huizen</td></tr>
                 </tbody>
             </table>
         `

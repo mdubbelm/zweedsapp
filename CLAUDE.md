@@ -30,6 +30,71 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ---
 
+## 📋 GitHub Issues Aanmaken
+
+**Bij feature requests, bugs of tickets ALTIJD deze metadata toevoegen:**
+
+### Verplichte velden
+
+```bash
+# Voorbeeld: nieuw issue aanmaken met alle metadata
+gh issue create \
+  --title "Feature: Beschrijving" \
+  --body "..." \
+  --label "enhancement" \
+  --milestone "M2: Learning" \
+  --assignee "@me"
+```
+
+### Labels (kies minimaal 1)
+| Label | Gebruik voor |
+|-------|--------------|
+| `bug` | Iets werkt niet zoals verwacht |
+| `enhancement` | Nieuwe feature of verbetering |
+| `documentation` | Docs, README, CLAUDE.md |
+| `ux` | User experience verbeteringen |
+| `accessibility` | WCAG/a11y issues |
+| `chore` | Refactoring, tests, tooling |
+
+### Story Points (in titel of body)
+Voeg story points toe als `[Xsp]` in de titel of body:
+- `[1sp]` - Trivial (<30 min)
+- `[2sp]` - Small (30min - 2u)
+- `[3sp]` - Medium (2-4u)
+- `[5sp]` - Large (4-8u)
+- `[8sp]` - Extra large (>8u, overweeg opsplitsen)
+
+### Milestones
+| Milestone | Focus | Deadline |
+|-----------|-------|----------|
+| **M1: Clarity** | UX versimpelen, bugs fixen | 11 dec 2025 |
+| **M2: Learning** | Leerfuncties uitbreiden | TBD |
+| **M3: Growth** | Gebruikersgroei features | TBD |
+| **M4: Polish** | Nice-to-haves, refactoring | Geen |
+
+**Workflow:**
+1. Milestones zijn **sequentieel** (niet parallel)
+2. Focus eerst 100% op M1, dan M2, etc.
+3. Nieuwe issues zonder milestone → direct triage + toewijzen
+
+### Voorbeeld issue body template
+
+```markdown
+## Beschrijving
+[Wat moet er gebeuren?]
+
+## Acceptatiecriteria
+- [ ] Criterium 1
+- [ ] Criterium 2
+
+## Story Points: [3sp]
+
+## Notities
+[Technische overwegingen, links, etc.]
+```
+
+---
+
 ## ⚠️ CRITICAL: Deployment Workflow
 
 **THIS APP IS DEPLOYED VIA GITHUB PAGES**

@@ -1,0 +1,558 @@
+11
+
+1.2
+
+Zelfstandige naamwoorden en
+lidwoorden
+
+Het geslacht van zelfstandige naamwoorden en het
+onbepaald lidwoord
+
+Het Zweeds onderscheidt voor zelfstandige naamwoorden twee
+geslachten, namelijk:
+
+utrum [niet-onzijdig, vgl. in het Nederlands ‘de’-woord]
+neutrum [onzijdig, vgl. in het Nederlands ‘het’-woord]
+
+Bij utrum-woorden wordt als onbepaald lidwoord het woordje en gebruikt;
+daarom worden utrum-woorden en-woorden genoemd.
+
+Bij neutrum-woorden wordt als onbepaald lidwoord het woordje ett ge-
+bruikt; daarom worden neutrum-woorden ett-woorden genoemd.
+
+Het Zweeds heeft dus, anders dan het Nederlands, twee vormen voor het
+onbepaald lidwoord, vergelijk:
+
+enros [en-woord] een roos [‘de’-woord]
+
+ett hus [ett-woord] een huis [’het’-woord]
+
+N.B. Ros [en-woord] en‘roos’ [‘'de’-woord] zijn etymologisch aan elkaar
+verwant; zo ook hus [ett-woord] en ‘huis’ [’het’-woord].
+
+Bij etymologisch verwante zelfstandige naamwoorden correspondeert
+het ‘de’-geslacht in het Nederlands met het en-geslacht in het Zweeds; het
+‘het’-geslacht in het Nederlands correspondeert met het ett-geslacht in
+
+het Zweeds.
+Deze overeenkomst wat betreft het geslacht van etymologisch verwante
+
+zelfstandige naamwoorden gaat echter niet altijd op, vergelijk:
+en station [en-woord] een station ['het’'-woord]
+ett Apple [ett-woord] een appel ['de’-woord]
+
+Het geslacht van samengestelde zelfstandige naamwoorden
+
+Samengestelde zelfstandige naamwoorden krijgen het geslacht van het
+laatste zelfstandige naamwoord van de samenstelling.
+
+Het woord blodgrupp ‘bloedgroep’ is samengesteld uit:
+
+blod [ett-woord] bloed + grupp [en-woord] groep
+
+Het woord blodgrupp is dus een en-woord op grond van het geslacht van
+het zelfstandig naamwoord grupp.
+
+1.3 Het meervoud van zelfstandige naamwoorden
+
+. Het Zweeds kent vijf verschillende groepen voor bed meervoudsvorming “
+
+| van zelfstandige naamwoorden. Deze groepen zijn: ms
+| Groep 1: meervoud op -or |
+
+| Deze groep bevat alleen en-woorden. Kenmerkend voor deze groep is te- G
+
+. vens, dat het - behoudens enkele uitzonderingen - zeltstandige |
+) naamwoorden betreft die uitgaan op -a; deze slotklinker -a valt weg in het
+
+meervoud, bijvoorbeeld: ne
+en flicka een meisje tva flickor 2 meisjes
+
+en ara een roeispaan tva aror 2 roeispanen
+
+N.B.1 Enkele uitzonderingen op een medeklinker zijn:
+enros-rosor roos en toffel-tofflor
+
+en vag-vagor golf en ader-adror
+
+| N.B.2 De meervoudsuitgang -or wordt uitgesproken als [-oer], maar in de
+| spreektaal echter vaak als [-ar].
+
+Groep 2: meervoud op -ar
+Op én enkele uitzondering na (zie N.B.4) bevat deze groep alleen en-
+
+woorden. Tot deze groep behoren alle zelfstandige naamwoorden die yj.
+gaan op -(n)ing. Verder bevat deze groep vele eenlettergrepige Zelistan.
+| dige naamwoorden, alsmede tweelettergrepige zelfstandige
+| naamwoorden die uitgaan op onbeklemtoond -e, -el, -en of -er, de one.
+| klemtoonde -e- valt in het meervoud weg. Enkele voorbeelden.
+
+entidning een krant tva tidningar 2 kranten
+| | envagg een muur tva vaggar 2 muren
+en bro een brug tva broar 2 bruaqgen
+| en pojke een jongen tva pojkar 2 jongens
+| en fagel een vogel tva faglar 2 vogels
+| en dken een woestijn tva Sknar 2 Woestijnen
+| en syster een zuster tva systrar 2 Zusters
+
+N.B.1 Andere voorbeelden van zelfstandige naamwoorden meteen mee.
+
+voud op «ar Zijn:
+en fjaril een viinder tva fjarilar 2 Viinders
+en aborre een baars tva aborrar 2 baarsen
+
+| N.B.2 Twee zelfstandige naamwoorden in deze groep hebben inhet
+| meervoud tevens klinkerwisseling, nameliik:
+
+en dotter een dochter twa dottrar 2 dochters |
+en moder een moeder tva médrar 2 moeders
+
+ee N.B.3 Let ook op het meervoud Op -ar bij onderstaande zelfstandige
+
+_ Maamwoorden:
+
+nmorgon = = eenmorgen tva morgnar 2 morgers
+— enzomer va somrar 2 zomets
+
+fl
+
+N.B.4 Het zelfstandig naamwoord finger is een ett-woord en heeft een
+meervoud op -ar:
+ett finger een vinger tva fingrar 2 vingers
+
+Groep 3: meervoud op -er
+
+Deze groep bevat aan de ene kant en-woorden, zoals éenlettergrepige
+zelfstandige naamwoorden, zelfstandige naamwoorden die eindigen op
+-nad, -(n)ar, -het, -skap en -ion en een groot aantal leenwoorden. Bij-
+voorbeeld:
+
+en dikt een gedicht tva dikter 2 gedichten
+
+en byggnad een gebouw tvabyggnader 2 gebouwen
+
+enresenar een reiziger tva resenarer 2 reizigers
+
+en lagenhet een woning tvalagenheter 2 woningen
+
+en vanskap eenvriendschap tvavanskaper 2 vriendschap-
+pen
+
+en station een station tva stationer 2 stations
+
+en student een student tva studenter 2 studenten
+
+en dator een computer tva datorer 2 computers
+
+Aan de andere kant bevat deze groep een aantal ett-woorden, zoals
+meerlettergrepige leenwoorden die eindigen op een beklemtoonde slot-
+klinker of leenwoorden die eindigen op -eum/-ium, waarbij -um in het
+meervoud wegvalt, bijvoorbeeld:
+
+ett bageri een bakkerij tva bagerier 2 bakkerijen
+ett paraply een paraplu tva paraplyer 2 paraplu’s
+ett museum een museum tva museer 2 musea
+
+ett stadium een stadium tva stadier 2 stadia
+
+N.B.1 Een aantal zelfstandige naamwoorden met de meervoudsuitgang
+-er heeft tevens klinkerwisseling (en soms verdubbeling van de eind-
+
+medeklinker):
+
+en and-adnder eend en bok-bocker boek
+en bokstav-bokstadver _ letter en bonde-bonder boer
+en bot-boter boete enbrand-brander brand
+en fot-fotter voet en hand-hander hand
+ett land-lander land enledamot-ledamoOter _ lid
+
+en natt-natter nacht  enrot-rotter wortel
+enson-soner zoon en stad-stader stad
+en strand-strander strand enstang-stanger stok
+en tand-tander tand en tang-tanger tang
+
+N.B.2 En-woorden in deze groep die eindigen op onbeklemtoond -el of -er
+
+verliezen -e- inhet meervoud:
+en mobel een meubel tva mébler 2 meubels
+
+en neger een neger tva negrer 2 negers
+N.B.3 Zelfstandige naamwoorden in deze groep die eindigen op een klin-
+
+ker hebben Of -er Of -r als uitgang. Meerlettergrepige zelfstandige naam-
+woorden waarvan de eindlettergreep beklemtoond is krijgen -er;
+
+13
+
+den waarv
+ttergrepige zelfstandige naamwoor andee
+ree niet beklemtoond is alsmede eenlettergrepige zelfstandige
+woorden krijgen -r, vergelijk Naam.
+i Nel
+: -er. 9g sS- a
+ed een menu tva menyer 2 menu’ en alrane
+en niva een niveau tva nivaer 5 Rives S
+se te een genie tva genier 5 Banics. N.B.2 Mil‘Zv
+re ponditor! een lunchroom tva konditorier 2 lun ina meervoudst
+Ms
+Vitgang -F- 14 Het bepas
+i tvaroérelser 2b
+enrérelse een beweging “ ewegin Het
+ettfangelse een gevangenis tvafangelser 2 gevangenia Bib ee
+enbastu een sauna tva bastur Maing. septal
+endébo een eilandbewoner tva G6bor 2 eilandbewon septic :
+ensko een schoen tva skor 2 schoenen ers 4 énflicka
+enta eenteen tva tar 2 tenen enros
+2 en tidning
+Groep 4: meervoud op -n eh envagg
+Deze groep bevat alleen ett-woorden die eindigen op een Klinker, bijvog en bro
+“ : r- en pojke
+beeld: é po}
+ett apple een appel tva applen 2 appels en fagel
+ettkna eenknie | _tvaknan 2 knieén dea
+schema  tvascheman somm
+ett schema een ak 2 schema's endikt
+N.B.1 De ett-woorden oraen Gee here een onregelmatig meervoud a beth
+éron en ogon. ensko
+Ui Aagh eB en dator
+N.B.2 Ett-woorden die eindigen op -ande en -ende vallen ook onder deze 5 enlarare
+groep 4, bijvoorbeeld: Oe Uk Cau ae aeeens
+ett meddelande-meddelanden mededeling enindie
+ett beteende-beteenden : gedrag en gas
+Groep 5: geen aparte meervoudsultgang Voor ett
+Het betreft vooral ett-woorden die uitgaan op een medeklinker. Dit kunnen , {e)t ge
+zowel inheemse woorden als leenwoorden zijn. Verder vallen onder deze ee Cttbag
+groep en-woorden die eindigen op -are, -ande, -ende en -(ik)er; in bete- aa pare
+kenis zijn het aanduidingen voor personen, beroepen of nationaliteiten. stare
+etthus == eenhuis  tvahus 2 huizen ett ane
+oh se! _ eenbosaardbel — tva smultron 2 bosaardbeien ettdra
+a fe bt een probl 1 tvaproblem 2 problemen ett bet
+enarere rey lara 2 leraren 5 etthu:
+2 reizigers ett pre
+9 voetgange's |
+2 politici pe
+2 Indiers ginal
+dige!
+
+bepa
+
+1.4
+
+en bro(de)r-bréder broer  enfa(de)r-fader vader
+en gas-gass gans — enman-miain man
+enmus-méss muis
+
+N.B.2 Mil ‘Zweedse mij! [=10 km]' is een en-woord, maar heeft geen
+meervoudsuitgang.
+
+Het bepaald lidwoord
+
+Het bepaald lidwoord wordt als uitgang aan het zelfstandig naamwoord
+gehecht. Men spreekt dan over ‘de bepaalde vorm' van het zelfstandig
+
+naamwoord. In het enkelvoud wordt voor en-woorden als uitgang -(e)n
+gebruikt, bijvoorbeeld:
+
+en flicka een meisje flickan het meisje
+enros een roos rosen de roos
+entidning een krant tidningen de krant
+
+en vagg een muur vaggen de muur
+
+en bro een brug bron de brug
+
+en pojke een jongen pojken de jongen
+en fagel een vogel fageln de vogel
+
+en syster een zuster systern de zuster
+ensommar een zomer sommaren de zomer
+
+en dikt een gedicht dikten het gedicht
+en byggnad een gebouw byggnaden het gebouw
+enrorelse een beweging rorelsen de beweging
+en sko een schoen skon de schoen
+en dator eencomputer — datorn de computer
+en larare een leraar lararen de leraar
+enresande een reiziger resanden de reiziger
+en indier een Indiér indiern de Indiér
+engas eengans gasen de gans
+
+Voor ett-woorden wordt voor het bepaald lidwoord enkelvoud als uitgang
+-(e)t gebruikt, bijvoorbeeld:
+
+ett bageri een bakkerij bageri(e)t de bakkerij
+ett paraply een paraplu paraply(e)t de paraplu
+ett museum een museum museet het museum
+ett land een land landet het land
+
+ett apple een appel applet de appel
+ettkna een knie kna(e)t de knie
+
+ett Gra een oor orat het oor
+
+ett beteende een gedrag beteendet het gedrag
+ett hus een huis huset het huis
+
+ett problem een probleem problemet het probleem
+
+N.B.1 Zoals blijkt uit bovenstaande voorbeelden hebben en-woorden die
+eindigen op -el, -eren -orals bepaald lidwoord enkelvoud -n, Bij zelfstan-
+dige naamwoorden die eindigen op een klinker valt vaak de -e- van het
+bepaald lidwoord enkelvoud weg. Bij en-woorden die eindigen op een
+
+16
+
+iid -n gebruikt, maar bij ett-woorden na beklemt
+OOnde
+
+slotklinker of bij eenlettergrepige ett-woorden heeft -et echter qa
+Kou, vergelijk: VOor-
+nth een teen tan detee
+enniva een niveau nivan het niveau
+enmeny een menu | menyn het men
+
+x eengevangenis fangelset u
+
+ace genie geniet
+
+ett geni een gé é het gen
+ett bi een bij biet de bij le
+
+N.B.2 En-woorden die eindigen op -en alsmede ett-woorden die eing
+
+op -el, -en of -er verliezen -e- In de bepaalde vorm enkelvoud, bi Moe
+beeld: i ¥
+
+en oken een woestijn oknen de woestijn
+ett segel een zeil seglet het zeit
+
+ett tecken een teken tecknet het teken
+
+ett fonster eenraam fonstret hetraam
+Ook het bepaald lidwoord meervoud wordt aan het zelfstandig naam-
+
+woord gehecht. Bij ett-woorden uit de groepen 4 en 5 worden respec-
+
+tievelijk -aen -en gebruikt:
+
+Applen appels applena de appels
+
+knan knieen knana de knieén
+
+beteenden gedragingen beteendena de gedragingen
+
+hus huizen husen de huizen
+
+problem problemen problemen de problemen
+
+in de overige gevallen wordt de uitgang -na gebruikt:
+
+flickor meisjes flickorna de meisjes
+
+pojkar jongens pojkarna de jongens
+
+dikter gedichten dikterna de gedichten
+
+skor schoenen skorna de schoenen
+
+lander landen landerna de landen
+
+resande reizigers resandena de reizigers
+
+politiker politici politikerna de politici
+
+N.B.1 Let op de uitgang -en bij:
+
+ogon ogen Ogonen de ogen
+
+dron oren oronen de oren
+
+Zo ook:
+
+4 i:
+
+aa ganzen gassen de ganzen
+
+a muizen mossen de muizen
+(Zweedse) mijlen milen de mijlen
+
+NB.
+2 Huvud (ett) ‘hoofd’ heeft meestal een meervoud huvuden en ce’
+
+bepaalde vorm meervoud huvudena.
+
+N.B.3 En-woorden die eindigen op -are alsmede ett-woorden die eindigen
+op -el, -enen -er verliezen -e- in de bepaalde vorm meervoud:
+
+larare leraren lararna de leraren
+segel zeilen seglen de zeilen
+
+tecken tekens tecknen de tekens
+fonster ramen fonstren de ramen
+
+Verdubbeling van slotmedeklinker -m/-nna korte klinker
+
+Zelfstandige naamwoorden die eindigen op enkele -m of -nna korte klin-
+ker hebben verdubbeling van deze oorspronkelijke enkele slotmedeklin-
+ker na een meervoudsuitgang of in de bepaalde vorm, bijvoorbeeld:
+
+enmun eenmond munnen demond munnar monden
+envan- eenvriend vannen’ devriend vanner — vrienden
+enman eenman mannen deman mannen demannen
+etthem eentehuis hemmet het tehuis hemmen detehuizen
+
+Meervoud van nieuwe leenwoorden die zelfstandige
+naamwoorden zijn
+
+Bij zelfstandige naamwoorden die recent als leenwoorden in het Zweeds
+opgenomen zijn wordt zoveel mogelijk geprobeerd voor het meervoud
+Zweedse meervoudsuitgangen te gebruiken. Zo wil men het gebruik van
+de niet-Zweedse meervoudsuitgang -s vermijden. Bijvoorbeeld de
+ontwikkeling van studio:
+
+en studio een studio studios > studior studio's
+studiorna de studio's
+
+ZO OOk:
+
+en partner een partner partners > partner partners
+partnerna de partners
+
+engangster eengangster gangsters > gangstrar gangsters
+gangstrarna de gangsters
+
+Leenwoorden die van oorsprong een meervoud op -s hebben en die alleen
+in het meervoud worden gebruikt behouden echter -s; zij hebben een be-
+
+paalde vorm op -en, zoals:
+jeans spijkerbroek jeansen de spijkerbroek
+
+blues blues bluesen de blues
+
+Vergelijk ook:
+fans fans fansen de fans
+
+De uitgang -s
+
+Evenals in het Nederlands kan in het Zweeds de uitgang -sin plaats van
+
+het voorzetsel ‘van’ gebruikt worden. Vergelijk:
+Rolfs far Rolfs vader [= de vader van Rolf]
+
+17
+~~
+a ©
+oo
+
+de hoogste berg van Zweden
+
+: 5 ber
+Daeg rt : het gerecht (menu) van de dag
+ag ‘ de Samen, het volkvand
+ia viddernas , © ope
+samerna, de fr viaktes "
+cxtexotsk blommas doft de,geur vanicen exotische bloem
+en. een vakantie van drie weken
+
+Deze vorm op -s kan zelfs predicatief [= als deel van het gezegde] ge.
+
+bruikt worden, bijvoorbeeld:
+
+Pennan ar min systers. De penis van mijn Zus.
+
+Indien een eigennaam op een -s of -x eindigt, wordt er geen -s meer aap
+
+vastgehecnt. Bijvoorbeeld:
+
+Lars far de vader van Lars
+
+Marx lara de leer van Marx
+
+Oorspronkelijke vormen Op -S [2e-naamvalsvormen] zijn overgebleven ip
+enkele staande uitdrukkingen, zoals:
+
+till bords aan tafel
+
+till sjoss ter zee
+
+tillsangs . te bed
+
+1.8 Weglaten van onbepaald/bepaald lidwoord
+
+in een aantal gevallen staat in het Zweeds, in tegenstelling tot in het Ne-
+derlands, het zelfstandig naamwoord zonder onbepaald/bepaald \ic-
+woord. Het gaat dan in de regel om algemene uitingen, bijvoorbeeld:
+
+Han ar svensk/ student. Hij is (een) Zweed/student.
+
+Han talar alltid sanning. Hij spreekt altijd de waarheid.
+
+Har duhjarta att sagahennedet? Heb jij de moed haar dat te zegge”
+Man ater soppa med sked! Je eet soep met een lepel!
+
+De klipper graset med maskin. Zi maaienhet gras met een mach
+
+In combinatie met het werkwoord att aka (B) ‘gaan staat het zelistandld
+naamwoord, aangevende het vervoermiddel dat gebruikt wordt, 200°"
+
+lidwoord:
+Hon akte buse til jobbet. Z\\ ging met de bus naat haat welt
+Zo 00k:
+aka tag/tunnelbana/ bat! biletc. — met detrein/de metro/de boo!
+de auto gaan enz.
+
+i Let echter Op:
+
+yga (D) ~
+cykla (A) met het viiegtuig gaan! vlleg®
+
+met de fiets gaan/fietse"
+
+N.B.2 Atk
+
+Soms he
+keli\k var
+vergeliit
+Han ate
+Han at
+
+Ditve
+veel)
+Har
+Hor
+De
+
+AD. ¥
+
+N.B.2 Att k6ra (B) bil betekent ‘met de auto gaan, [= zelf autorijden]’.
+
+Soms heeft men de keuze tussen wel of geen onbepaald lidwoord. Afhan-
+
+kelijk van het gebruik bestaat er echter wel een verschil in betekenis,
+vergelijk:
+
+Han ater pizza. Hij eet pizza.
+Han ater en pizza. Hij eet een pizza.
+
+Dit verschil in gebruik van wel of geen onbepaald lidwoordis in het Zweeds
+veel verder doorgevoerd. Bijvoorbeeld:
+
+Har du hund? Heb jij honden/een hond?
+Hon maste skaffa bil. Zij heeft een auto nodig.
+Det finns alg har. Er zitten hier elanden.
+
+Het bepaald lidwoord als bezittelijk voornaamwoord
+
+Soms wordt in het Zweeds een bepaald lidwoord gebruikt, waar in het
+Nederlands een bezittelijk voornaamwoord gebruikelijker is. Dit is met
+
+name het geval in zinnen waarin lichaamsdelen en kledingstukken ge-
+noemd worden. Voorwaarde is wel, dat er geen twijfel over bestaat, wie de
+
+eigenaar ervan is. Bijvoorbeeld:
+
+Eva skar sig ihanden. Eva sneed in haar hand.
+
+Han knappte upp rocken. Hij knoopte zijn jas los.
+
+19

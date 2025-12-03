@@ -391,6 +391,360 @@ export const grammarExercises = {
         }
     ],
 
+    // Bijvoeglijke naamwoorden (H2)
+    adjective: [
+        // Onbepaalde vorm - en/ett/meervoud
+        {
+            id: 'adj1',
+            type: 'adjective',
+            prompt: 'en ___ stad (stor)',
+            options: ['stor', 'stort', 'stora'],
+            answer: 'stor',
+            translation: 'een grote stad',
+            difficulty: 'easy'
+        },
+        {
+            id: 'adj2',
+            type: 'adjective',
+            prompt: 'ett ___ hus (stor)',
+            options: ['stor', 'stort', 'stora'],
+            answer: 'stort',
+            translation: 'een groot huis',
+            difficulty: 'easy'
+        },
+        {
+            id: 'adj3',
+            type: 'adjective',
+            prompt: '___ städer (stor)',
+            options: ['stor', 'stort', 'stora'],
+            answer: 'stora',
+            translation: 'grote steden',
+            difficulty: 'easy'
+        },
+        {
+            id: 'adj4',
+            type: 'adjective',
+            prompt: 'en ___ katt (svart)',
+            options: ['svart', 'svart', 'svarta'],
+            answer: 'svart',
+            translation: 'een zwarte kat',
+            difficulty: 'easy'
+        },
+        {
+            id: 'adj5',
+            type: 'adjective',
+            prompt: 'ett ___ bord (svart)',
+            options: ['svart', 'svart', 'svarta'],
+            answer: 'svart',
+            translation: 'een zwarte tafel',
+            hint: 'medeklinker + t verliest -t in ett-vorm',
+            difficulty: 'medium'
+        },
+        {
+            id: 'adj6',
+            type: 'adjective',
+            prompt: 'en ___ ros (röd)',
+            options: ['röd', 'rött', 'röda'],
+            answer: 'röd',
+            translation: 'een rode roos',
+            difficulty: 'easy'
+        },
+        {
+            id: 'adj7',
+            type: 'adjective',
+            prompt: 'ett ___ äpple (röd)',
+            options: ['röd', 'rött', 'röda'],
+            answer: 'rött',
+            translation: 'een rode appel',
+            hint: 'klinker + d krijgt -tt',
+            difficulty: 'medium'
+        },
+        // Bepaalde vorm
+        {
+            id: 'adj8',
+            type: 'adjective',
+            prompt: 'den ___ staden (stor)',
+            options: ['stor', 'stora', 'stort'],
+            answer: 'stora',
+            translation: 'de grote stad',
+            difficulty: 'medium'
+        },
+        {
+            id: 'adj9',
+            type: 'adjective',
+            prompt: 'det ___ huset (stor)',
+            options: ['stor', 'stora', 'stort'],
+            answer: 'stora',
+            translation: 'het grote huis',
+            difficulty: 'medium'
+        },
+        // Vergrotende trap
+        {
+            id: 'adj10',
+            type: 'adjective',
+            prompt: 'Bilen är ___ än cykeln. (dyr)',
+            options: ['dyr', 'dyrare', 'dyrast'],
+            answer: 'dyrare',
+            translation: 'De auto is duurder dan de fiets.',
+            difficulty: 'medium'
+        },
+        {
+            id: 'adj11',
+            type: 'adjective',
+            prompt: 'Hon är ___ än mig. (ung)',
+            options: ['ung', 'yngre', 'yngst'],
+            answer: 'yngre',
+            translation: 'Zij is jonger dan ik.',
+            difficulty: 'medium'
+        },
+        // Overtreffende trap
+        {
+            id: 'adj12',
+            type: 'adjective',
+            prompt: 'Stockholm är ___ i Sverige. (stor)',
+            options: ['stor', 'större', 'störst'],
+            answer: 'störst',
+            translation: 'Stockholm is het grootst in Zweden.',
+            difficulty: 'medium'
+        },
+        {
+            id: 'adj13',
+            type: 'adjective',
+            prompt: 'Det är den ___ bilen. (dyr)',
+            options: ['dyr', 'dyrare', 'dyraste'],
+            answer: 'dyraste',
+            translation: 'Dat is de duurste auto.',
+            difficulty: 'medium'
+        },
+        // Onregelmatige vormen
+        {
+            id: 'adj14',
+            type: 'adjective',
+            prompt: 'Det här är ___ än det där. (bra)',
+            options: ['bra', 'bättre', 'bäst'],
+            answer: 'bättre',
+            translation: 'Dit is beter dan dat.',
+            difficulty: 'medium'
+        },
+        {
+            id: 'adj15',
+            type: 'adjective',
+            prompt: 'Hon är ___ i klassen. (bra)',
+            options: ['bra', 'bättre', 'bäst'],
+            answer: 'bäst',
+            translation: 'Zij is de beste in de klas.',
+            difficulty: 'medium'
+        },
+        {
+            id: 'adj16',
+            type: 'adjective',
+            prompt: 'Jag har ___ pengar än du. (mycket)',
+            options: ['mycket', 'mer', 'mest'],
+            answer: 'mer',
+            translation: 'Ik heb meer geld dan jij.',
+            difficulty: 'hard'
+        },
+        {
+            id: 'adj17',
+            type: 'adjective',
+            prompt: 'Hon har ___ vänner. (många)',
+            options: ['många', 'flera', 'flest'],
+            answer: 'flest',
+            translation: 'Zij heeft de meeste vrienden.',
+            difficulty: 'hard'
+        },
+        // Liten (onregelmatig)
+        {
+            id: 'adj18',
+            type: 'adjective',
+            prompt: 'ett ___ barn (liten)',
+            options: ['liten', 'litet', 'små'],
+            answer: 'litet',
+            translation: 'een klein kind',
+            difficulty: 'medium'
+        },
+        {
+            id: 'adj19',
+            type: 'adjective',
+            prompt: '___ katter (liten)',
+            options: ['liten', 'litet', 'små'],
+            answer: 'små',
+            translation: 'kleine katten',
+            difficulty: 'medium'
+        },
+        {
+            id: 'adj20',
+            type: 'adjective',
+            prompt: 'den ___ katten (liten)',
+            options: ['liten', 'lilla', 'små'],
+            answer: 'lilla',
+            translation: 'de kleine kat',
+            difficulty: 'hard'
+        }
+    ],
+
+    // Telwoorden (H3)
+    numbers: [
+        // Hoofdtelwoorden
+        {
+            id: 'num1',
+            type: 'number',
+            prompt: 'Vertaal: 5',
+            options: ['fyra', 'fem', 'sex'],
+            answer: 'fem',
+            difficulty: 'easy'
+        },
+        {
+            id: 'num2',
+            type: 'number',
+            prompt: 'Vertaal: 12',
+            options: ['elva', 'tolv', 'tretton'],
+            answer: 'tolv',
+            difficulty: 'easy'
+        },
+        {
+            id: 'num3',
+            type: 'number',
+            prompt: 'Vertaal: 17',
+            options: ['sexton', 'sjutton', 'arton'],
+            answer: 'sjutton',
+            difficulty: 'easy'
+        },
+        {
+            id: 'num4',
+            type: 'number',
+            prompt: 'Vertaal: 50',
+            options: ['fyrtio', 'femtio', 'sextio'],
+            answer: 'femtio',
+            difficulty: 'easy'
+        },
+        // en/ett bij telwoorden
+        {
+            id: 'num5',
+            type: 'number',
+            prompt: 'tjugo___ rosor (21 rozen)',
+            options: ['en', 'ett'],
+            answer: 'en',
+            hint: 'ros is een en-woord',
+            translation: '21 rozen',
+            difficulty: 'medium'
+        },
+        {
+            id: 'num6',
+            type: 'number',
+            prompt: 'tjugo___ hus (21 huizen)',
+            options: ['en', 'ett'],
+            answer: 'ett',
+            hint: 'hus is een ett-woord',
+            translation: '21 huizen',
+            difficulty: 'medium'
+        },
+        // Rangtelwoorden
+        {
+            id: 'num7',
+            type: 'number',
+            prompt: 'den ___ maj (1 mei)',
+            options: ['en', 'första', 'ett'],
+            answer: 'första',
+            translation: '1 mei',
+            difficulty: 'easy'
+        },
+        {
+            id: 'num8',
+            type: 'number',
+            prompt: 'den ___ december (24 dec)',
+            options: ['tjugofyra', 'tjugofjärde', 'tjugo fyra'],
+            answer: 'tjugofjärde',
+            translation: '24 december',
+            difficulty: 'medium'
+        },
+        {
+            id: 'num9',
+            type: 'number',
+            prompt: 'Vertaal: tweede',
+            options: ['tvåa', 'andra', 'två'],
+            answer: 'andra',
+            difficulty: 'easy'
+        },
+        {
+            id: 'num10',
+            type: 'number',
+            prompt: 'Vertaal: derde',
+            options: ['trea', 'tredje', 'tre'],
+            answer: 'tredje',
+            difficulty: 'easy'
+        },
+        // Klokkijken
+        {
+            id: 'num11',
+            type: 'number',
+            prompt: 'Klockan är halv ___. (6:30)',
+            options: ['sex', 'sju', 'fem'],
+            answer: 'sju',
+            translation: 'Het is half zeven.',
+            hint: 'Net als in het Nederlands!',
+            difficulty: 'medium'
+        },
+        {
+            id: 'num12',
+            type: 'number',
+            prompt: 'Klockan är kvart ___ tre. (2:45)',
+            options: ['över', 'i', 'halv'],
+            answer: 'i',
+            translation: 'Het is kwart voor drie.',
+            difficulty: 'medium'
+        },
+        {
+            id: 'num13',
+            type: 'number',
+            prompt: 'Klockan är kvart ___ tre. (3:15)',
+            options: ['över', 'i', 'halv'],
+            answer: 'över',
+            translation: 'Het is kwart over drie.',
+            difficulty: 'medium'
+        },
+        {
+            id: 'num14',
+            type: 'number',
+            prompt: 'Klockan är fem ___ fyra. (3:55)',
+            options: ['över', 'i', 'halv'],
+            answer: 'i',
+            translation: 'Het is vijf voor vier.',
+            difficulty: 'medium'
+        },
+        // Getallen als zelfstandig naamwoord
+        {
+            id: 'num15',
+            type: 'number',
+            prompt: 'Han har en ___. (3-kamerwoning)',
+            options: ['tre', 'trea', 'tredje'],
+            answer: 'trea',
+            translation: 'Hij heeft een driekamerwoning.',
+            difficulty: 'hard'
+        },
+        // Breuken
+        {
+            id: 'num16',
+            type: 'number',
+            prompt: 'en ___ banan (halve)',
+            options: ['halv', 'halvt', 'halva'],
+            answer: 'halv',
+            translation: 'een halve banaan',
+            hint: 'banan is een en-woord',
+            difficulty: 'medium'
+        },
+        {
+            id: 'num17',
+            type: 'number',
+            prompt: 'ett ___ äpple (halve)',
+            options: ['halv', 'halvt', 'halva'],
+            answer: 'halvt',
+            translation: 'een halve appel',
+            hint: 'äpple is een ett-woord',
+            difficulty: 'medium'
+        }
+    ],
+
     // Vertalingen (woord niveau)
     translation: [
         {
@@ -472,6 +826,8 @@ export function getRandomGrammarExercises(count = 2, difficulty = null) {
         ...grammarExercises.conjugation,
         ...grammarExercises.pronoun,
         ...grammarExercises.article,
+        ...grammarExercises.adjective,
+        ...grammarExercises.numbers,
         ...grammarExercises.translation
     ];
 

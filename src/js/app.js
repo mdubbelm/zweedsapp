@@ -45,6 +45,7 @@ import {
     renderSetup,
     toggleSignUp,
     renderHome,
+    renderDaily,
     renderCategories,
     renderSettings,
     renderPractice,
@@ -638,6 +639,28 @@ export class SwedishApp {
         this.render();
     }
 
+    /**
+     * Start daily program from first incomplete item
+     * Called from the new simplified Daily View
+     */
+    startDailyFromBeginning() {
+        const phrases = this.state.dailyPhrases || [];
+        const completedPhrases = this.state.dailyCompletedPhrases || [];
+
+        // Find first incomplete item
+        const firstIncompleteIndex = phrases.findIndex(
+            p => !completedPhrases.includes(`${p.categoryId}-${p.id}`)
+        );
+
+        // If all done, stay on daily view
+        if (firstIncompleteIndex === -1) {
+            return;
+        }
+
+        // Start from first incomplete
+        this.startDailyPhrase(firstIncompleteIndex);
+    }
+
     // =====================
     // Navigation
     // =====================
@@ -882,6 +905,8 @@ export class SwedishApp {
         switch (this.state.currentTab) {
             case TABS.HOME:
                 return renderHome(this.state);
+            case TABS.DAILY:
+                return renderDaily(this.state);
             case TABS.CATEGORIES:
                 return renderCategories(this.state, filterFn);
             case TABS.PRACTICE:
@@ -904,6 +929,7 @@ export class SwedishApp {
     renderAppHeader() {
         const tabTitles = {
             [TABS.HOME]: 'Svenska Kat',
+            [TABS.DAILY]: 'Dagelijks',
             [TABS.CATEGORIES]: 'Categorieën',
             [TABS.PRACTICE]: 'Uitspraak',
             [TABS.WRITING]: 'Schrijven',

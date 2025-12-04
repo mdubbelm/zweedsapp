@@ -7,6 +7,7 @@ import { renderStreakCalendar } from '../components/StreakCalendar.js';
 
 export { renderLogin, renderSetup, toggleSignUp } from './LoginView.js';
 export { renderHome } from './HomeView.js';
+export { renderDaily } from './DailyView.js';
 export { renderCategories } from './CategoriesView.js';
 export { renderSettings } from './SettingsView.js';
 export { renderPractice } from './PracticeView.js';

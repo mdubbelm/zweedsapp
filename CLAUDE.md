@@ -712,6 +712,13 @@ await supabase
 }
 ```
 
+**Content checklist (Vanya - Zweedstalige Eindredacteur):**
+- [ ] Zweeds grammaticaal correct (en/ett, woordvolgorde, verbuigingen)
+- [ ] Nederlandse vertaling klopt qua betekenis
+- [ ] Uitspraak fonetisch correct voor Nederlandse leerlingen
+- [ ] Moeilijkheidsgraad passend (easy/medium/hard)
+- [ ] Natuurlijk Zweeds (geen vertaal-Zweeds)
+
 ### Adding New Categories
 1. Add to `categories` object following the existing pattern:
 ```javascript

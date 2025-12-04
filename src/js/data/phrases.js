@@ -110,7 +110,7 @@ export const categories = {
             {
                 id: 'g15',
                 swedish: 'Varsågod',
-                dutch: 'Alstublieft',
+                dutch: 'Graag gedaan',
                 pronunciation: 'Varsawgood',
                 difficulty: 'easy'
             },
@@ -404,7 +404,7 @@ export const categories = {
             {
                 id: 'd26',
                 swedish: 'Jag ringer ett samtal',
-                dutch: 'Ik pleeg een telefoontje',
+                dutch: 'Ik bel',
                 pronunciation: 'Jaag ringer et samtal',
                 difficulty: 'hard'
             },
@@ -789,7 +789,7 @@ export const categories = {
             {
                 id: 't19',
                 swedish: 'Var är turistinformationen?',
-                dutch: 'Waar is de VVV?',
+                dutch: 'Waar is de toeristeninformatie?',
                 pronunciation: 'Vaar er toeristinformatsjoonen?',
                 difficulty: 'medium'
             },
@@ -1013,7 +1013,7 @@ export const categories = {
             {
                 id: 'c20',
                 swedish: 'Det beror på',
-                dutch: 'Het hangt af van',
+                dutch: 'Dat hangt ervan af',
                 pronunciation: 'Det beroer paw',
                 difficulty: 'hard'
             },
@@ -1167,7 +1167,7 @@ export const categories = {
             {
                 id: 'k11',
                 swedish: 'Alla tre katterna är väldigt söta',
-                dutch: 'Alle drie de katten zijn heel lief',
+                dutch: 'Alle drie de katten zijn heel schattig',
                 pronunciation: 'Alla tree katterna er veldigt soeta',
                 difficulty: 'medium'
             },
@@ -1202,7 +1202,7 @@ export const categories = {
             {
                 id: 'k16',
                 swedish: 'Katten jagar en mus',
-                dutch: 'De kat jaagt een muis',
+                dutch: 'De kat jaagt op een muis',
                 pronunciation: 'Katten jaagar en moes',
                 difficulty: 'easy'
             },
@@ -1285,9 +1285,9 @@ export const categories = {
             },
             {
                 id: 'k28',
-                swedish: 'Katten är allergisk mot katter',
+                swedish: 'Han är allergisk mot katter',
                 dutch: 'Hij is allergisch voor katten',
-                pronunciation: 'Katten er allergisk moot katter',
+                pronunciation: 'Han er allergisk moot katter',
                 difficulty: 'hard'
             },
             {
@@ -1349,9 +1349,9 @@ export const categories = {
             },
             {
                 id: 'a6',
-                swedish: 'August målar i konst',
-                dutch: 'August schildert bij tekenen',
-                pronunciation: 'August mawlar ee konst',
+                swedish: 'August målar på konstlektionen',
+                dutch: 'August schildert tijdens de tekenles',
+                pronunciation: 'August mawlar paw konstlektsjoonen',
                 difficulty: 'medium'
             },
             {
@@ -1478,7 +1478,7 @@ export const categories = {
             {
                 id: 'a24',
                 swedish: 'August plockar kantareller försiktigt',
-                dutch: 'August plukt voorzichtig hanekammen',
+                dutch: 'August plukt voorzichtig cantharellen',
                 pronunciation: 'August plockar kantareller foersiktigt',
                 difficulty: 'hard'
             },
@@ -1549,7 +1549,7 @@ export const categories = {
             {
                 id: 'a34',
                 swedish: 'August älskar choklad med vispad grädde',
-                dutch: 'August houdt van chocolademelk met slagroom',
+                dutch: 'August houdt van chocolade met slagroom',
                 pronunciation: 'August elskar sjoklad med vispad graedde',
                 difficulty: 'hard'
             },
@@ -1689,7 +1689,7 @@ export const categories = {
             {
                 id: 's13',
                 swedish: 'Kan jag prova detta?',
-                dutch: 'Mag ik dit passen?',
+                dutch: 'Mag ik dit proberen?',
                 pronunciation: 'Kan jaag proova detta?',
                 difficulty: 'easy'
             },

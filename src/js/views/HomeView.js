@@ -58,7 +58,7 @@ function renderDailyProgram(dailyPhrases, completedPhrases) {
     });
 
     return `
-        <button id="daily-program" onclick="app.openDailyProgramModal()"
+        <button id="daily-program" onclick="app.setTab('daily')"
                 class="w-full rounded-2xl p-6 card-shadow card-hover text-left border-3 transition-all"
                 style="background: linear-gradient(135deg, rgba(91, 155, 213, 0.15) 0%, rgba(74, 127, 168, 0.08) 100%); border: 3px solid var(--scandi-blue);">
             <div class="flex items-center justify-between">

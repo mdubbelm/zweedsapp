@@ -991,8 +991,10 @@ export class SwedishApp {
 
     renderDailyCompletionMessage() {
         return `
-            <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fadeIn">
-                <div class="bg-white rounded-2xl p-8 mx-4 text-center animate-slideUp max-w-sm">
+            <div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fadeIn"
+                 onclick="app.dismissDailyCompletion()">
+                <div class="bg-white rounded-2xl p-8 mx-4 text-center animate-slideUp max-w-sm"
+                     onclick="event.stopPropagation()">
                     <div class="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-4 bg-green-100">
                         <i class="fas fa-check-circle text-5xl text-green-500"></i>
                     </div>
@@ -1000,12 +1002,22 @@ export class SwedishApp {
                     <p class="text-lg text-gray-600 mb-4">
                         Je hebt je dagelijkse oefeningen voltooid!
                     </p>
-                    <p class="text-sm text-gray-500">
+                    <p class="text-sm text-gray-500 mb-4">
                         Kom morgen terug voor nieuwe zinnen
                     </p>
+                    <button onclick="app.dismissDailyCompletion()"
+                            class="px-6 py-3 rounded-xl font-semibold text-white transition-all"
+                            style="background: linear-gradient(135deg, var(--scandi-blue) 0%, #2F5F8A 100%);">
+                        Sluiten
+                    </button>
                 </div>
             </div>
         `;
+    }
+
+    dismissDailyCompletion() {
+        this.state.showDailyCompletion = false;
+        this.render();
     }
 
     renderDailyProgramModal() {

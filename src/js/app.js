@@ -52,7 +52,8 @@ import {
     renderWriting,
     renderFlashcards,
     renderGrammar,
-    renderBadges
+    renderBadges,
+    renderOnboarding
 } from './views/index.js';
 
 // Components
@@ -825,6 +826,32 @@ export class SwedishApp {
         this.render();
     }
 
+    nextOnboardingStep() {
+        this.state.onboardingStep = (this.state.onboardingStep || 0) + 1;
+        this.render();
+    }
+
+    previousOnboardingStep() {
+        if (this.state.onboardingStep > 0) {
+            this.state.onboardingStep--;
+            this.render();
+        }
+    }
+
+    skipOnboarding() {
+        this.state.showOnboarding = false;
+        this.state.onboardingStep = 0;
+        localStorage.setItem('onboardingCompleted', 'true');
+        this.render();
+    }
+
+    finishOnboarding() {
+        this.state.showOnboarding = false;
+        this.state.onboardingStep = 0;
+        localStorage.setItem('onboardingCompleted', 'true');
+        this.render();
+    }
+
     // =====================
     // Login Form Handling
     // =====================
@@ -888,6 +915,7 @@ export class SwedishApp {
             ${this.state.showDailyProgramModal ? this.renderDailyProgramModal() : ''}
             ${this.state.selectedCategoryForMode ? this.renderModeSelector() : ''}
             ${this.state.selectedModeForCategory ? this.renderCategorySelector() : ''}
+            ${renderOnboarding(this.state)}
 
             <div class="min-h-screen pb-20">
                 ${this.renderAppHeader()}

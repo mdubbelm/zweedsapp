@@ -618,6 +618,7 @@ const grammarTopics = {
         icon: 'fa-user-tag',
         color: '#6B8CAE',
         description: 'Bezit uitdrukken met -s',
+        level: 'basis',
         content: `
             <h3 class="text-lg font-bold mb-3">De Zweedse genitief</h3>
             <p class="mb-4">In het Zweeds wordt bezit uitgedrukt door een <strong>-s</strong> aan het bezittende woord toe te voegen. Dit is veel simpeler dan in het Nederlands!</p>
@@ -721,6 +722,435 @@ const grammarTopics = {
                 <li><strong>Vad är bilens färg?</strong> ${audioBtn('Vad är bilens färg')} - Wat is de kleur van de auto?</li>
             </ul>
         `
+    },
+    articleOmission: {
+        name: 'Weglaten van lidwoord',
+        icon: 'fa-minus-circle',
+        color: '#C9826B',
+        description: 'Wanneer gebruik je GEEN lidwoord',
+        level: 'gevorderd',
+        content: `
+            <h3 class="text-lg font-bold mb-3">Wanneer laat je het lidwoord weg?</h3>
+            <p class="mb-4">In het Zweeds wordt het lidwoord weggelaten in gevallen waar het Nederlands het WEL gebruikt. Dit is een belangrijke afwijking!</p>
+
+            <div class="bg-clay-50 rounded-xl p-4 mb-6">
+                <p class="font-medium text-clay-800 mb-2">Contrast met Nederlands</p>
+                <p class="text-sm">In het Nederlands zeg je "Hij is <strong>een</strong> leraar" of "Zij spreekt <strong>de</strong> waarheid".<br>
+                Het Zweeds laat deze lidwoorden vaak weg.</p>
+            </div>
+
+            <h3 class="text-lg font-bold mb-3">1. Bij beroepen en nationaliteiten</h3>
+            <p class="mb-4">Na werkwoorden als <strong>vara</strong> (zijn) en <strong>bli</strong> (worden):</p>
+            <div class="overflow-x-auto -mx-4 px-4 mb-6">
+                <table class="w-full text-left text-sm min-w-[380px]">
+                    <thead class="bg-gray-100">
+                        <tr><th class="p-2">Zweeds</th><th class="p-2">Letterlijk NL</th><th class="p-2">Correct NL</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b">
+                            <td class="p-2">Han är <strong>lärare</strong>. ${audioBtn('Han är lärare')}</td>
+                            <td class="p-2">Hij is leraar.</td>
+                            <td class="p-2">Hij is <em>een</em> leraar.</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="p-2">Hon är <strong>svensk</strong>. ${audioBtn('Hon är svensk')}</td>
+                            <td class="p-2">Zij is Zweeds.</td>
+                            <td class="p-2">Zij is <em>een</em> Zweedse.</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="p-2">Jag är <strong>student</strong>. ${audioBtn('Jag är student')}</td>
+                            <td class="p-2">Ik ben student.</td>
+                            <td class="p-2">Ik ben <em>een</em> student.</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="p-2">De blev <strong>läkare</strong>. ${audioBtn('De blev läkare')}</td>
+                            <td class="p-2">Zij werden arts.</td>
+                            <td class="p-2">Zij werden <em>artsen</em>.</td>
+                        </tr>
+                        <tr>
+                            <td class="p-2">Han är <strong>vegan</strong>. ${audioBtn('Han är vegan')}</td>
+                            <td class="p-2">Hij is veganist.</td>
+                            <td class="p-2">Hij is <em>een</em> veganist.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="p-3 bg-amber-50 rounded-lg text-sm mb-6">
+                <p class="font-medium text-amber-800 mb-1">Let op!</p>
+                <p>Zodra er een bijvoeglijk naamwoord bijkomt, gebruik je WEL het onbepaalde lidwoord:</p>
+                <ul class="mt-2 space-y-1 text-sm">
+                    <li>✅ Han är <strong>en bra lärare</strong>. ${audioBtn('Han är en bra lärare')} - Hij is een goede leraar.</li>
+                    <li>✅ Hon är <strong>en ung student</strong>. ${audioBtn('Hon är en ung student')} - Zij is een jonge student.</li>
+                </ul>
+            </div>
+
+            <h3 class="text-lg font-bold mb-3">2. Bij algemene uitingen en vaste uitdrukkingen</h3>
+            <p class="mb-4">Bij algemene zaken waar het Nederlands "de/het" zou gebruiken:</p>
+            <div class="overflow-x-auto -mx-4 px-4 mb-6">
+                <table class="w-full text-left text-sm min-w-[380px]">
+                    <thead class="bg-gray-100">
+                        <tr><th class="p-2">Zweeds</th><th class="p-2">Letterlijk NL</th><th class="p-2">Correct NL</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b">
+                            <td class="p-2">Han talar <strong>sanning</strong>. ${audioBtn('Han talar sanning')}</td>
+                            <td class="p-2">Hij spreekt waarheid.</td>
+                            <td class="p-2">Hij spreekt <em>de</em> waarheid.</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="p-2">Ha <strong>tålamod</strong>! ${audioBtn('Ha tålamod')}</td>
+                            <td class="p-2">Heb geduld!</td>
+                            <td class="p-2">Heb <em>geduld</em>! (NL ook zonder)</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="p-2">Hon saknar <strong>erfarenhet</strong>. ${audioBtn('Hon saknar erfarenhet')}</td>
+                            <td class="p-2">Zij mist ervaring.</td>
+                            <td class="p-2">Zij mist <em>ervaring</em>. (NL ook zonder)</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="p-2">Jag behöver <strong>hjälp</strong>. ${audioBtn('Jag behöver hjälp')}</td>
+                            <td class="p-2">Ik heb hulp nodig.</td>
+                            <td class="p-2">Ik heb <em>hulp</em> nodig. (NL ook zonder)</td>
+                        </tr>
+                        <tr>
+                            <td class="p-2">Hon spelar <strong>piano</strong>. ${audioBtn('Hon spelar piano')}</td>
+                            <td class="p-2">Zij speelt piano.</td>
+                            <td class="p-2">Zij speelt <em>piano</em>. (NL ook zonder)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="text-lg font-bold mb-3">3. Bij vervoermiddelen met åka</h3>
+            <p class="mb-4">Na het werkwoord <strong>åka</strong> (gaan/reizen met):</p>
+            <div class="space-y-3 mb-6">
+                <div class="p-3 bg-gray-50 rounded-lg">
+                    <p class="font-medium">Hon åkte <strong>buss</strong> till jobbet. ${audioBtn('Hon åkte buss till jobbet')}</p>
+                    <p class="text-sm text-gray-600">Zij ging met <em>de</em> bus naar haar werk.</p>
+                </div>
+                <div class="p-3 bg-gray-50 rounded-lg">
+                    <p class="font-medium">Vi åker <strong>tåg</strong> till Stockholm. ${audioBtn('Vi åker tåg till Stockholm')}</p>
+                    <p class="text-sm text-gray-600">Wij gaan met <em>de</em> trein naar Stockholm.</p>
+                </div>
+                <div class="p-3 bg-gray-50 rounded-lg">
+                    <p class="font-medium">De åkte <strong>bil</strong>. ${audioBtn('De åkte bil')}</p>
+                    <p class="text-sm text-gray-600">Zij gingen met <em>de</em> auto.</p>
+                </div>
+                <div class="p-3 bg-gray-50 rounded-lg">
+                    <p class="font-medium">Kan du åka <strong>motorcykel</strong>? ${audioBtn('Kan du åka motorcykel')}</p>
+                    <p class="text-sm text-gray-600">Kun je <em>motorrijden</em>?</p>
+                </div>
+            </div>
+
+            <div class="p-3 bg-blue-50 rounded-lg text-sm mb-6">
+                <p class="font-medium text-blue-800 mb-1">Vergelijk:</p>
+                <ul class="space-y-1">
+                    <li>Åka <strong>buss</strong> ${audioBtn('åka buss')} = met de bus gaan (algemeen)</li>
+                    <li>Ta <strong>bussen</strong> ${audioBtn('ta bussen')} = de (specifieke) bus nemen</li>
+                </ul>
+            </div>
+
+            <h3 class="text-lg font-bold mb-3">Meer voorbeelden zonder lidwoord</h3>
+            <div class="grid grid-cols-1 gap-2 text-sm">
+                <div class="p-2 bg-clay-50 rounded flex items-center justify-between">
+                    <span>gå i <strong>skolan</strong> ${audioBtn('gå i skolan')}</span>
+                    <span class="text-gray-600">naar school gaan</span>
+                </div>
+                <div class="p-2 bg-clay-50 rounded flex items-center justify-between">
+                    <span>vara hemma från <strong>jobbet</strong> ${audioBtn('vara hemma från jobbet')}</span>
+                    <span class="text-gray-600">thuisblijven van het werk</span>
+                </div>
+                <div class="p-2 bg-clay-50 rounded flex items-center justify-between">
+                    <span>till <strong>fots</strong> ${audioBtn('till fots')}</span>
+                    <span class="text-gray-600">te voet</span>
+                </div>
+                <div class="p-2 bg-clay-50 rounded flex items-center justify-between">
+                    <span>på <strong>semester</strong> ${audioBtn('på semester')}</span>
+                    <span class="text-gray-600">op vakantie</span>
+                </div>
+            </div>
+        `
+    },
+    loanwordPlurals: {
+        name: 'Leenwoorden meervoud',
+        icon: 'fa-globe',
+        color: '#E89E8D',
+        description: 'Moderne leenwoorden en hun meervoud',
+        level: 'gevorderd',
+        content: `
+            <h3 class="text-lg font-bold mb-3">Leenwoorden in het Zweeds</h3>
+            <p class="mb-4">Moderne leenwoorden (vooral uit het Engels) volgen een interessante ontwikkeling in hun meervoudsvorming.</p>
+
+            <div class="bg-coral-50 rounded-xl p-4 mb-6">
+                <p class="font-medium text-coral-800 mb-2">Historische ontwikkeling</p>
+                <p class="text-sm">Engelse leenwoorden kregen eerst hun Engelse meervoud (-s), maar worden steeds vaker "gezweedst" met -r of -er.</p>
+            </div>
+
+            <h3 class="text-lg font-bold mb-3">Ontwikkeling: studio</h3>
+            <p class="mb-4">Een mooi voorbeeld van hoe leenwoorden zich aanpassen:</p>
+            <div class="overflow-x-auto -mx-4 px-4 mb-6">
+                <table class="w-full text-left text-sm min-w-[320px]">
+                    <thead class="bg-gray-100">
+                        <tr><th class="p-2">Fase</th><th class="p-2">Meervoud</th><th class="p-2">Status</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b">
+                            <td class="p-2">1. Oorspronkelijk Engels</td>
+                            <td class="p-2"><strong>studios</strong> ${audioBtn('studios')}</td>
+                            <td class="p-2">❌ Verouderd</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="p-2">2. Gezweedst (tussenfase)</td>
+                            <td class="p-2"><strong>studior</strong> ${audioBtn('studior')}</td>
+                            <td class="p-2">⚠️ Acceptabel maar gedateerd</td>
+                        </tr>
+                        <tr>
+                            <td class="p-2">3. Modern Zweeds</td>
+                            <td class="p-2"><strong>studiorna</strong> ${audioBtn('studiorna')}</td>
+                            <td class="p-2">✅ Voorkeur (bepaald meervoud)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="text-lg font-bold mb-3">Engelse leenwoorden: vermijden van -s</h3>
+            <p class="mb-4">De moderne trend is om het Engelse -s meervoud te vermijden en Zweedse uitgangen te gebruiken:</p>
+            <div class="overflow-x-auto -mx-4 px-4 mb-6">
+                <table class="w-full text-left text-sm min-w-[380px]">
+                    <thead class="bg-gray-100">
+                        <tr><th class="p-2">Enkelvoud</th><th class="p-2">Engels mv.</th><th class="p-2">Zweeds mv.</th><th class="p-2">NL</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b">
+                            <td class="p-2">en jeans ${audioBtn('en jeans')}</td>
+                            <td class="p-2">❌ jeans</td>
+                            <td class="p-2">✅ <strong>jeansen</strong> ${audioBtn('jeansen')}</td>
+                            <td class="p-2">de spijkerbroek</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="p-2">en fan ${audioBtn('en fan')}</td>
+                            <td class="p-2">❌ fans</td>
+                            <td class="p-2">✅ <strong>fansen</strong> ${audioBtn('fansen')}</td>
+                            <td class="p-2">de fans</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="p-2">en trend ${audioBtn('en trend')}</td>
+                            <td class="p-2">❌ trends</td>
+                            <td class="p-2">✅ <strong>trender</strong> ${audioBtn('trender')}</td>
+                            <td class="p-2">de trends</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="p-2">en influencer ${audioBtn('en influencer')}</td>
+                            <td class="p-2">❌ influencers</td>
+                            <td class="p-2">✅ <strong>influencers</strong> / <strong>influencern</strong> ${audioBtn('influencern')}</td>
+                            <td class="p-2">de influencers</td>
+                        </tr>
+                        <tr>
+                            <td class="p-2">en podcast ${audioBtn('en podcast')}</td>
+                            <td class="p-2">❌ podcasts</td>
+                            <td class="p-2">✅ <strong>poddar</strong> / <strong>podcaster</strong> ${audioBtn('poddar')}</td>
+                            <td class="p-2">de podcasts</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="p-3 bg-amber-50 rounded-lg text-sm mb-6">
+                <p class="font-medium text-amber-800 mb-1">Waarom deze verandering?</p>
+                <p>Het Zweeds heeft geen natuurlijk -s meervoud (alleen Groep 5 verliezen een -e). Daarom worden leenwoorden aangepast om te passen in de Zweedse meervoudsgroepen (meestal Groep 1: -or of Groep 3: -er).</p>
+            </div>
+
+            <h3 class="text-lg font-bold mb-3">Uitzonderingen: woorden die -s behouden</h3>
+            <p class="mb-4">Sommige woorden behouden hun Engelse meervoud, vooral:</p>
+            <ul class="space-y-2 mb-6 text-sm">
+                <li><strong>Afkortingen:</strong> SMS → SMS:ar ${audioBtn('SMSar')}, CD → CD:n / CD-skivor ${audioBtn('CDn')}</li>
+                <li><strong>Merknamen:</strong> iPhones, Mercedes (blijft vaak enkelvoud)</li>
+                <li><strong>Zeer recente woorden:</strong> selfies (maar al selfie-bilder)</li>
+            </ul>
+
+            <h3 class="text-lg font-bold mb-3">Praktische voorbeelden</h3>
+            <div class="space-y-3 mb-6">
+                <div class="p-3 bg-gray-50 rounded-lg">
+                    <p class="font-medium">Alla <strong>fansen</strong> köpte <strong>jeansen</strong>. ${audioBtn('Alla fansen köpte jeansen')}</p>
+                    <p class="text-sm text-gray-600">Alle fans kochten de spijkerbroeken.</p>
+                </div>
+                <div class="p-3 bg-gray-50 rounded-lg">
+                    <p class="font-medium">Hon lyssnar på många <strong>poddar</strong>. ${audioBtn('Hon lyssnar på många poddar')}</p>
+                    <p class="text-sm text-gray-600">Zij luistert naar veel podcasts.</p>
+                </div>
+                <div class="p-3 bg-gray-50 rounded-lg">
+                    <p class="font-medium">Vi följer de senaste <strong>trenderna</strong>. ${audioBtn('Vi följer de senaste trenderna')}</p>
+                    <p class="text-sm text-gray-600">Wij volgen de nieuwste trends.</p>
+                </div>
+            </div>
+
+            <h3 class="text-lg font-bold mb-3">Tips voor leerders</h3>
+            <div class="bg-blue-50 rounded-xl p-4">
+                <ul class="space-y-2 text-sm">
+                    <li>✅ Gebruik bij twijfel de Zweedse meervoudsuitgang (-ar, -er, -or)</li>
+                    <li>✅ Check Svenska Akademiens Ordlista (SAOL) voor moderne spelling</li>
+                    <li>✅ Let op dat jonge Zweden -s meervoud soms informeel gebruiken</li>
+                    <li>❌ Vermijd -s in formeel/geschreven Zweeds</li>
+                </ul>
+            </div>
+        `
+    },
+    articleAsPossessive: {
+        name: 'Bepaald lidwoord als bezit',
+        icon: 'fa-hand-holding-heart',
+        color: '#9FA8BC',
+        description: 'Lidwoord i.p.v. possessief bij lichaamsdelen',
+        level: 'gevorderd',
+        content: `
+            <h3 class="text-lg font-bold mb-3">Bepaald lidwoord in plaats van bezittelijk voornaamwoord</h3>
+            <p class="mb-4">Het Zweeds gebruikt vaak het <strong>bepaald lidwoord</strong> waar het Nederlands een <strong>bezittelijk voornaamwoord</strong> (mijn/jouw/zijn/haar) zou gebruiken.</p>
+
+            <div class="bg-lavender-grey-50 rounded-xl p-4 mb-6">
+                <p class="font-medium text-lavender-grey-800 mb-2">Basisregel</p>
+                <p class="text-sm">Als uit de context duidelijk is <strong>wiens</strong> lichaamsdeel/kledingstuk het is, gebruik dan het bepaald lidwoord in plaats van een bezittelijk voornaamwoord.</p>
+            </div>
+
+            <h3 class="text-lg font-bold mb-3">1. Bij lichaamsdelen</h3>
+            <p class="mb-4">Als het uit de context duidelijk is van wie het lichaamsdeel is:</p>
+            <div class="overflow-x-auto -mx-4 px-4 mb-6">
+                <table class="w-full text-left text-sm min-w-[400px]">
+                    <thead class="bg-gray-100">
+                        <tr><th class="p-2">Zweeds</th><th class="p-2">Letterlijk</th><th class="p-2">Correct NL</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b">
+                            <td class="p-2">Eva skar sig i <strong>handen</strong>. ${audioBtn('Eva skar sig i handen')}</td>
+                            <td class="p-2">Eva sneed zich in <em>de hand</em>.</td>
+                            <td class="p-2">Eva sneed zich in <em>haar hand</em>.</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="p-2">Han slog sig på <strong>huvudet</strong>. ${audioBtn('Han slog sig på huvudet')}</td>
+                            <td class="p-2">Hij sloeg zich op <em>het hoofd</em>.</td>
+                            <td class="p-2">Hij sloeg zich op <em>zijn hoofd</em>.</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="p-2">Hon tvättade <strong>händerna</strong>. ${audioBtn('Hon tvättade händerna')}</td>
+                            <td class="p-2">Zij waste <em>de handen</em>.</td>
+                            <td class="p-2">Zij waste <em>haar handen</em>.</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="p-2">Jag har ont i <strong>magen</strong>. ${audioBtn('Jag har ont i magen')}</td>
+                            <td class="p-2">Ik heb pijn in <em>de buik</em>.</td>
+                            <td class="p-2">Ik heb <em>buikpijn</em>.</td>
+                        </tr>
+                        <tr>
+                            <td class="p-2">Hon böjde <strong>knäna</strong>. ${audioBtn('Hon böjde knäna')}</td>
+                            <td class="p-2">Zij boog <em>de knieën</em>.</td>
+                            <td class="p-2">Zij boog <em>haar knieën</em>.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="p-3 bg-red-50 rounded-lg text-sm mb-6">
+                <p class="font-medium text-red-800 mb-1">❌ Veelgemaakte fout:</p>
+                <p class="mb-2">Gebruik van bezittelijk voornaamwoord wanneer het niet nodig is:</p>
+                <ul class="space-y-1">
+                    <li>❌ Eva skar sig i <strong>sin hand</strong>. (onnodig bezittelijk)</li>
+                    <li>✅ Eva skar sig i <strong>handen</strong>. (bepaald lidwoord volstaat)</li>
+                </ul>
+            </div>
+
+            <h3 class="text-lg font-bold mb-3">2. Bij kledingstukken</h3>
+            <p class="mb-4">Hetzelfde patroon geldt voor kleding:</p>
+            <div class="overflow-x-auto -mx-4 px-4 mb-6">
+                <table class="w-full text-left text-sm min-w-[400px]">
+                    <thead class="bg-gray-100">
+                        <tr><th class="p-2">Zweeds</th><th class="p-2">Letterlijk</th><th class="p-2">Correct NL</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b">
+                            <td class="p-2">Han knäppte upp <strong>rocken</strong>. ${audioBtn('Han knäppte upp rocken')}</td>
+                            <td class="p-2">Hij knoopte <em>de jas</em> open.</td>
+                            <td class="p-2">Hij knoopte <em>zijn jas</em> open.</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="p-2">Hon tog av sig <strong>skorna</strong>. ${audioBtn('Hon tog av sig skorna')}</td>
+                            <td class="p-2">Zij trok <em>de schoenen</em> uit.</td>
+                            <td class="p-2">Zij trok <em>haar schoenen</em> uit.</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="p-2">Jag glömde <strong>hatten</strong> hemma. ${audioBtn('Jag glömde hatten hemma')}</td>
+                            <td class="p-2">Ik vergat <em>de hoed</em> thuis.</td>
+                            <td class="p-2">Ik vergat <em>mijn hoed</em> thuis.</td>
+                        </tr>
+                        <tr>
+                            <td class="p-2">Barnet tappade <strong>handsken</strong>. ${audioBtn('Barnet tappade handsken')}</td>
+                            <td class="p-2">Het kind verloor <em>de handschoen</em>.</td>
+                            <td class="p-2">Het kind verloor <em>zijn handschoen</em>.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="text-lg font-bold mb-3">Voorwaarde: eigenaar moet duidelijk zijn</h3>
+            <div class="bg-blue-50 rounded-xl p-4 mb-6">
+                <p class="font-medium text-blue-800 mb-2">Let op de context!</p>
+                <div class="space-y-3 text-sm">
+                    <div class="p-2 bg-white rounded">
+                        <p class="font-medium mb-1">✅ Duidelijke eigenaar:</p>
+                        <p>Eva tvättade <strong>händerna</strong>. ${audioBtn('Eva tvättade händerna')}</p>
+                        <p class="text-gray-600 text-xs">Eva is subject → zij waste haar eigen handen</p>
+                    </div>
+                    <div class="p-2 bg-white rounded">
+                        <p class="font-medium mb-1">❌ Onduidelijke eigenaar - gebruik possessief:</p>
+                        <p>Eva tvättade <strong>hans händer</strong>. ${audioBtn('Eva tvättade hans händer')}</p>
+                        <p class="text-gray-600 text-xs">Eva waste iemand anders' handen → possessief nodig</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="text-lg font-bold mb-3">Meer voorbeelden</h3>
+            <div class="space-y-3 mb-6">
+                <div class="p-3 bg-gray-50 rounded-lg">
+                    <p class="font-medium">Hon borstade <strong>tänderna</strong>. ${audioBtn('Hon borstade tänderna')}</p>
+                    <p class="text-sm text-gray-600">Zij poetste haar tanden.</p>
+                </div>
+                <div class="p-3 bg-gray-50 rounded-lg">
+                    <p class="font-medium">Han skakade på <strong>huvudet</strong>. ${audioBtn('Han skakade på huvudet')}</p>
+                    <p class="text-sm text-gray-600">Hij schudde zijn hoofd.</p>
+                </div>
+                <div class="p-3 bg-gray-50 rounded-lg">
+                    <p class="font-medium">Jag blundade och slöt <strong>ögonen</strong>. ${audioBtn('Jag blundade och slöt ögonen')}</p>
+                    <p class="text-sm text-gray-600">Ik sloot mijn ogen dicht.</p>
+                </div>
+                <div class="p-3 bg-gray-50 rounded-lg">
+                    <p class="font-medium">Hon stoppade <strong>händerna</strong> i fickorna. ${audioBtn('Hon stoppade händerna i fickorna')}</p>
+                    <p class="text-sm text-gray-600">Zij stopte haar handen in haar zakken.</p>
+                </div>
+            </div>
+
+            <h3 class="text-lg font-bold mb-3">Samenvatting</h3>
+            <div class="overflow-x-auto -mx-4 px-4">
+                <table class="w-full text-left text-sm min-w-[320px]">
+                    <thead class="bg-gray-100">
+                        <tr><th class="p-2">Situatie</th><th class="p-2">Gebruik</th><th class="p-2">Voorbeeld</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b">
+                            <td class="p-2">Eigenaar duidelijk uit subject</td>
+                            <td class="p-2">✅ Bepaald lidwoord</td>
+                            <td class="p-2">Hon tvättade <strong>händerna</strong>.</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="p-2">Eigenaar is iemand anders</td>
+                            <td class="p-2">✅ Possessief</td>
+                            <td class="p-2">Hon tvättade <strong>hans händer</strong>.</td>
+                        </tr>
+                        <tr>
+                            <td class="p-2">Nadruk op bezit</td>
+                            <td class="p-2">✅ Possessief</td>
+                            <td class="p-2">Det är <strong>min hand</strong>! (nadruk)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        `
     }
 };
 
@@ -739,8 +1169,11 @@ function renderTopicList() {
                          style="background: ${topic.color};">
                         <i class="fas ${topic.icon} text-xl"></i>
                     </div>
-                    <div>
-                        <p class="font-bold text-gray-800">${escapeHtml(topic.name)}</p>
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2">
+                            <p class="font-bold text-gray-800">${escapeHtml(topic.name)}</p>
+                            ${topic.level === 'gevorderd' ? '<span class="text-xs px-2 py-0.5 rounded-full text-white" style="background-color: var(--scandi-teal);">gevorderd</span>' : ''}
+                        </div>
                         <p class="text-sm text-gray-600">${escapeHtml(topic.description)}</p>
                     </div>
                     <i class="fas fa-chevron-right text-gray-400 ml-auto"></i>

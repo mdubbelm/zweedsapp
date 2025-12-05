@@ -43,8 +43,9 @@ export function renderOnboarding(state) {
                     </h2>
                     <div class="bg-white rounded-2xl p-5 shadow-sm border border-gray-100">
                         <div class="flex items-center gap-4 mb-4">
-                            <div class="w-16 h-16 bg-amber-100 rounded-xl flex items-center justify-center">
-                                <i class="fas fa-calendar-check text-2xl text-amber-600"></i>
+                            <div class="w-16 h-16 rounded-xl flex items-center justify-center"
+                                 style="background-color: var(--scandi-amber);">
+                                <i class="fas fa-calendar-check text-2xl text-white"></i>
                             </div>
                             <div>
                                 <p class="font-semibold text-gray-800">10 zinnen per dag</p>

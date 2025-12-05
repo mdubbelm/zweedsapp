@@ -367,6 +367,90 @@ shopping:     'clay'          // Kitchen, hygge
 ❌ **Wrong**: Choosing colors based on brightness/pop
 ✅ **Right**: Choosing colors based on natural materials and Nordic aesthetics
 
+### ⛔ VERBODEN Tailwind Classes
+
+**GEBRUIK NOOIT deze Tailwind color classes - ze zijn niet onderdeel van het design systeem:**
+
+```
+❌ VERBODEN (niet-Scandinavische kleuren):
+bg-amber-*    text-amber-*     → Gebruik: style="background-color: var(--scandi-amber)"
+bg-blue-*     text-blue-*      → Gebruik: var(--scandi-blue)
+bg-green-*    text-green-*     → Gebruik: var(--scandi-green)
+bg-teal-*     text-teal-*      → Gebruik: var(--scandi-teal)
+bg-red-*      text-red-*       → Gebruik: var(--scandi-red)
+bg-yellow-*   text-yellow-*    → Gebruik: var(--scandi-amber)
+bg-orange-*   text-orange-*    → Gebruik: var(--coral) of var(--clay)
+bg-pink-*     text-pink-*      → Gebruik: var(--dusty-rose)
+bg-purple-*   text-purple-*    → NIET GEBRUIKEN (geen Scandinavische equivalent)
+bg-indigo-*   text-indigo-*    → NIET GEBRUIKEN
+bg-violet-*   text-violet-*    → NIET GEBRUIKEN
+
+✅ TOEGESTAAN (neutrale Tailwind classes):
+bg-white, bg-gray-50, bg-gray-100  → Achtergronden
+text-gray-500 t/m text-gray-800    → Tekst (WCAG compliant)
+text-white                          → Op gekleurde achtergronden
+border-gray-100, border-gray-200   → Subtiele borders
+```
+
+**Waarom?** Tailwind kleuren zijn niet afgestemd op:
+- Het Scandinavische design systeem
+- WCAG contrast requirements in onze context
+- De bestaande kleurharmonie
+
+### ⛔ VERBODEN UI Patterns
+
+**GEBRUIK NOOIT deze UI patterns:**
+
+| Pattern | Waarom verboden | Alternatief |
+|---------|-----------------|-------------|
+| **Modal overlay** | Blur verbergt context, focus trap complex, slechte mobile UX | Inline scherm (volledig scherm) |
+| **Modal met backdrop-blur** | Gebruiker ziet niet waar arrows/spotlights naar wijzen | Inline content met scroll |
+| **Multi-step wizard (4+ stappen)** | ~10% drop-off per stap, completion rate ~40% | Single scrollable page |
+| **Spotlight/tooltip tour** | Vereist complexe ARIA, werkt niet op mobile | Inline welcome screen |
+| **Auto-switching tabs** | Disoriënterend, toegankelijkheidsprobleem | Laat gebruiker navigeren |
+
+**Correct pattern voor onboarding/uitleg:**
+```javascript
+// ✅ GOED: Inline scrollable page
+<div class="fixed inset-0 z-50 bg-gray-50 overflow-y-auto">
+    <article class="max-w-lg mx-auto p-6 pb-32">
+        <!-- Gewone HTML secties, native scroll -->
+    </article>
+</div>
+
+// ❌ FOUT: Modal met overlay
+<div class="fixed inset-0 bg-black/60 backdrop-blur-sm">
+    <div class="modal">...</div>
+</div>
+```
+
+### ✅ UI Code Checklist (VERPLICHT)
+
+**Doorloop deze checklist VOORDAT je UI code commit:**
+
+```markdown
+## Kleuren
+- [ ] Geen Tailwind color classes gebruikt (bg-blue-*, text-amber-*, etc.)
+- [ ] Alle kleuren via CSS variables (var(--scandi-*))
+- [ ] Text contrast minimaal 4.5:1 (gebruik text-gray-500 of donkerder)
+- [ ] Icons op gekleurde achtergrond: witte icon, niet gekleurd op licht
+
+## Patterns
+- [ ] Geen modals met backdrop-blur
+- [ ] Geen multi-step wizards (gebruik single scrollable page)
+- [ ] Geen auto-switching tabs of content
+
+## Toegankelijkheid
+- [ ] Touch targets minimaal 44x44px
+- [ ] Focus states zichtbaar
+- [ ] Native HTML elementen (button, niet div met onclick)
+- [ ] Labels bij form inputs
+
+## Layout
+- [ ] Content niet verborgen achter navigatie (pb-24 of meer)
+- [ ] Scrollable content waar nodig
+```
+
 ### How to Add a New Category Color
 
 1. **Consult UI Designer agent**:

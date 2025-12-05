@@ -19,7 +19,7 @@ export function renderLogin() {
                 <form class="space-y-4" action="#" method="post" onsubmit="event.preventDefault(); app.handleLogin();">
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2" for="email">Email</label>
-                        <input type="email" id="email" name="email" autocomplete="username" placeholder="jouw@email.com"
+                        <input type="email" id="email" name="email" autocomplete="email" placeholder="jouw@email.com"
                                required
                                class="w-full p-4 border-2 border-gray-200 rounded-xl font-medium">
                     </div>
@@ -139,7 +139,7 @@ export function toggleSignUp(event) {
     } else {
         // Switch to login mode
         displayNameField.style.display = 'none';
-        emailField.setAttribute('autocomplete', 'username');
+        emailField.setAttribute('autocomplete', 'email');
         passwordField.setAttribute('autocomplete', 'current-password');
         displayNameInput.removeAttribute('required');
         button.innerHTML = '<i class="fas fa-user-plus mr-2"></i>Nog geen account? Registreer';

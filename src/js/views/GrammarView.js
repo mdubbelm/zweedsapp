@@ -288,31 +288,56 @@ const grammarTopics = {
         content: `
             <h3 class="text-lg font-bold mb-3">Tegenwoordige tijd</h3>
             <p class="mb-4">In het Zweeds eindigen de meeste werkwoorden op <strong>-ar</strong>, <strong>-er</strong>, of <strong>-r</strong>:</p>
-            <ul class="space-y-2 mb-6">
-                <li><strong>att tala → talar</strong> ${audioBtn('att tala, talar')} (praten → praat)</li>
-                <li><strong>att läsa → läser</strong> ${audioBtn('att läsa, läser')} (lezen → leest)</li>
-                <li><strong>att bo → bor</strong> ${audioBtn('att bo, bor')} (wonen → woont)</li>
+
+            <h4 class="font-semibold text-gray-700 mb-2">Groep 1: -ar werkwoorden</h4>
+            <p class="text-sm text-gray-600 mb-2">Stam eindigt op medeklinker, krijgt -ar</p>
+            <ul class="space-y-1 mb-4">
+                <li><strong>att tala → talar</strong> ${audioBtn('att tala, talar')} (praten)</li>
+                <li><strong>att arbeta → arbetar</strong> ${audioBtn('att arbeta, arbetar')} (werken)</li>
+                <li><strong>att fråga → frågar</strong> ${audioBtn('att fråga, frågar')} (vragen)</li>
+                <li><strong>att stanna → stannar</strong> ${audioBtn('att stanna, stannar')} (blijven)</li>
+            </ul>
+
+            <h4 class="font-semibold text-gray-700 mb-2">Groep 2: -er werkwoorden</h4>
+            <p class="text-sm text-gray-600 mb-2">Stam eindigt op medeklinker, krijgt -er</p>
+            <ul class="space-y-1 mb-4">
+                <li><strong>att läsa → läser</strong> ${audioBtn('att läsa, läser')} (lezen)</li>
+                <li><strong>att skriva → skriver</strong> ${audioBtn('att skriva, skriver')} (schrijven)</li>
+                <li><strong>att köpa → köper</strong> ${audioBtn('att köpa, köper')} (kopen)</li>
+                <li><strong>att äta → äter</strong> ${audioBtn('att äta, äter')} (eten)</li>
+            </ul>
+
+            <h4 class="font-semibold text-gray-700 mb-2">Groep 3: korte werkwoorden</h4>
+            <p class="text-sm text-gray-600 mb-2">Stam eindigt op klinker, krijgt alleen -r</p>
+            <ul class="space-y-1 mb-6">
+                <li><strong>att bo → bor</strong> ${audioBtn('att bo, bor')} (wonen)</li>
+                <li><strong>att tro → tror</strong> ${audioBtn('att tro, tror')} (geloven)</li>
             </ul>
 
             <h3 class="text-lg font-bold mb-3">Verleden tijd</h3>
             <p class="mb-4">De meeste werkwoorden krijgen <strong>-de</strong> of <strong>-te</strong>:</p>
             <ul class="space-y-2 mb-6">
-                <li><strong>talar → talade</strong> ${audioBtn('talar, talade')} (praatte)</li>
-                <li><strong>läser → läste</strong> ${audioBtn('läser, läste')} (las)</li>
+                <li><strong>talar → talade</strong> ${audioBtn('talar, talade')} (praatte) - Groep 1</li>
+                <li><strong>läser → läste</strong> ${audioBtn('läser, läste')} (las) - Groep 2</li>
+                <li><strong>bor → bodde</strong> ${audioBtn('bor, bodde')} (woonde) - Groep 3</li>
             </ul>
 
-            <h3 class="text-lg font-bold mb-3">Voorbeelden</h3>
-            <table class="w-full text-left">
-                <thead class="bg-gray-100">
-                    <tr><th class="p-2">Infinitief</th><th class="p-2">Heden</th><th class="p-2">Verleden</th></tr>
-                </thead>
-                <tbody>
-                    <tr class="border-b"><td class="p-2">att vara ${audioBtn('att vara')}</td><td class="p-2">är ${audioBtn('är')}</td><td class="p-2">var ${audioBtn('var')}</td></tr>
-                    <tr class="border-b"><td class="p-2">att ha ${audioBtn('att ha')}</td><td class="p-2">har ${audioBtn('har')}</td><td class="p-2">hade ${audioBtn('hade')}</td></tr>
-                    <tr class="border-b"><td class="p-2">att gå ${audioBtn('att gå')}</td><td class="p-2">går ${audioBtn('går')}</td><td class="p-2">gick ${audioBtn('gick')}</td></tr>
-                    <tr><td class="p-2">att komma ${audioBtn('att komma')}</td><td class="p-2">kommer ${audioBtn('kommer')}</td><td class="p-2">kom ${audioBtn('kom')}</td></tr>
-                </tbody>
-            </table>
+            <h3 class="text-lg font-bold mb-3">Onregelmatige werkwoorden</h3>
+            <p class="mb-4">Deze werkwoorden volgen geen vast patroon en moet je uit je hoofd leren:</p>
+            <div class="overflow-x-auto -mx-4 px-4">
+                <table class="w-full text-left text-sm min-w-[320px]">
+                    <thead class="bg-gray-100">
+                        <tr><th class="p-2">Infinitief</th><th class="p-2">Heden</th><th class="p-2">Verleden</th><th class="p-2">NL</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b"><td class="p-2">att vara ${audioBtn('att vara')}</td><td class="p-2">är</td><td class="p-2">var</td><td class="p-2">zijn</td></tr>
+                        <tr class="border-b"><td class="p-2">att ha ${audioBtn('att ha')}</td><td class="p-2">har</td><td class="p-2">hade</td><td class="p-2">hebben</td></tr>
+                        <tr class="border-b"><td class="p-2">att gå ${audioBtn('att gå')}</td><td class="p-2">går</td><td class="p-2">gick</td><td class="p-2">gaan</td></tr>
+                        <tr class="border-b"><td class="p-2">att komma ${audioBtn('att komma')}</td><td class="p-2">kommer</td><td class="p-2">kom</td><td class="p-2">komen</td></tr>
+                        <tr><td class="p-2">att se ${audioBtn('att se')}</td><td class="p-2">ser</td><td class="p-2">såg</td><td class="p-2">zien</td></tr>
+                    </tbody>
+                </table>
+            </div>
         `
     },
     pronouns: {

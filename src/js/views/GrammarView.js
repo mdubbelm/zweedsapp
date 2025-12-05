@@ -947,15 +947,9 @@ const grammarTopics = {
                     </thead>
                     <tbody>
                         <tr class="border-b">
-                            <td class="p-2">en jeans ${audioBtn('en jeans')}</td>
-                            <td class="p-2">❌ jeans</td>
-                            <td class="p-2">✅ <strong>jeansen</strong> ${audioBtn('jeansen')}</td>
-                            <td class="p-2">de spijkerbroek</td>
-                        </tr>
-                        <tr class="border-b">
-                            <td class="p-2">en fan ${audioBtn('en fan')}</td>
-                            <td class="p-2">❌ fans</td>
-                            <td class="p-2">✅ <strong>fansen</strong> ${audioBtn('fansen')}</td>
+                            <td class="p-2">ett fan ${audioBtn('ett fan')}</td>
+                            <td class="p-2">⚠️ fans</td>
+                            <td class="p-2">✅ <strong>fans</strong> / <strong>fansen</strong> ${audioBtn('fansen')}</td>
                             <td class="p-2">de fans</td>
                         </tr>
                         <tr class="border-b">
@@ -966,8 +960,8 @@ const grammarTopics = {
                         </tr>
                         <tr class="border-b">
                             <td class="p-2">en influencer ${audioBtn('en influencer')}</td>
-                            <td class="p-2">❌ influencers</td>
-                            <td class="p-2">✅ <strong>influencers</strong> / <strong>influencern</strong> ${audioBtn('influencern')}</td>
+                            <td class="p-2">⚠️ influencers</td>
+                            <td class="p-2">✅ <strong>influencers</strong> / <strong>influencerna</strong> ${audioBtn('influencerna')}</td>
                             <td class="p-2">de influencers</td>
                         </tr>
                         <tr>
@@ -996,8 +990,8 @@ const grammarTopics = {
             <h3 class="text-lg font-bold mb-3">Praktische voorbeelden</h3>
             <div class="space-y-3 mb-6">
                 <div class="p-3 bg-gray-50 rounded-lg">
-                    <p class="font-medium">Alla <strong>fansen</strong> köpte <strong>jeansen</strong>. ${audioBtn('Alla fansen köpte jeansen')}</p>
-                    <p class="text-sm text-gray-600">Alle fans kochten de spijkerbroeken.</p>
+                    <p class="font-medium">Alla <strong>fansen</strong> följde <strong>trenderna</strong>. ${audioBtn('Alla fansen följde trenderna')}</p>
+                    <p class="text-sm text-gray-600">Alle fans volgden de trends.</p>
                 </div>
                 <div class="p-3 bg-gray-50 rounded-lg">
                     <p class="font-medium">Hon lyssnar på många <strong>poddar</strong>. ${audioBtn('Hon lyssnar på många poddar')}</p>

@@ -1169,8 +1169,11 @@ function renderTopicList() {
                          style="background: ${topic.color};">
                         <i class="fas ${topic.icon} text-xl"></i>
                     </div>
-                    <div>
-                        <p class="font-bold text-gray-800">${escapeHtml(topic.name)}</p>
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2">
+                            <p class="font-bold text-gray-800">${escapeHtml(topic.name)}</p>
+                            ${topic.level === 'gevorderd' ? '<span class="text-xs px-2 py-0.5 rounded-full text-white" style="background-color: var(--scandi-teal);">gevorderd</span>' : ''}
+                        </div>
                         <p class="text-sm text-gray-600">${escapeHtml(topic.description)}</p>
                     </div>
                     <i class="fas fa-chevron-right text-gray-400 ml-auto"></i>

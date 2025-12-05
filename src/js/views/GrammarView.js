@@ -104,10 +104,43 @@ const grammarTopics = {
 
             <h3 class="text-lg font-bold mb-3">Samengestelde naamwoorden</h3>
             <p class="mb-4">Bij samengestelde naamwoorden bepaalt het <strong>laatste deel</strong> het geslacht:</p>
-            <ul class="space-y-2 text-sm">
-                <li><strong>blod</strong> (ett) + <strong>grupp</strong> (en) = <strong>en blodgrupp</strong> ${audioBtn('en blodgrupp')} (een bloedgroep)</li>
-                <li><strong>bok</strong> (en) + <strong>handel</strong> (en) = <strong>en bokhandel</strong> ${audioBtn('en bokhandel')} (een boekhandel)</li>
-            </ul>
+
+            <div class="bg-blue-50 rounded-xl p-4 mb-4">
+                <p class="font-medium text-blue-800 mb-2">Basisregel</p>
+                <ul class="space-y-2 text-sm">
+                    <li><strong>blod</strong> (ett) + <strong>grupp</strong> (en) = <strong>en blodgrupp</strong> ${audioBtn('en blodgrupp')} (bloedgroep)</li>
+                    <li><strong>bok</strong> (en) + <strong>handel</strong> (en) = <strong>en bokhandel</strong> ${audioBtn('en bokhandel')} (boekhandel)</li>
+                    <li><strong>jul</strong> (en) + <strong>bord</strong> (ett) = <strong>ett julbord</strong> ${audioBtn('ett julbord')} (kerstbuffet)</li>
+                </ul>
+            </div>
+
+            <h4 class="font-bold mb-2">Veel voorkomende voorbeelden</h4>
+            <div class="grid grid-cols-2 gap-2 mb-4 text-sm">
+                <div class="p-2 bg-gray-50 rounded">tandläkare ${audioBtn('tandläkare')} - tandarts</div>
+                <div class="p-2 bg-gray-50 rounded">barnbok ${audioBtn('barnbok')} - kinderboek</div>
+                <div class="p-2 bg-gray-50 rounded">kaffekopp ${audioBtn('kaffekopp')} - koffiekop</div>
+                <div class="p-2 bg-gray-50 rounded">solsken ${audioBtn('solsken')} - zonneschijn</div>
+                <div class="p-2 bg-gray-50 rounded">bondgård ${audioBtn('bondgård')} - boerderij</div>
+                <div class="p-2 bg-gray-50 rounded">jordgubbe ${audioBtn('jordgubbe')} - aardbei</div>
+            </div>
+
+            <h4 class="font-bold mb-2">Verbindingsletters</h4>
+            <p class="text-sm mb-3">Soms komt er een verbindingsletter tussen de delen:</p>
+            <div class="overflow-x-auto -mx-4 px-4">
+                <table class="w-full text-left text-sm min-w-[320px]">
+                    <thead class="bg-gray-100">
+                        <tr><th class="p-2">Verbinding</th><th class="p-2">Voorbeeld</th><th class="p-2">NL</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b"><td class="p-2">-s-</td><td class="p-2">arbetsdag ${audioBtn('arbetsdag')}</td><td class="p-2">werkdag</td></tr>
+                        <tr class="border-b"><td class="p-2">-s-</td><td class="p-2">tidningsartikel ${audioBtn('tidningsartikel')}</td><td class="p-2">krantenartikel</td></tr>
+                        <tr class="border-b"><td class="p-2">-o-</td><td class="p-2">landsväg ${audioBtn('landsväg')}</td><td class="p-2">landweg</td></tr>
+                        <tr class="border-b"><td class="p-2">-u-</td><td class="p-2">landstuga ${audioBtn('landstuga')}</td><td class="p-2">landhuis</td></tr>
+                        <tr><td class="p-2">(geen)</td><td class="p-2">skolbok ${audioBtn('skolbok')}</td><td class="p-2">schoolboek</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <p class="text-xs text-gray-600 mt-2">Tip: De -s- verbinding is het meest voorkomend, vooral na woorden op -tion, -ning, -het.</p>
         `
     },
     plurals: {
@@ -153,7 +186,14 @@ const grammarTopics = {
                             <tr><td class="p-2">en syster ${audioBtn('en syster')}</td><td class="p-2">två systrar ${audioBtn('två systrar')}</td><td class="p-2">zusters</td></tr>
                         </tbody>
                     </table>
-                    <p class="text-xs text-blue-600 mt-2">Let op klinkerwisseling: en dotter → två döttrar ${audioBtn('två döttrar')}, en moder → två mödrar ${audioBtn('två mödrar')}</p>
+                    <div class="mt-3 p-3 bg-blue-100 rounded-lg">
+                        <p class="text-xs font-medium text-blue-800 mb-2">🔄 Klinkerwisselingen in Groep 2:</p>
+                        <ul class="text-xs text-blue-700 space-y-1">
+                            <li>en dotter → två <strong>dö</strong>ttrar ${audioBtn('två döttrar')} (o→ö)</li>
+                            <li>en moder → två <strong>mö</strong>drar ${audioBtn('två mödrar')} (o→ö)</li>
+                            <li>en broder → två <strong>brö</strong>der ${audioBtn('två bröder')} (o→ö)</li>
+                        </ul>
+                    </div>
                 </div>
 
                 <!-- Groep 3 -->
@@ -172,7 +212,19 @@ const grammarTopics = {
                             <tr><td class="p-2">ett museum ${audioBtn('ett museum')}</td><td class="p-2">två museer ${audioBtn('två museer')}</td><td class="p-2">musea</td></tr>
                         </tbody>
                     </table>
-                    <p class="text-xs text-amber-600 mt-2">Veel klinkerwisselingen: en hand → två händer ${audioBtn('två händer')}, en stad → två städer ${audioBtn('två städer')}, en man → två män ${audioBtn('två män')}</p>
+                    <div class="mt-3 p-3 bg-amber-100 rounded-lg">
+                        <p class="text-xs font-medium text-amber-800 mb-2">🔄 Klinkerwisselingen in Groep 3:</p>
+                        <ul class="text-xs text-amber-700 space-y-1">
+                            <li>en hand → två <strong>hä</strong>nder ${audioBtn('två händer')} (a→ä)</li>
+                            <li>en tand → två <strong>tä</strong>nder ${audioBtn('två tänder')} (a→ä)</li>
+                            <li>en strand → två <strong>strä</strong>nder ${audioBtn('två stränder')} (a→ä)</li>
+                            <li>en stad → två <strong>stä</strong>der ${audioBtn('två städer')} (a→ä)</li>
+                            <li>en man → två <strong>män</strong> ${audioBtn('två män')} (a→ä, geen -er!)</li>
+                            <li>en gås → två <strong>gä</strong>ss ${audioBtn('två gäss')} (å→ä)</li>
+                            <li>en fot → två <strong>fö</strong>tter ${audioBtn('två fötter')} (o→ö)</li>
+                            <li>en bok → två <strong>bö</strong>cker ${audioBtn('två böcker')} (o→ö)</li>
+                        </ul>
+                    </div>
                 </div>
 
                 <!-- Groep 4 -->
@@ -558,6 +610,115 @@ const grammarTopics = {
                 <li><strong>Talar du svenska?</strong> ${audioBtn('Talar du svenska')} - Spreek je Zweeds?</li>
                 <li><strong>Är du hungrig?</strong> ${audioBtn('Är du hungrig')} - Heb je honger?</li>
                 <li><strong>Kommer du imorgon?</strong> ${audioBtn('Kommer du imorgon')} - Kom je morgen?</li>
+            </ul>
+        `
+    },
+    genitive: {
+        name: 'Genitief (bezits-s)',
+        icon: 'fa-user-tag',
+        color: '#6B8CAE',
+        description: 'Bezit uitdrukken met -s',
+        content: `
+            <h3 class="text-lg font-bold mb-3">De Zweedse genitief</h3>
+            <p class="mb-4">In het Zweeds wordt bezit uitgedrukt door een <strong>-s</strong> aan het bezittende woord toe te voegen. Dit is veel simpeler dan in het Nederlands!</p>
+
+            <div class="bg-blue-50 rounded-xl p-4 mb-6">
+                <p class="font-medium text-blue-800 mb-2">Basisregel</p>
+                <p class="text-sm">Voeg <strong>-s</strong> toe aan het woord dat bezit (geen apostrof!):</p>
+                <ul class="mt-2 space-y-1 text-sm">
+                    <li><strong>Karins bok</strong> ${audioBtn('Karins bok')} - Karins boek</li>
+                    <li><strong>Rolfs far</strong> ${audioBtn('Rolfs far')} - Rolfs vader</li>
+                    <li><strong>Katten</strong>s mat ${audioBtn('Kattens mat')} - Het eten van de kat</li>
+                </ul>
+            </div>
+
+            <h3 class="text-lg font-bold mb-3">Voorbeelden met namen</h3>
+            <table class="w-full text-left mb-6">
+                <thead class="bg-gray-100">
+                    <tr><th class="p-2">Zweeds</th><th class="p-2">Nederlands</th></tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b"><td class="p-2">Annas hund ${audioBtn('Annas hund')}</td><td class="p-2">Anna's hond</td></tr>
+                    <tr class="border-b"><td class="p-2">Eriks bil ${audioBtn('Eriks bil')}</td><td class="p-2">Eriks auto</td></tr>
+                    <tr class="border-b"><td class="p-2">mammas väska ${audioBtn('mammas väska')}</td><td class="p-2">mama's tas</td></tr>
+                    <tr class="border-b"><td class="p-2">pappas telefon ${audioBtn('pappas telefon')}</td><td class="p-2">papa's telefoon</td></tr>
+                    <tr><td class="p-2">Sveriges huvudstad ${audioBtn('Sveriges huvudstad')}</td><td class="p-2">de hoofdstad van Zweden</td></tr>
+                </tbody>
+            </table>
+
+            <h3 class="text-lg font-bold mb-3">Met zelfstandige naamwoorden</h3>
+            <div class="space-y-3 mb-6">
+                <div class="p-3 bg-gray-50 rounded-lg">
+                    <p class="font-medium">flickans katt ${audioBtn('flickans katt')}</p>
+                    <p class="text-sm text-gray-600">de kat van het meisje</p>
+                </div>
+                <div class="p-3 bg-gray-50 rounded-lg">
+                    <p class="font-medium">husets tak ${audioBtn('husets tak')}</p>
+                    <p class="text-sm text-gray-600">het dak van het huis</p>
+                </div>
+                <div class="p-3 bg-gray-50 rounded-lg">
+                    <p class="font-medium">barnens rum ${audioBtn('barnens rum')}</p>
+                    <p class="text-sm text-gray-600">de kamer van de kinderen</p>
+                </div>
+                <div class="p-3 bg-gray-50 rounded-lg">
+                    <p class="font-medium">stadens centrum ${audioBtn('stadens centrum')}</p>
+                    <p class="text-sm text-gray-600">het centrum van de stad</p>
+                </div>
+            </div>
+
+            <h3 class="text-lg font-bold mb-3">Uitzondering: woorden op -s, -x, -z</h3>
+            <div class="bg-amber-50 rounded-xl p-4 mb-6">
+                <p class="text-sm mb-2">Bij woorden die al eindigen op <strong>-s</strong>, <strong>-x</strong> of <strong>-z</strong> wordt <strong>geen extra -s</strong> toegevoegd:</p>
+                <ul class="space-y-2 text-sm">
+                    <li><strong>Frans hus</strong> ${audioBtn('Frans hus')} - Frans' huis (niet: Franss)</li>
+                    <li><strong>Max bil</strong> ${audioBtn('Max bil')} - Max' auto (niet: Maxs)</li>
+                    <li><strong>Lars väska</strong> ${audioBtn('Lars väska')} - Lars' tas</li>
+                </ul>
+                <p class="text-xs text-amber-700 mt-3">In formeel/ouderwets Zweeds zie je soms een apostrof: <em>Frans' hus</em>, maar dit is optioneel.</p>
+            </div>
+
+            <h3 class="text-lg font-bold mb-3">Vaste uitdrukkingen met genitief</h3>
+            <div class="grid grid-cols-1 gap-2 mb-6 text-sm">
+                <div class="p-2 bg-teal-50 rounded flex items-center justify-between">dagens rätt ${audioBtn('dagens rätt')} - dagschotel</div>
+                <div class="p-2 bg-teal-50 rounded flex items-center justify-between">veckans erbjudande ${audioBtn('veckans erbjudande')} - weekaanbieding</div>
+                <div class="p-2 bg-teal-50 rounded flex items-center justify-between">årets bästa film ${audioBtn('årets bästa film')} - beste film van het jaar</div>
+                <div class="p-2 bg-teal-50 rounded flex items-center justify-between">världens största ${audioBtn('världens största')} - 's werelds grootste</div>
+                <div class="p-2 bg-teal-50 rounded flex items-center justify-between">för Guds skull ${audioBtn('för Guds skull')} - in godsnaam</div>
+            </div>
+
+            <h3 class="text-lg font-bold mb-3">Genitief vs. possessief pronomen</h3>
+            <p class="mb-4 text-sm">Let op het verschil:</p>
+            <div class="overflow-x-auto -mx-4 px-4 mb-6">
+                <table class="w-full text-left text-sm min-w-[320px]">
+                    <thead class="bg-gray-100">
+                        <tr><th class="p-2">Genitief</th><th class="p-2">Possessief</th><th class="p-2">Verschil</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr class="border-b">
+                            <td class="p-2">Karins bok ${audioBtn('Karins bok')}</td>
+                            <td class="p-2">hennes bok ${audioBtn('hennes bok')}</td>
+                            <td class="p-2">Karin specifiek vs. "haar" algemeen</td>
+                        </tr>
+                        <tr class="border-b">
+                            <td class="p-2">flickans rum ${audioBtn('flickans rum')}</td>
+                            <td class="p-2">hennes rum ${audioBtn('hennes rum')}</td>
+                            <td class="p-2">"van het meisje" vs. "haar"</td>
+                        </tr>
+                        <tr>
+                            <td class="p-2">Eriks bil ${audioBtn('Eriks bil')}</td>
+                            <td class="p-2">hans bil ${audioBtn('hans bil')}</td>
+                            <td class="p-2">Erik specifiek vs. "zijn" algemeen</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h3 class="text-lg font-bold mb-3">Oefenzinnen</h3>
+            <ul class="space-y-2">
+                <li><strong>Det är Marias nya hus.</strong> ${audioBtn('Det är Marias nya hus')} - Dit is Maria's nieuwe huis.</li>
+                <li><strong>Hundens mat är slut.</strong> ${audioBtn('Hundens mat är slut')} - Het hondenvoer is op.</li>
+                <li><strong>Jag gillar Sveriges natur.</strong> ${audioBtn('Jag gillar Sveriges natur')} - Ik hou van de Zweedse natuur.</li>
+                <li><strong>Vad är bilens färg?</strong> ${audioBtn('Vad är bilens färg')} - Wat is de kleur van de auto?</li>
             </ul>
         `
     }

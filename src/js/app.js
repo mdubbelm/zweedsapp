@@ -311,6 +311,22 @@ export class SwedishApp {
         this.state.completedPhrases = result.completedPhrases;
         this.state.phraseHistory = result.phraseHistory;
 
+        // Sync daily program state from Supabase (for cross-device sync)
+        const today = new Date().toISOString().split('T')[0];
+        if (this.state.stats.dailyProgramDate === today) {
+            // Same day - restore daily progress from Supabase
+            this.state.dailyCompletedPhrases = this.state.stats.dailyCompletedPhrases || [];
+            // Also update localStorage for consistency
+            localStorage.setItem(
+                'dailyCompletedPhrases',
+                JSON.stringify(this.state.dailyCompletedPhrases)
+            );
+        } else {
+            // New day or no data - reset daily progress
+            this.state.dailyCompletedPhrases = [];
+            localStorage.setItem('dailyCompletedPhrases', '[]');
+        }
+
         if (result.isNewUser) {
             await this.saveUserData();
         }
@@ -323,6 +339,11 @@ export class SwedishApp {
         if (!this.state.user) {
             return;
         }
+
+        // Sync daily program state to stats before saving (for cross-device sync)
+        const today = new Date().toISOString().split('T')[0];
+        this.state.stats.dailyProgramDate = today;
+        this.state.stats.dailyCompletedPhrases = this.state.dailyCompletedPhrases || [];
 
         await saveUserData(
             this.state.user.id,
@@ -1550,6 +1571,17 @@ export class SwedishApp {
 
         const phraseId = `${this.state.currentCategory}-${phrase.id}`;
 
+        // Track daily completion separately (for daily program progress)
+        // This resets each day, unlike completedPhrases which is cumulative
+        // NOTE: Must be BEFORE saveUserData() so daily progress syncs to Supabase
+        if (this.state.fromDailyProgram && !this.state.dailyCompletedPhrases.includes(phraseId)) {
+            this.state.dailyCompletedPhrases.push(phraseId);
+            localStorage.setItem(
+                'dailyCompletedPhrases',
+                JSON.stringify(this.state.dailyCompletedPhrases)
+            );
+        }
+
         if (!this.state.completedPhrases.includes(phraseId)) {
             this.state.completedPhrases.push(phraseId);
 
@@ -1566,16 +1598,9 @@ export class SwedishApp {
 
             this.checkStreak();
             await this.saveUserData();
-        }
-
-        // Track daily completion separately (for daily program progress)
-        // This resets each day, unlike completedPhrases which is cumulative
-        if (this.state.fromDailyProgram && !this.state.dailyCompletedPhrases.includes(phraseId)) {
-            this.state.dailyCompletedPhrases.push(phraseId);
-            localStorage.setItem(
-                'dailyCompletedPhrases',
-                JSON.stringify(this.state.dailyCompletedPhrases)
-            );
+        } else if (this.state.fromDailyProgram) {
+            // Already completed phrase, but still need to sync daily progress
+            await this.saveUserData();
         }
 
         // If from Daily Program, navigate to next uncompleted daily phrase
@@ -1788,6 +1813,21 @@ export class SwedishApp {
 
         if (isCorrect) {
             const phraseId = `${this.state.writingCategory || this.state.currentCategory}-${phrase.id}`;
+
+            // Track daily completion separately (for daily program progress)
+            // This resets each day, unlike completedPhrases which is cumulative
+            // NOTE: Must be BEFORE saveUserData() so daily progress syncs to Supabase
+            if (
+                this.state.fromDailyProgram &&
+                !this.state.dailyCompletedPhrases.includes(phraseId)
+            ) {
+                this.state.dailyCompletedPhrases.push(phraseId);
+                localStorage.setItem(
+                    'dailyCompletedPhrases',
+                    JSON.stringify(this.state.dailyCompletedPhrases)
+                );
+            }
+
             if (!this.state.completedPhrases.includes(phraseId)) {
                 this.state.completedPhrases.push(phraseId);
                 const points =
@@ -1798,19 +1838,9 @@ export class SwedishApp {
                 this.state.stats.dailyGoal = (this.state.stats.dailyGoal || 0) + 1;
                 this.checkStreak();
                 this.saveUserData();
-            }
-
-            // Track daily completion separately (for daily program progress)
-            // This resets each day, unlike completedPhrases which is cumulative
-            if (
-                this.state.fromDailyProgram &&
-                !this.state.dailyCompletedPhrases.includes(phraseId)
-            ) {
-                this.state.dailyCompletedPhrases.push(phraseId);
-                localStorage.setItem(
-                    'dailyCompletedPhrases',
-                    JSON.stringify(this.state.dailyCompletedPhrases)
-                );
+            } else if (this.state.fromDailyProgram) {
+                // Already completed phrase, but still need to sync daily progress
+                this.saveUserData();
             }
         }
 
@@ -1996,7 +2026,7 @@ export class SwedishApp {
         this.render();
     }
 
-    completeGrammarExercise() {
+    async completeGrammarExercise() {
         const exercise = this.state.currentGrammarExercise;
 
         // Mark as completed in daily program
@@ -2009,6 +2039,9 @@ export class SwedishApp {
                     JSON.stringify(this.state.dailyCompletedPhrases)
                 );
             }
+
+            // Sync daily progress to Supabase (for cross-device sync)
+            await this.saveUserData();
 
             // Navigate to next daily item
             this.navigateToNextDailyPhrase();

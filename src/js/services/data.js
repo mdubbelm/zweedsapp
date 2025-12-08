@@ -34,7 +34,10 @@ export function getDefaultStats() {
             'cats',
             'august',
             'shopping'
-        ]
+        ],
+        // Daily program sync (for cross-device sync)
+        dailyProgramDate: null, // ISO date string (YYYY-MM-DD)
+        dailyCompletedPhrases: [] // Phrase IDs completed today
     };
 }
 

@@ -490,26 +490,37 @@ export class SwedishApp {
 
         try {
             // Show loading state
-            this.showToast('Update controleren...');
+            this.showToast('Update wordt uitgevoerd...');
 
             // Unregister all service workers
             if ('serviceWorker' in navigator) {
                 const registrations = await navigator.serviceWorker.getRegistrations();
-                for (const registration of registrations) {
-                    await registration.unregister();
-                }
+                await Promise.all(registrations.map(registration => registration.unregister()));
+                console.log('[ForceUpdate] Service workers unregistered');
             }
 
             // Clear all caches
             if ('caches' in window) {
                 const cacheNames = await window.caches.keys();
-                for (const cacheName of cacheNames) {
-                    await window.caches.delete(cacheName);
-                }
+                await Promise.all(cacheNames.map(cacheName => window.caches.delete(cacheName)));
+                console.log('[ForceUpdate] Caches cleared:', cacheNames);
             }
 
-            // Hard reload
-            window.location.reload(true);
+            // Clear localStorage update flags to ensure clean state
+            localStorage.removeItem('lastSeenVersion');
+
+            // Small delay to ensure cache operations complete
+            // This is especially important on iOS PWA
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            // Force navigation with cache-busting query param
+            // This works better than reload() on iOS PWA standalone mode
+            // because it forces a fresh network request
+            const baseUrl = window.location.href.split('?')[0].split('#')[0];
+            const cacheBuster = `?_update=${Date.now()}`;
+
+            // Use location.replace to prevent back-navigation to old version
+            window.location.replace(baseUrl + cacheBuster);
         } catch (error) {
             console.error('Force update failed:', error);
             alert(

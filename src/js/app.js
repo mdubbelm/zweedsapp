@@ -406,25 +406,22 @@ export class SwedishApp {
             // First practice ever - start streak
             this.state.stats.streak = 1;
             this.state.stats.lastPracticeDate = today;
-            this.updateLongestStreak();
-            return;
-        }
-
-        if (isToday(lastDate)) {
+        } else if (isToday(lastDate)) {
             // Already practiced today - streak unchanged
-            return;
-        }
-
-        if (isYesterday(lastDate)) {
+            // Continue to updateLongestStreak() to ensure longestStreak is correct
+        } else if (isYesterday(lastDate)) {
             // Streak continues - increment
             this.state.stats.streak = (this.state.stats.streak || 0) + 1;
             this.state.stats.lastPracticeDate = today;
-            this.updateLongestStreak();
         } else {
             // Streak broken - reset to 1 (today counts)
             this.state.stats.streak = 1;
             this.state.stats.lastPracticeDate = today;
         }
+
+        // Always update longest streak to ensure it's never less than current streak
+        // This fixes edge cases where longestStreak could get out of sync
+        this.updateLongestStreak();
     }
 
     /**

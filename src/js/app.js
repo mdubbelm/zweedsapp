@@ -885,8 +885,8 @@ export class SwedishApp {
     // Login Form Handling
     // =====================
 
-    toggleSignUp() {
-        toggleSignUp();
+    toggleSignUp(event) {
+        toggleSignUp(event);
     }
 
     async handleLogin() {

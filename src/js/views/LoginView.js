@@ -125,7 +125,8 @@ export function toggleSignUp(event) {
     const emailField = document.getElementById('email');
     const passwordField = document.getElementById('password');
     const displayNameInput = document.getElementById('displayName');
-    const button = event.target;
+    const submitButton = document.querySelector('form button[type="submit"]');
+    const toggleButton = event.currentTarget;
 
     if (displayNameField.style.display === 'none') {
         // Switch to signup mode
@@ -133,16 +134,16 @@ export function toggleSignUp(event) {
         emailField.setAttribute('autocomplete', 'email');
         passwordField.setAttribute('autocomplete', 'new-password');
         displayNameInput.setAttribute('required', '');
-        button.innerHTML = '<i class="fas fa-arrow-left mr-2"></i>Terug naar inloggen';
-        button.previousElementSibling.innerHTML =
-            '<i class="fas fa-user-plus mr-2"></i>Registreren';
+        toggleButton.innerHTML = '<i class="fas fa-arrow-left mr-2"></i>Terug naar inloggen';
+        submitButton.innerHTML = '<i class="fas fa-user-plus mr-2"></i>Registreren';
     } else {
         // Switch to login mode
         displayNameField.style.display = 'none';
         emailField.setAttribute('autocomplete', 'email');
         passwordField.setAttribute('autocomplete', 'current-password');
         displayNameInput.removeAttribute('required');
-        button.innerHTML = '<i class="fas fa-user-plus mr-2"></i>Nog geen account? Registreer';
-        button.previousElementSibling.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i>Inloggen';
+        toggleButton.innerHTML =
+            '<i class="fas fa-user-plus mr-2"></i>Nog geen account? Registreer';
+        submitButton.innerHTML = '<i class="fas fa-sign-in-alt mr-2"></i>Inloggen';
     }
 }

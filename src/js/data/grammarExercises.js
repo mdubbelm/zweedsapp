@@ -9,6 +9,8 @@
  * - translation: Translate a word/phrase
  */
 
+import { extractVerbIdFromPrompt, getUnlockedVerbIds } from './vocabulary.js';
+
 export const grammarExercises = {
     // Werkwoord conjugatie oefeningen
     conjugation: [
@@ -818,12 +820,26 @@ export const grammarExercises = {
  * Get random grammar exercises for daily program
  * @param {number} count - Number of exercises to return
  * @param {string} difficulty - Filter by difficulty (easy, medium, hard)
+ * @param {number} completedExercises - Number of completed exercises (for vocabulary filtering)
  * @returns {Array} Array of grammar exercises
  */
-export function getRandomGrammarExercises(count = 2, difficulty = null) {
-    // Collect all exercises
+export function getRandomGrammarExercises(count = 2, difficulty = null, completedExercises = 0) {
+    // Get unlocked verb IDs based on progress
+    const unlockedVerbIds = getUnlockedVerbIds(completedExercises);
+
+    // Filter conjugation exercises to only include unlocked verbs
+    const filteredConjugation = grammarExercises.conjugation.filter(exercise => {
+        const verbId = extractVerbIdFromPrompt(exercise.prompt);
+        // If we can't extract verb ID, include the exercise (safe default)
+        if (!verbId) {
+            return true;
+        }
+        return unlockedVerbIds.includes(verbId);
+    });
+
+    // Collect all exercises (with filtered conjugation)
     let allExercises = [
-        ...grammarExercises.conjugation,
+        ...filteredConjugation,
         ...grammarExercises.pronoun,
         ...grammarExercises.article,
         ...grammarExercises.adjective,

@@ -637,13 +637,16 @@ export class SwedishApp {
             exerciseType: index % 2 === 0 ? 'practice' : 'writing'
         }));
 
-        // Get 2 grammar exercises
-        const grammarItems = getRandomGrammarExercises(2, difficultyFilter).map(exercise => ({
-            ...exercise,
-            exerciseType: 'grammar',
-            categoryId: 'grammar',
-            categoryName: 'Grammatica'
-        }));
+        // Get 2 grammar exercises (filtered by unlocked vocabulary)
+        const completedExercises = this.state.completedPhrases?.length || 0;
+        const grammarItems = getRandomGrammarExercises(2, difficultyFilter, completedExercises).map(
+            exercise => ({
+                ...exercise,
+                exerciseType: 'grammar',
+                categoryId: 'grammar',
+                categoryName: 'Grammatica'
+            })
+        );
 
         // Combine: 8 phrases + 2 grammar = 10 items total
         // Interleave grammar at positions 4 and 8 for variety

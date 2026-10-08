@@ -100,6 +100,10 @@ describe('leerstof', () => {
         expect(bad).toEqual([]);
     });
 
+    it('geen rare, absurde zinnen (besluit Monique, 8 oktober)', () => {
+        expect(ITEMS.filter(i => i.kind === 'silly').map(i => i.id)).toEqual([]);
+    });
+
     it('elke bouwer-zin is precies de som van zijn stukjes', () => {
         const bad = ITEMS.filter(i => i.kind === 'builder' && i.pieces.join(' ') !== i.sv);
         expect(bad.map(i => i.id)).toEqual([]);

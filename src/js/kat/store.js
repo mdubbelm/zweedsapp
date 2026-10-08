@@ -27,6 +27,7 @@ export function freshState() {
         quests: { day: null, done: {} },
         rijtjes: {},
         sprintBest: 0,
+        ontdek: { cracked: {}, friends: {} },
         settings: { voice: true, style: 'mix' },
         updatedAt: null
     };

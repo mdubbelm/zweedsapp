@@ -89,6 +89,7 @@ export function finish(session) {
         stars: stars(s),
         xp: session.xp + bonus,
         bonus,
-        srsChanges: session.srsChanges
+        srsChanges: session.srsChanges,
+        results: session.results
     };
 }

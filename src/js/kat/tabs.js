@@ -12,6 +12,8 @@ import { streakDays, levelFor, XP } from '../engine/rewards.js';
 import { addXp } from './store.js';
 import { WORLDS, CHALLENGES_PER_WORLD, currentWorld } from './worlds.js';
 import { questsFor } from './quests.js';
+import { RULES, FALSE_FRIENDS } from '../content/ontdekken.js';
+import { ruleRound, friendsRound } from '../engine/ontdek.js';
 import { icon } from './ui/icons.js';
 import { speak } from './ui/speech.js';
 import { cleo } from '../art/cleo.js';
@@ -27,8 +29,58 @@ const row = ({ ic, title, sub, end = '', act = '', attrs = '', done = false, dis
 
 // ---------- Quests ----------
 
+function ontdek(app) {
+    return app.state.ontdek || { cracked: {}, friends: {} };
+}
+
+function renderCodekraker(app) {
+    const done = ontdek(app).cracked;
+    if (app.ui.rule) {
+        const rule = RULES.find(r => r.id === app.ui.rule);
+        return `<main class="page">
+            <button class="btn soft small" data-act="rules" style="justify-self:start">${icon('close', 18)} Alle regels</button>
+            <h1>${esc(rule.title)}</h1>
+            <p class="lede">Zweeds en Nederlands zijn familie. Waar het Zweeds <b>${esc(rule.sv)}</b> heeft, heeft het Nederlands vaak <b>${esc(rule.nl)}</b>.</p>
+            <div class="rijtje">${rule.examples
+                .map(
+                    ([sv, nl]) => `<button class="rij" data-act="say" data-text="${esc(sv)}">
+                    <span><span class="sv">${esc(sv)}</span><br><span class="nl">${esc(nl)}</span></span>${icon('speaker', 20)}</button>`
+                )
+                .join('')}</div>
+            <p class="lede">Zie je het patroon? Dan kun je deze vast ook: drie woorden die je nooit hebt geleerd, en één andersom.</p>
+            <button class="btn wide" data-act="crack" data-id="${rule.id}">${icon('key', 20)} Kraak de code</button>
+        </main>`;
+    }
+    const rows = RULES.map(r => {
+        const n =
+            r.crack.filter(([sv]) => done[`ck-${r.id}-${sv}`]).length +
+            (done[`ck-${r.id}-bouw`] ? 1 : 0);
+        return row({
+            ic: n === 4 ? 'check' : 'key',
+            title: esc(r.title),
+            sub: `${esc(r.examples[0][0])} is ${esc(r.examples[0][1])}`,
+            end: `${n}/4`,
+            act: 'open-rule',
+            attrs: `data-id="${r.id}"`,
+            done: n === 4
+        });
+    }).join('');
+    const total = Object.keys(done).length;
+    return `<main class="page">
+        <button class="btn soft small" data-act="close-ontdek" style="justify-self:start">${icon('close', 18)} Quests</button>
+        <h1>Codekraker</h1>
+        <p class="lede">Met een paar klankregels kun je Zweedse woorden lezen die je nooit hebt geleerd. ${total ? `Je hebt er al ${total} gekraakt.` : 'Kies een regel en probeer het.'}</p>
+        <div class="list">${rows}</div>
+    </main>`;
+}
+
 export function renderQuests(app) {
+    if (app.ui.codekraker) {
+        return renderCodekraker(app);
+    }
     const s = app.state;
+    const seenFriends = Object.keys(ontdek(app).friends).length;
+    const cracked = Object.keys(ontdek(app).cracked).length;
     const today = toDay();
     const qs = questsFor(today);
     const counts = s.quests && s.quests.day === today ? s.quests : { counts: {}, done: {} };
@@ -51,6 +103,11 @@ export function renderQuests(app) {
         <h1>Quests</h1>
         <p class="lede">Drie opdrachtjes voor vandaag. Doe er wat je zin in hebt.</p>
         <div class="list">${quests}</div>
+        <h2 style="margin:8px 0 0;font:600 19px var(--display)">Ontdekken</h2>
+        <div class="list">
+            ${row({ ic: 'key', title: 'Codekraker', sub: cracked ? `${cracked} woorden ontcijferd zonder ze te leren` : 'Lees Zweeds dat je nooit hebt geleerd', act: 'open-codekraker', end: icon('chevron', 20) })}
+            ${row({ ic: 'mask', title: 'Valse vrienden', sub: seenFriends ? `${seenFriends} van ${FALSE_FRIENDS.length} doorzien` : 'Rolig is niet rustig. Wat dan wel?', act: 'friends' })}
+        </div>
         <h2 style="margin:8px 0 0;font:600 19px var(--display)">Spelvormen</h2>
         <div class="list">
             ${row({ ic: 'refresh', title: 'Opfrissen', sub: due ? `${due} ${due === 1 ? 'woord is' : 'woorden zijn'} klaar om op te halen` : 'Niets aan de beurt. Cleo slaapt.', act: 'refresh', disabled: !due })}
@@ -238,6 +295,12 @@ export function renderStats(app) {
                 ? `<div class="panel"><h2>Reispaspoort</h2><p style="margin:0">${s.stempels.length} ${s.stempels.length === 1 ? 'stempel' : 'stempels'}: ${[...new Set(s.stempels.map(x => WORLDS.find(w => w.id === x.world).title))].map(esc).join(', ')}</p></div>`
                 : ''
         }
+        ${
+            Object.keys((s.ontdek || {}).cracked || {}).length +
+            Object.keys((s.ontdek || {}).friends || {}).length
+                ? `<div class="panel"><h2>Ontdekt</h2><p style="margin:0">${Object.keys(s.ontdek.cracked).length} woorden zelf ontcijferd met klankregels · ${Object.keys(s.ontdek.friends).length} valse vrienden doorzien</p></div>`
+                : ''
+        }
         <div class="panel"><h2>Bijna raak</h2>${
             almost.length
                 ? `<div class="list">${almost.map(it => `<p style="margin:0"><span class="empty">${esc(it.kind === 'form' ? it.prompt : it.nl)}</span><br><b>${esc(expectedAnswer(it))}</b></p>`).join('')}</div>`
@@ -308,6 +371,39 @@ export function renderSettings(app) {
 export function installTabs(app) {
     app.tabAction = (act, t) => {
         const today = toDay();
+        if (act === 'open-codekraker' || act === 'rules') {
+            app.ui.codekraker = true;
+            app.ui.rule = null;
+            app.render();
+            window.scrollTo(0, 0);
+            return;
+        } else if (act === 'close-ontdek') {
+            app.ui.codekraker = false;
+            app.ui.rule = null;
+            app.render();
+            return;
+        } else if (act === 'open-rule') {
+            app.ui.rule = t.dataset.id;
+            app.render();
+            window.scrollTo(0, 0);
+            return;
+        } else if (act === 'say') {
+            speak(t.dataset.text);
+            return;
+        } else if (act === 'crack') {
+            app.ui.rule = null;
+            app.play('ontdek', {
+                round: ruleRound(RULES.find(r => r.id === t.dataset.id)),
+                returnTab: 'quests'
+            });
+            return;
+        } else if (act === 'friends') {
+            app.play('ontdek', {
+                round: friendsRound(FALSE_FRIENDS, ontdek(app).friends),
+                returnTab: 'quests'
+            });
+            return;
+        }
         if (act === 'open-rijtje') {
             app.ui.beuken = { id: t.dataset.id, read: true, cover: false, mic: false, at: null };
             app.render();

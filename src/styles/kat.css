@@ -1137,6 +1137,7 @@ button {
 }
 
 .rij {
+    text-align: left;
     display: grid;
     grid-template-columns: 1fr auto;
     gap: 10px;
@@ -1262,4 +1263,11 @@ button {
     padding: 0;
     font-weight: 800;
     text-decoration: underline;
+}
+
+mark.friend {
+    background: var(--gold);
+    color: #2a1f00;
+    border-radius: 6px;
+    padding: 0 4px;
 }

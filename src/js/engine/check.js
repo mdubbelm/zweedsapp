@@ -60,8 +60,18 @@ export function expectedAnswer(item) {
     return item.sv;
 }
 
+/** Bij een gatzin: de hele zin met het gat ingevuld. */
+export function filledSentence(item) {
+    return item.kind === 'gap' ? item.sv.replace('___', item.answer) : expectedAnswer(item);
+}
+
 export function acceptedAnswers(item) {
-    return [expectedAnswer(item), ...(item.accept || [])].map(normalize);
+    const list = [expectedAnswer(item), ...(item.accept || [])];
+    // Wie de hele zin typt in plaats van alleen het ontbrekende woord, heeft het ook goed.
+    if (item.kind === 'gap') {
+        list.push(filledSentence(item));
+    }
+    return list.map(normalize);
 }
 
 /**

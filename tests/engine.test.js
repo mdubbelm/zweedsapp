@@ -197,6 +197,14 @@ describe('nakijken', () => {
         expect(checkAnswer(tuin, 'en tradgard').reason).toBe('tekens');
     });
 
+    it('bij een gatzin is het woord goed, en de hele zin ook', () => {
+        const gap = { kind: 'gap', sv: 'Jacob ___ en vattenkanna.', answer: 'har' };
+        expect(checkAnswer(gap, 'har').ok).toBe(true);
+        expect(checkAnswer(gap, 'jacob har en vattenkanna').ok).toBe(true);
+        expect(checkAnswer(gap, 'Jacob har en vattenkanna.').ok).toBe(true);
+        expect(checkAnswer(gap, 'jacob är en vattenkanna').ok).toBe(false);
+    });
+
     it('werkwoorden mogen met of zonder att', () => {
         const vattna = { kind: 'word', sv: 'att vattna' };
         expect(checkAnswer(vattna, 'vattna').ok).toBe(true);

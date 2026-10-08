@@ -26,6 +26,7 @@ import { startSession } from './session.js';
 import { bumpQuest } from './quests.js';
 import { RunScreen } from './run.js';
 import { icon } from './ui/icons.js';
+import { trackViewport, settle } from './ui/viewport.js';
 import { chest, trophy } from './ui/props.js';
 import {
     renderQuests,
@@ -67,6 +68,7 @@ export class KatApp {
                 this.render();
             }
         });
+        trackViewport();
         installTabs(this);
         root.addEventListener('click', e => this.onClick(e));
         root.addEventListener('submit', e => this.onSubmit(e));
@@ -497,6 +499,7 @@ export class KatApp {
     }
 
     openOverlay(build) {
+        settle();
         this.ui.overlay = true;
         this.root.innerHTML = '';
         const host = document.createElement('div');
@@ -506,6 +509,7 @@ export class KatApp {
     }
 
     closeOverlay() {
+        settle();
         this.ui.overlay = null;
         this.ui.tab = 'start';
         this.render();

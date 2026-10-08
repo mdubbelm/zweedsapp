@@ -4,7 +4,7 @@
  */
 
 import { escapeHtml as esc } from '../utils/helpers.js';
-import { checkAnswer, expectedAnswer, nudge, normalize } from '../engine/check.js';
+import { checkAnswer, expectedAnswer, filledSentence, nudge, normalize } from '../engine/check.js';
 import { current, isDone, progress, answer, blowUp, finish } from './session.js';
 import { icon, MODES } from './ui/icons.js';
 import { speak } from './ui/speech.js';
@@ -217,7 +217,7 @@ export class RunScreen {
             }
             return `<div class="feedback almost" role="status">
                 <h2>Bijna.</h2>
-                <p class="answer-line">Het is: <span class="${articleClass(this.item)}">${esc(f.correct)}</span></p>
+                <p class="answer-line">Het is: ${f.correctHtml}</p>
                 ${f.nudge ? `<p>${esc(f.nudge)}</p>` : ''}
                 ${this.item.why && f.nudge !== this.item.why ? (this.local.showWhy ? `<p>${esc(this.item.why)}</p>` : '<button class="why" data-act="why">Waarom?</button>') : ''}
                 <button class="btn wide" data-act="next">Verder</button>
@@ -244,7 +244,7 @@ export class RunScreen {
         } else {
             main = `<button class="btn wide" data-act="check" ${this.local.value ? '' : 'disabled'}>Controleer</button>`;
         }
-        return `<div class="run-foot" style="display:grid;gap:12px">${aids}${main}</div>`;
+        return `<div class="run-foot">${aids}${main}</div>`;
     }
 
     say(text) {
@@ -266,6 +266,13 @@ export class RunScreen {
             xp: res.gained,
             praise: PRAISE[Math.floor(Math.random() * PRAISE.length)],
             correct: exp,
+            correctHtml:
+                this.item.kind === 'gap'
+                    ? esc(this.item.sv).replace(
+                          '___',
+                          `<span class="art-en">${esc(this.item.answer)}</span>`
+                      )
+                    : `<span class="${articleClass(this.item)}">${esc(exp)}</span>`,
             nudge: ok ? '' : nudge(this.item, reason)
         };
         this.step = 'feedback';
@@ -274,7 +281,7 @@ export class RunScreen {
         }
         this.render();
         if (ok) {
-            this.say(exp);
+            this.say(filledSentence(this.item));
         }
     }
 

@@ -158,7 +158,7 @@ function sittingBody(o = {}) {
     const legR = raiseRight
         ? strokeLine('M144 172C158 168 170 150 178 124', 17, WH, 2.5) +
           `<path d="M150 168C160 164 168 150 173 134" fill="none" stroke="${WS}" stroke-width="3" stroke-linecap="round" opacity=".9"/>`
-        : `<rect x="127" y="182" width="24" height="50" rx="12" fill="${WH}" stroke="${OUT}" stroke-width="2.6"/>`;
+        : `<rect x="127" y="182" width="24" height="50" rx="12" fill="${WH}" stroke="${OUT}" stroke-width="2.6"/><rect x="129" y="181" width="20" height="14" fill="${WH}"/>`;
 
     const pawR = raiseRight
         ? `<g transform="rotate(14 182 114)"><ellipse cx="182" cy="114" rx="14.5" ry="13" fill="${WH}" stroke="${OUT}" stroke-width="2.6"/><ellipse cx="182" cy="118" rx="6" ry="4.6" fill="${PINK}"/><circle cx="174.5" cy="109" r="2.7" fill="${PINK}"/><circle cx="182" cy="106" r="2.7" fill="${PINK}"/><circle cx="189.5" cy="109" r="2.7" fill="${PINK}"/></g>`
@@ -175,7 +175,7 @@ function sittingBody(o = {}) {
         `<ellipse cx="68" cy="236" rx="15" ry="7.5" fill="${WH}" stroke="${OUT}" stroke-width="2.4"/><ellipse cx="172" cy="236" rx="15" ry="7.5" fill="${WH}" stroke="${OUT}" stroke-width="2.4"/>` +
         `<path d="${chestD}" fill="${WH}" stroke="${OUT}" stroke-width="2.6" stroke-linejoin="round"/>` +
         `<path d="M92 190C96 218 106 230 120 230C134 230 144 218 148 190C140 206 128 212 120 212C112 212 100 206 92 190Z" fill="${WS}" opacity=".75"/>` +
-        `<rect x="91" y="182" width="24" height="50" rx="12" fill="${WH}" stroke="${OUT}" stroke-width="2.6"/>` +
+        `<rect x="91" y="182" width="24" height="50" rx="12" fill="${WH}" stroke="${OUT}" stroke-width="2.6"/><rect x="93" y="181" width="20" height="14" fill="${WH}"/>` +
         legR +
         paw(103, 230, 15, 10.5, true) +
         pawR

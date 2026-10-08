@@ -225,7 +225,8 @@ export class KatApp {
                     ? `<span class="stars">${[0, 1, 2].map(k => STAR(k < prog.stars[idx])).join('')}</span>`
                     : '';
                 const inner = isDone ? icon('check', 34) : isNow ? '' : icon('lock', 26);
-                return `<button class="node ${cls}" style="${left(n.x, n.y)}" data-node="challenge" data-index="${idx}" aria-label="Challenge ${idx + 1}${isDone ? ', gehaald' : isNow ? ', speel nu' : ', nog dicht'}"><span class="dot">${inner}</span>${stars}</button>`;
+                const label = isNow ? '<span class="play-label">Speel</span>' : '';
+                return `<button class="node ${cls}" style="${left(n.x, n.y)}" data-node="challenge" data-index="${idx}" aria-label="Challenge ${idx + 1}${isDone ? ', gehaald' : isNow ? ', speel nu' : ', nog dicht'}"><span class="dot">${inner}</span>${stars}${label}</button>`;
             }
             if (n.type === 'chest') {
                 const c = chestNo++;
@@ -451,6 +452,10 @@ export class KatApp {
             const prog = s.path[r.world];
             const prize = stepsToNextPrize(prog);
             const next = nextStep(prog);
+            const done = prog.stars.length;
+            const target = done + prize.left;
+            const from = [0, ...CHEST_AFTER].filter(n => n < target).pop() || 0;
+            const prizePct = Math.round(((done - from) / Math.max(1, target - from)) * 100);
             const ahead =
                 next.type === 'chest'
                     ? 'Er staat een kist voor je klaar.'
@@ -458,7 +463,12 @@ export class KatApp {
                       ? 'De masterchallenge staat klaar. Zou je het halen?'
                       : `Nog ${prize.left} ${prize.left === 1 ? 'challenge' : 'challenges'} tot de ${prize.prize === 'chest' ? 'kist' : 'trofee'}.`;
             body = `<div class="bigstars">${[0, 1, 2].map(k => `<span>${STAR(k < r.result.stars, k === 1 ? 64 : 50)}</span>`).join('')}</div>
-                <p>${ahead}${r.questXp ? ` Er is ook een dagquest af.` : ''}</p>`;
+                ${
+                    next.type === 'challenge'
+                        ? `<div class="next-prize">${prize.prize === 'chest' ? chest(false, 44) : trophy(false, 44)}<div>${ahead}<div class="bar"><i style="width:${prizePct}%"></i></div></div></div>`
+                        : `<p>${ahead}</p>`
+                }
+                ${r.questXp ? '<p>Er is ook een dagquest af.</p>' : ''}`;
         }
         const lvl = levelFor(s.xp);
         this.openOverlay(host => {
@@ -467,7 +477,7 @@ export class KatApp {
                 <div class="modal" role="dialog" aria-labelledby="reward-title">
                     ${badge ? `<span class="xp-badge">${badge}</span>` : ''}
                     ${extra ? `<div>${extra}</div>` : ''}
-                    ${cleo(pose, 120)}
+                    ${cleo(pose, 150)}
                     <h2 id="reward-title">${head}</h2>
                     ${body}
                     <div class="chips" style="justify-content:center">

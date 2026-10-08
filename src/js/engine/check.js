@@ -105,7 +105,7 @@ export function checkAnswer(item, given) {
 export function nudge(item, reason) {
     switch (reason) {
         case 'lidwoord':
-            return `Het lidwoord hoort erbij: ${item.article} ${item.sv}.`;
+            return 'Zonder en of ett is het net niet compleet.';
         case 'ander-lidwoord':
             return `${item.sv} is een ${item.article}-woord.`;
         case 'tekens':

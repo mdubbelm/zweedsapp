@@ -288,7 +288,9 @@ export class KatApp {
         const s = this.state;
         const today = this.today();
         let challenge;
-        if (kind === 'master') {
+        if (kind === 'ontdek') {
+            challenge = opts.round;
+        } else if (kind === 'master') {
             challenge = buildMaster({ items: ITEMS, srs: s.srs, world: opts.world });
         } else if (kind === 'refresh') {
             const ids = dueItems(s.srs, today).slice(0, 10);
@@ -325,6 +327,7 @@ export class KatApp {
             this.toast('Alles is opgefrist. Cleo ligt te spinnen.');
             return;
         }
+        this.ui.returnTab = opts.returnTab || null;
         const session = startSession(challenge, {
             today,
             isCompressed: it => this.isCompressed(it)
@@ -332,7 +335,7 @@ export class KatApp {
         this.openOverlay(host => {
             const screen = new RunScreen(host, {
                 session,
-                items: ITEMS,
+                items: challenge.items ? [...ITEMS, ...challenge.items] : ITEMS,
                 store: this.store,
                 onExit: () => this.closeOverlay(),
                 onFinish: result => this.finishRun(challenge, result, opts)
@@ -364,8 +367,19 @@ export class KatApp {
         const today = this.today();
         const worldId = currentWorld(this.state.path);
         let passed = true;
+        let cracked = 0;
         this.store.update(s => {
-            Object.assign(s.srs, result.srsChanges);
+            if (challenge.kind === 'ontdek') {
+                // Ontdekken telt niet mee in het herhaalschema; we onthouden wat je kraakte.
+                s.ontdek = s.ontdek || { cracked: {}, friends: {} };
+                for (const r of result.results.filter(x => x.ok && !x.retry)) {
+                    const bucket = r.itemId.startsWith('vv-') ? 'friends' : 'cracked';
+                    s.ontdek[bucket][r.itemId] = today;
+                }
+                cracked = Object.keys(s.ontdek.cracked).length;
+            } else {
+                Object.assign(s.srs, result.srsChanges);
+            }
             addXp(s, result.xp);
             s.streak = updateStreak(s.streak, today);
             if (challenge.kind === 'challenge') {
@@ -395,6 +409,8 @@ export class KatApp {
             result,
             passed,
             questXp,
+            cracked,
+            friendsRound: challenge.kind === 'ontdek' && !challenge.ruleId,
             world: opts.world || worldId
         });
     }
@@ -436,6 +452,18 @@ export class KatApp {
                       ? `<p class="loot">2 pootjes extra</p><p>Cleo mag nog twee keer een vraag van tafel tikken. Die komt later gewoon terug.</p>`
                       : `<p class="loot">Een stempel van ${esc(world.title)}</p><p>Voor in jullie reispaspoort bij Stats.</p>`;
             extra = chest(true, 96);
+        } else if (r.type === 'ontdek') {
+            pose = 'happy';
+            badge = `+${r.result.xp} XP`;
+            if (r.friendsRound) {
+                head = 'Valse vrienden doorzien';
+                body = `<div class="bigstars">${[0, 1, 2].map(k => `<span>${STAR(k < r.result.stars, k === 1 ? 64 : 50)}</span>`).join('')}</div>
+                    <p>Ze lijken Nederlands, maar jij trapt er niet meer in.</p>`;
+            } else {
+                head = 'Code gekraakt';
+                body = `<p class="loot">${r.cracked} ${r.cracked === 1 ? 'woord' : 'woorden'}</p>
+                    <p>Zoveel Zweedse woorden heb je nu ontcijferd zonder dat je ze ooit leerde.</p>`;
+            }
         } else if (r.type === 'master' && r.passed) {
             pose = 'happy';
             head = `${esc(world.title)} gehaald`;
@@ -511,7 +539,8 @@ export class KatApp {
     closeOverlay() {
         settle();
         this.ui.overlay = null;
-        this.ui.tab = 'start';
+        this.ui.tab = this.ui.returnTab || 'start';
+        this.ui.returnTab = null;
         this.render();
         this.scrollToNow();
     }
@@ -538,6 +567,8 @@ export class KatApp {
         if (t.dataset.tab) {
             this.ui.tab = t.dataset.tab;
             this.ui.beuken = null;
+            this.ui.codekraker = false;
+            this.ui.rule = null;
             window.history.replaceState(null, '', `#${t.dataset.tab}`);
             this.render();
             window.scrollTo(0, 0);

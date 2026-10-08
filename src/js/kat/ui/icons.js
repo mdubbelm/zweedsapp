@@ -41,6 +41,8 @@ const P = {
     chevron: '<path d="M9 6l6 6-6 6"/>',
     plus: '<path d="M12 5v14M5 12h14"/>',
     paw: '<ellipse cx="12" cy="16" rx="5" ry="4.2" fill="currentColor" stroke="none"/><ellipse cx="5.5" cy="10.5" rx="2.2" ry="2.8" fill="currentColor" stroke="none"/><ellipse cx="9.5" cy="6.5" rx="2.2" ry="2.9" fill="currentColor" stroke="none"/><ellipse cx="14.5" cy="6.5" rx="2.2" ry="2.9" fill="currentColor" stroke="none"/><ellipse cx="18.5" cy="10.5" rx="2.2" ry="2.8" fill="currentColor" stroke="none"/>',
+    key: '<circle cx="8" cy="15" r="4"/><path d="M10.8 12.2 20 3M16 7l3 3M18 5l2 2"/>',
+    mask: '<path d="M3 7c3-1.5 6-1.5 9 0 3-1.5 6-1.5 9 0 0 6-3 10-6 10-1.6 0-2.4-1.5-3-3-.6 1.5-1.4 3-3 3-3 0-6-4-6-10z"/><path d="M7 11.5h2M15 11.5h2"/>',
     trash: '<path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13"/>'
 };
 
@@ -59,6 +61,8 @@ export const MODES = {
     builder: { label: 'Bouwer', icon: 'puzzle' },
     truefalse: { label: 'Sant eller falskt', icon: 'scale' },
     silly: { label: 'Rare zin', icon: 'joker' },
+    decode: { label: 'Codekraker', icon: 'key' },
+    friend: { label: 'Valse vriend', icon: 'mask' },
     pen: { label: 'Pen en papier', icon: 'paper' },
     sprint: { label: 'Sprint', icon: 'stopwatch' }
 };

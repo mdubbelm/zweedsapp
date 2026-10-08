@@ -9,6 +9,7 @@ import { current, isDone, progress, answer, blowUp, finish } from './session.js'
 import { icon, MODES } from './ui/icons.js';
 import { speak } from './ui/speech.js';
 import { shuffle } from '../engine/challenge.js';
+import { findFriendWord } from '../engine/ontdek.js';
 
 const PRAISE = ['Goed zo!', 'Precies.', 'Ja, raak!', 'Snyggt!', 'Klopt helemaal.'];
 
@@ -199,6 +200,22 @@ export class RunScreen {
                 <p>Schrijf het op papier, met de hand. Daarna kijk je zelf na.</p></div>
                 ${this.local.penShown ? cardHtml(it) : ''}`;
         }
+        if (mode === 'decode') {
+            return `<div class="prompt"><p>Kraak de code. Wat betekent dit?</p>
+                <h1 lang="sv">${esc(it.show)}</h1></div>
+                <button class="say" data-say="${esc(it.show)}" aria-label="Uitspreken">${icon('speaker')}</button>
+                ${typeBox('In het Nederlands')}${hint}`;
+        }
+        if (mode === 'friend') {
+            const at = findFriendWord(it.show, it.word);
+            const sentence = at
+                ? `${esc(it.show.slice(0, at.start))}<mark class="friend">${esc(it.show.slice(at.start, at.end))}</mark>${esc(it.show.slice(at.end))}`
+                : esc(it.show);
+            return `<div class="prompt"><p>Lijkt op ${esc(it.looksLike)}. Maar wat betekent <b>${esc(it.word)}</b> hier?</p>
+                <h1 lang="sv">${sentence}</h1></div>
+                <button class="say" data-say="${esc(it.show)}" aria-label="Uitspreken">${icon('speaker')}</button>
+                ${typeBox('In het Nederlands')}${hint}`;
+        }
         // type en silly
         const title =
             mode === 'silly' ? 'Rare zin. Hoe zeg je dit?' : 'Hoe zeg je dit in het Zweeds?';
@@ -211,6 +228,7 @@ export class RunScreen {
             if (f.ok) {
                 return `<div class="feedback good" role="status">
                     <h2>${f.praise}</h2>
+                    ${this.item.kind === 'friend' ? `<p>${esc(this.item.why)}</p><p class="empty">${esc(this.item.nl)}</p>` : ''}
                     ${f.xp ? `<p>+${f.xp} XP</p>` : ''}
                     <button class="btn wide" data-act="next">Verder</button>
                 </div>`;
@@ -264,7 +282,12 @@ export class RunScreen {
         this.local.feedback = {
             ok,
             xp: res.gained,
-            praise: PRAISE[Math.floor(Math.random() * PRAISE.length)],
+            praise:
+                this.item.kind === 'decode'
+                    ? 'Gekraakt!'
+                    : this.item.kind === 'friend'
+                      ? 'Doorzien!'
+                      : PRAISE[Math.floor(Math.random() * PRAISE.length)],
             correct: exp,
             correctHtml:
                 this.item.kind === 'gap'
@@ -281,7 +304,8 @@ export class RunScreen {
         }
         this.render();
         if (ok) {
-            this.say(filledSentence(this.item));
+            const it = this.item;
+            this.say(it.kind === 'decode' || it.kind === 'friend' ? it.show : filledSentence(it));
         }
     }
 

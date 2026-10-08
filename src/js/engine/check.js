@@ -84,6 +84,13 @@ export function checkAnswer(item, given) {
     if (accepted.includes(answer)) {
         return { ok: true, reason: null };
     }
+    // Bij een Nederlandse betekenis maakt de, het of een niet uit.
+    if (item.kind === 'decode' || item.kind === 'friend') {
+        const bare = t => t.replace(/^(de|het|een|'t) /, '');
+        if (accepted.some(x => bare(x) === bare(answer))) {
+            return { ok: true, reason: null };
+        }
+    }
     // Werkwoorden mogen met of zonder 'att'.
     if (accepted.some(a => stripAtt(a) === stripAtt(answer))) {
         return { ok: true, reason: null };

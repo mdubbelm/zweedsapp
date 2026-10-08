@@ -55,3 +55,6 @@ PROJECT_OVERVIEW.md
 GITHUB_PROJECT_SUMMARY.md
 VERSIONING.md
 docs/blog/
+
+# Automatisch checkpoint (lokaal)
+.checkpoint.md

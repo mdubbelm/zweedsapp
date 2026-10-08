@@ -1,24 +1,11 @@
 /**
  * Svenska Kat - Main Entry Point
- * Swedish language learning PWA
+ * Cleo reist met August door vijf werelden.
  */
 
-// Import styles
-import './styles/main.css';
+import './styles/kat.css';
+import { KatApp } from './js/kat/app.js';
 
-// Import app
-import { SwedishApp } from './js/app.js';
-
-// Initialize app when DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
-    // Create app instance (SwedishApp constructor sets window.app = this)
-    new SwedishApp();
+    window.katApp = new KatApp(document.getElementById('app'));
 });
-
-// PWA Update handling (will be managed by vite-plugin-pwa)
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        // vite-plugin-pwa handles service worker registration automatically
-        console.log('PWA ready');
-    });
-}

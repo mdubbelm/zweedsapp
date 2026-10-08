@@ -219,7 +219,7 @@ export function renderStats(app) {
                    ${sav.available >= sav.next.cost ? `<button class="btn" data-act="claim" data-id="${sav.next.id}">Verzilveren</button>` : ''}`
                 : `<p style="margin:0">Nog geen beloning gekozen. <button class="btn soft small" data-tab="settings">Kies er een</button></p>`
         }
-        ${app.account && app.account.user ? '' : '<p class="empty" style="margin:0">Log in bij Instellingen om de XP van je maatje mee te tellen.</p>'}
+        ${app.account && !app.account.user ? '<p class="empty" style="margin:0">Log in bij Instellingen om de XP van je maatje mee te tellen.</p>' : ''}
     </div>`;
 
     return `<main class="page">
@@ -262,8 +262,9 @@ export function renderSettings(app) {
         .join('');
 
     let account;
-    if (!isSupabaseEnabled()) {
-        account = '<p class="empty" style="margin:0">Je voortgang staat op dit apparaat.</p>';
+    if (!isSupabaseEnabled() || !acc) {
+        account =
+            '<p class="empty" style="margin:0">Je voortgang staat op dit apparaat, in deze browser. Wissen van de browsergegevens wist ook Cleo\'s reis.</p>';
     } else if (acc && acc.user) {
         account = `<p style="margin:0">Ingelogd als ${esc(acc.user.email)}. Je voortgang gaat mee naar je andere apparaten.</p>
             <button class="btn soft" data-act="logout">Uitloggen</button>`;
@@ -284,7 +285,7 @@ export function renderSettings(app) {
         </div>
         <div class="panel">
             <h2>Waar sparen jullie voor?</h2>
-            <p class="empty" style="margin:0">Jullie XP telt samen op. Vul zelf in wat de beloning is en hoeveel XP hij kost.</p>
+            <p class="empty" style="margin:0">${acc && acc.user ? 'Jullie XP telt samen op. ' : ''}Vul zelf in wat de beloning is en hoeveel XP hij kost.</p>
             ${rewards}
             <button class="btn soft small" data-act="rw-add" style="justify-self:start">${icon('plus', 18)} Beloning toevoegen</button>
         </div>

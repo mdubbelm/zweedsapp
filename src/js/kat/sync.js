@@ -6,11 +6,28 @@
 import { initSupabase, isSupabaseEnabled, getSupabase } from '../services/supabase.js';
 import { checkAuth } from '../services/auth.js';
 import { loadUserData, saveUserData } from '../services/data.js';
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from '../utils/constants.js';
+
+/** Is de server echt bereikbaar? Een verwijderd project geeft anders een inlogscherm dat niets doet. */
+async function reachable() {
+    try {
+        const ctrl = new window.AbortController();
+        const timer = setTimeout(() => ctrl.abort(), 4000);
+        const res = await window.fetch(`${SUPABASE_URL}/auth/v1/health`, {
+            headers: { apikey: SUPABASE_ANON_KEY },
+            signal: ctrl.signal
+        });
+        clearTimeout(timer);
+        return res.ok;
+    } catch {
+        return false;
+    }
+}
 
 export async function connect() {
     try {
         await initSupabase();
-        if (!isSupabaseEnabled()) {
+        if (!isSupabaseEnabled() || !(await reachable())) {
             return null;
         }
         const { user } = await checkAuth();

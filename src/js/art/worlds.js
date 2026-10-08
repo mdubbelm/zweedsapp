@@ -298,7 +298,7 @@ function makeCtx(id, nodes, opts = {}) {
                 `<ellipse cx="${x}" cy="${y}" rx="${rx}" ry="${ry}" fill="${fill}" opacity="${op}"/>`
             );
         },
-        out(sky) {
+        out() {
             const items = layers.items
                 .map((o, i) => [o, i])
                 .sort((a, b) => a[0].y - b[0].y || a[1] - b[1])
@@ -850,6 +850,17 @@ function volkstuin() {
         6
     );
 
+    C.sym(
+        'scarecrow',
+        `<ellipse cx="6" cy="3" rx="16" ry="4" fill="${SHADOW}"/><path d="M0 0V-70" stroke="${OUT}" stroke-width="7" stroke-linecap="round"/><path d="M0 0V-70" stroke="#a8743f" stroke-width="3.6" stroke-linecap="round"/>` +
+            `<path d="M-34 -48L34 -48" stroke="${OUT}" stroke-width="7" stroke-linecap="round"/><path d="M-34 -48L34 -48" stroke="#a8743f" stroke-width="3.6" stroke-linecap="round"/>` +
+            `<path d="M-14 -54L-10 -30H10L14 -54L34 -52L34 -42L14 -42L12 -22H-12L-14 -42L-34 -42L-34 -52Z" fill="#e5503f" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/><path d="M-6 -44H6V-36H-6Z" fill="#f2c14a" stroke="${OUT}" stroke-width="1.6"/>` +
+            `<path d="M-34 -42l-6 8M-30 -42l-3 9M34 -42l6 8M30 -42l3 9" stroke="#e5c25a" stroke-width="2.4" stroke-linecap="round"/>` +
+            `<circle cx="0" cy="-64" r="12" fill="#f6dba0" stroke="${OUT}" stroke-width="2.4"/><circle cx="-4" cy="-66" r="1.8" fill="#222"/><circle cx="4" cy="-66" r="1.8" fill="#222"/><path d="M-4 -60Q0 -57 4 -60" fill="none" stroke="#222" stroke-width="1.6" stroke-linecap="round"/>` +
+            `<path d="M-20 -72H20L14 -74L8 -88H-8L-14 -74Z" fill="#d9a44a" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/><path d="M-12 -74H12" stroke="#e5503f" stroke-width="3"/>`,
+        20,
+        [-80, 26]
+    );
     C.drawPath({ edge: '#c79a5d', sand: '#f3dca4', light: '#fbefc9' });
 
     // beekje met plankenbrug
@@ -938,6 +949,7 @@ function volkstuin() {
     C.use('sunflower', 30, 268, 1);
     C.use('sunflower', 362, 244, 1);
     C.use('flowW', R(335, 50), 338, 0.9);
+    C.use('scarecrow', 352, 296, 1);
     C.use('flowP', L(420, 32), 424, 0.9);
     C.use('tree', 40, 150, 1);
     C.use('tree', 352, 128, 1);
@@ -1263,8 +1275,6 @@ function camper() {
     );
 
     /* --- plaatsing --- */
-    const L = (y, g) => C.left(y, g);
-    const R = (y, g) => C.right(y, g);
     C.block(10, 176, 120, 240, 'stuga');
     C.block(lx - 104, ly - 78, lx + 124, ly + 80, 'meer');
     // start: wegwijzer + dennen
@@ -1953,7 +1963,6 @@ function malmo() {
 
     /* --- plaatsing --- */
     const L = (y, g) => C.left(y, g);
-    const R = (y, g) => C.right(y, g);
     C.block(0, 0, 390, 146, 'zee');
     C.block(pondX - 84, pondY - 46, pondX + 84, pondY + 46, 'vijver');
     C.block(0, sy - 34, 390, sy + 34, 'kanaal');
@@ -1963,11 +1972,10 @@ function malmo() {
     C.use('lampG', 270, 1420, 1);
     C.use('flowP', 340, 1480, 0.9);
     C.use('flowY', 120, 1460, 0.9);
-    C.use('treeAu', 352, 1360, 1.05);
-    C.use('bikeR', 330, 1300, 1);
+    C.use('bikeR', 312, 1356, 1);
     C.use('bush', 40, 1335, 0.9);
     C.use('flowW', 74, 1385, 0.9);
-    C.use('tree', 356, 1262, 1.0);
+    C.use('treeAu', 364, 1290, 1.0);
     C.use('icecream', 326, 1192, 1);
     C.use('tree', 22, 1296, 1);
     C.use('bench', 48, 1242, 1, { flip: true });
@@ -1982,7 +1990,6 @@ function malmo() {
     C.use('lampG', L(sy - 36, 18), sy - 30, 1);
     C.use('bikeB', 310, 1004, 0.9);
     C.use('flowY', 40, 1010, 0.9);
-    C.use('tree', 24, 1012, 1.05);
     // markt: kraampjes
     C.use('stallR', 44, 928, 1, { force: true });
     C.use('stallG', 330, 940, 0.95);

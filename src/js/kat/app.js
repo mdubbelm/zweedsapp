@@ -5,10 +5,12 @@
 
 import { escapeHtml as esc } from '../utils/helpers.js';
 import { ITEMS } from '../content/items.js';
+import { PACK_ITEMS, packById } from '../content/packs.js';
 import { WORLD_ART } from '../art/worlds.js';
 import { cleo } from '../art/cleo.js';
 import { toDay } from '../engine/dates.js';
 import { buildChallenge, buildMaster, worldIndex } from '../engine/challenge.js';
+import { buildPackRound } from '../engine/packs.js';
 import { dueItems } from '../engine/srs.js';
 import { updateStreak, streakDays, chestLoot, levelFor } from '../engine/rewards.js';
 import { createStore, addXp } from './store.js';
@@ -102,12 +104,24 @@ export class KatApp {
         return toDay();
     }
 
+    /**
+     * De dag voor de feestdagkalender. Met ?datum=2026-12-13 in de adresbalk
+     * kun je een andere dag bekijken; voortgang gebruikt altijd de echte dag.
+     */
+    calendarDay() {
+        const m = /[?&]datum=(\d{4}-\d{2}-\d{2})/.exec(window.location.search);
+        return m ? m[1] : toDay();
+    }
+
     unlockedWorlds() {
         const now = worldIndex(currentWorld(this.state.path));
         return WORLDS.filter((w, i) => i <= now).map(w => w.id);
     }
 
     isCompressed(item) {
+        if (!item.world) {
+            return false;
+        }
         const p = this.state.path[item.world];
         return !p || !p.master;
     }
@@ -290,11 +304,14 @@ export class KatApp {
         let challenge;
         if (kind === 'ontdek') {
             challenge = opts.round;
+        } else if (kind === 'pack') {
+            const pack = packById(opts.pack);
+            challenge = { ...buildPackRound(pack, s.srs), items: PACK_ITEMS };
         } else if (kind === 'master') {
             challenge = buildMaster({ items: ITEMS, srs: s.srs, world: opts.world });
         } else if (kind === 'refresh') {
             const ids = dueItems(s.srs, today).slice(0, 10);
-            const byId = new Map(ITEMS.map(i => [i.id, i]));
+            const byId = new Map([...ITEMS, ...PACK_ITEMS].map(i => [i.id, i]));
             challenge = {
                 kind: 'refresh',
                 style: 'mix',
@@ -335,7 +352,7 @@ export class KatApp {
         this.openOverlay(host => {
             const screen = new RunScreen(host, {
                 session,
-                items: challenge.items ? [...ITEMS, ...challenge.items] : ITEMS,
+                items: challenge.items ? [...ITEMS, ...challenge.items] : [...ITEMS, ...PACK_ITEMS],
                 store: this.store,
                 onExit: () => this.closeOverlay(),
                 onFinish: result => this.finishRun(challenge, result, opts)
@@ -411,6 +428,7 @@ export class KatApp {
             questXp,
             cracked,
             friendsRound: challenge.kind === 'ontdek' && !challenge.ruleId,
+            pack: opts.pack || null,
             world: opts.world || worldId
         });
     }
@@ -464,6 +482,14 @@ export class KatApp {
                 body = `<p class="loot">${r.cracked} ${r.cracked === 1 ? 'woord' : 'woorden'}</p>
                     <p>Zoveel Zweedse woorden heb je nu ontcijferd zonder dat je ze ooit leerde.</p>`;
             }
+        } else if (r.type === 'pack') {
+            const pack = packById(r.pack);
+            pose = 'happy';
+            badge = `+${r.result.xp + (r.questXp || 0)} XP`;
+            head = esc(pack.title);
+            body = `<div class="bigstars">${[0, 1, 2].map(k => `<span>${STAR(k < r.result.stars, k === 1 ? 64 : 50)}</span>`).join('')}</div>
+                <p>${esc(pack.canNow)}</p>
+                <p class="muted">De nieuwe woorden komen de komende dagen terug bij Opfrissen.</p>`;
         } else if (r.type === 'master' && r.passed) {
             pose = 'happy';
             head = `${esc(world.title)} gehaald`;

@@ -78,9 +78,9 @@ function feastLine(app, entry, others) {
 
 function nextLine(entry) {
     const h = entry.holiday;
-    return `<button class="vd-line vd-next" data-act="open-sub" data-sub="kalender" aria-label="Feestdagenkalender. ${esc(inDaysText(entry.inDays))}: ${esc(svName(h))}, ${esc(nlName(h))}">
+    return `<button class="vd-line vd-next" data-act="open-sub" data-sub="kalender" aria-label="Feestdagenkalender. ${esc(h.approx || inDaysText(entry.inDays))}: ${esc(svName(h))}, ${esc(nlName(h))}">
         <span class="vd-badge">${motif(h.id, 34)}</span>
-        <span class="vd-text"><span class="vd-kick">${esc(inDaysText(entry.inDays)).replace(/^./, c => c.toUpperCase())}</span><b lang="sv">${esc(svName(h))}</b></span>
+        <span class="vd-text"><span class="vd-kick">${esc(h.approx || inDaysText(entry.inDays)).replace(/^./, c => c.toUpperCase())}</span><b lang="sv">${esc(svName(h))}</b></span>
         ${icon('chevron', 18)}
     </button>`;
 }

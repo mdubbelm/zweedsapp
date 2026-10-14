@@ -64,4 +64,20 @@ describe('de kalender rond een dag', () => {
         expect(cal.past.map(x => x.holiday.id)).toContain('appelmarknaden');
         expect(cal.upcoming.map(x => x.holiday.id)).not.toContain('appelmarknaden');
     });
+
+    it('twee feestdagen op één dag staan er allebei', () => {
+        const cal = holidayCalendar(HOLIDAYS, '2027-11-06');
+        const ids = cal.today.map(x => x.holiday.id);
+        expect(ids).toContain('gustav-adolfsdagen');
+        expect(ids).toContain('alla-helgons-dag');
+    });
+});
+
+describe('dagen zonder vaste datum', () => {
+    it('kräftskiva is nooit vandaag, maar staat wel bij wat eraan komt', async () => {
+        const { calendarFor } = await import('../src/js/kat/feest.js');
+        const cal = calendarFor('2026-08-07');
+        expect(cal.today.map(x => x.holiday.id)).not.toContain('kraftpremiar');
+        expect(cal.upcoming.map(x => x.holiday.id)).toContain('kraftpremiar');
+    });
 });

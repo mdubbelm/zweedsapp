@@ -69,7 +69,9 @@ function row(app, e, kind) {
     const open = app.ui.kalOpen === h.id;
     // Eén ding op de datumregel: vandaag, een aftelling of een datum.
     let when;
-    if (kind === 'today') {
+    if (h.approx) {
+        when = esc(h.approx);
+    } else if (kind === 'today') {
         when = '<b>vandaag</b>';
     } else if (kind === 'past') {
         when = esc(shortDate(e.past));

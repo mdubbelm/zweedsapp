@@ -43,7 +43,7 @@ const BULLAR = [
     },
     { kind: 'semla', sv: 'semla', nl: 'room en amandelspijs', holiday: 'fettisdagen' },
     { kind: 'lussekatt', sv: 'lussekatt', nl: 'met saffraan', holiday: 'lucia' },
-    { kind: 'vetebrod', sv: 'vetebröd', nl: 'het zoete basisdeeg', when: 'Ook als vetelängd' }
+    { kind: 'vetebrod', sv: 'vetebröd', nl: 'zoet tarwebrood', when: 'Ook als vetelängd' }
 ];
 
 const SHORT_MONTHS = 'jan feb mrt apr mei jun jul aug sep okt nov dec'.split(' ');

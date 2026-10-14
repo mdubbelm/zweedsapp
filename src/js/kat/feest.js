@@ -114,7 +114,15 @@ export function inDaysText(n) {
 
 /** Kalender rond een dag (zie engine/holidays.js). */
 export function calendarFor(day) {
-    return holidayCalendar(HOLIDAYS, day);
+    const cal = holidayCalendar(HOLIDAYS, day);
+    // Een dag zonder vaste datum (kräftskiva: ergens in augustus) is nooit
+    // "vandaag"; hij blijft in de lijst met wat eraan komt.
+    const vague = cal.today.filter(e => e.holiday.approx);
+    return {
+        ...cal,
+        today: cal.today.filter(e => !e.holiday.approx),
+        upcoming: [...vague, ...cal.upcoming]
+    };
 }
 
 /**

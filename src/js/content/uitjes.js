@@ -232,7 +232,7 @@ export const OUTINGS = [
                 article: 'en',
                 definite: 'kardemummabullen',
                 plural: 'kardemummabullar',
-                why: 'Een samengesteld woord volgt het laatste deel: bulle is een en-woord, dus en kardemummabulle, kardemummabullar.',
+                why: 'Bij een samengesteld woord telt het laatste deel: bulle is een en-woord, dus en kardemummabulle, kardemummabullar.',
                 accept: []
             },
             {

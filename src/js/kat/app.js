@@ -35,6 +35,7 @@ import {
     renderBeuken,
     renderStats,
     renderSettings,
+    showsOnStart,
     SprintScreen,
     installTabs
 } from './tabs.js';
@@ -206,7 +207,7 @@ export class KatApp {
                 <div class="meta"><span>${done} van ${CHALLENGES_PER_WORLD}</span><div class="bar"><i style="width:${(done / CHALLENGES_PER_WORLD) * 100}%"></i></div></div>
             </div>
             ${isCurrent && step.type !== 'done' ? `<button class="btn" data-act="go">Verder</button>` : ''}
-            ${isCurrent ? `<div class="styles" role="group" aria-label="Kies de vorm">${styleBtn('mix', 'Mix', 'pencil')}${styleBtn('luister', 'Luisteren', 'headphones')}${styleBtn('pen', 'Pen', 'paper')}</div>` : ''}
+            ${isCurrent && showsOnStart(s, 'vormen') ? `<div class="styles" role="group" aria-label="Kies de vorm">${styleBtn('mix', 'Mix', 'pencil')}${styleBtn('luister', 'Luisteren', 'headphones')}${styleBtn('pen', 'Pen', 'paper')}</div>` : ''}
         </div>`;
 
         const unlocked = this.unlockedWorlds();
@@ -223,11 +224,11 @@ export class KatApp {
                 <div class="chips">
                     <span class="chip"><span class="flame">${icon('flame', 20)}</span>${streakDays(s.streak, today)} ${streakDays(s.streak, today) === 1 ? 'dag' : 'dagen'}</span>
                     <span class="chip"><span class="bolt">${icon('bolt', 20)}</span>${s.xp.toLocaleString('nl-NL')} XP</span>
-                    ${uitjesChip()}
+                    ${showsOnStart(s, 'uitjes') ? uitjesChip() : ''}
                 </div>
                 ${todayCard}
-                <div class="goal">${goal}</div>
-                ${vandaagHtml(this)}
+                ${showsOnStart(s, 'spaardoel') ? `<div class="goal">${goal}</div>` : ''}
+                ${showsOnStart(s, 'vandaag') ? vandaagHtml(this) : ''}
                 ${switcher}
             </div>
             <div class="map">${this.mapHtml(worldId, art, prog, isCurrent)}</div>

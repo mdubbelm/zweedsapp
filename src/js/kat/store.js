@@ -112,8 +112,59 @@ export function createStore({ remote = null } = {}) {
             state = freshState();
             persist();
             emit();
+        },
+        /** Zet een back-up terug: vervangt de stand op dit apparaat. */
+        restore(saved) {
+            state = merge(freshState(), saved);
+            persist();
+            emit();
         }
     };
+}
+
+const BACKUP_APP = 'svenska-kat';
+
+/** De speelstand als back-upbestand (JSON-tekst). */
+export function backupJson(state, now = new Date()) {
+    return JSON.stringify(
+        { app: BACKUP_APP, backup: 1, savedAt: now.toISOString(), state },
+        null,
+        2
+    );
+}
+
+/** Bestandsnaam voor een back-up, met de datum erin. */
+export function backupFileName(day = toDay()) {
+    return `svenska-kat-backup-${day}.json`;
+}
+
+/**
+ * Lees een back-upbestand. Geeft { ok: true, state, savedAt } of
+ * { ok: false, reason } met een zin die op het scherm kan.
+ * Een losse speelstand (zonder omhulsel) wordt ook geaccepteerd.
+ */
+export function parseBackup(text) {
+    let data;
+    try {
+        data = JSON.parse(text);
+    } catch {
+        return { ok: false, reason: 'Dit bestand is geen back-up van Svenska Kat.' };
+    }
+    const wrapped = data && data.app === BACKUP_APP && data.state;
+    const state = wrapped ? data.state : data;
+    const looksRight =
+        state &&
+        typeof state === 'object' &&
+        state.version === 2 &&
+        typeof state.xp === 'number' &&
+        state.path &&
+        typeof state.path === 'object' &&
+        state.srs &&
+        typeof state.srs === 'object';
+    if (!looksRight) {
+        return { ok: false, reason: 'Dit bestand is geen back-up van Svenska Kat.' };
+    }
+    return { ok: true, state, savedAt: (wrapped && data.savedAt) || state.updatedAt || null };
 }
 
 /** XP vandaag bijhouden voor de weekgrafiek in Stats. */

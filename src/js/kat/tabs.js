@@ -17,6 +17,8 @@ import { ruleRound, friendsRound } from '../engine/ontdek.js';
 import { icon } from './ui/icons.js';
 import { speak } from './ui/speech.js';
 import { cleo } from '../art/cleo.js';
+import { OUTINGS } from '../content/uitjes.js';
+import { calendarFor, inDaysText, svName } from './feest.js';
 import { signIn, signOut } from '../services/auth.js';
 import { isSupabaseEnabled } from '../services/supabase.js';
 
@@ -86,6 +88,9 @@ export function renderQuests(app) {
     const counts = s.quests && s.quests.day === today ? s.quests : { counts: {}, done: {} };
     const due = dueItems(s.srs, today).filter(id => ITEMS.some(i => i.id === id)).length;
     const sprintN = sprintPool(ITEMS, s.srs).length;
+    const outingSeen = OUTINGS.flatMap(o => o.items).filter(it => s.srs[it.id]).length;
+    const cal = calendarFor(app.calendarDay());
+    const nextFeast = cal.today[0] || cal.upcoming[0] || null;
 
     const quests = qs
         .map(q => {
@@ -107,6 +112,8 @@ export function renderQuests(app) {
         <div class="list">
             ${row({ ic: 'key', title: 'Codekraker', sub: cracked ? `${cracked} woorden ontcijferd zonder ze te leren` : 'Lees Zweeds dat je nooit hebt geleerd', act: 'open-codekraker', end: icon('chevron', 20) })}
             ${row({ ic: 'mask', title: 'Valse vrienden', sub: seenFriends ? `${seenFriends} van ${FALSE_FRIENDS.length} doorzien` : 'Rolig is niet rustig. Wat dan wel?', act: 'friends' })}
+            ${row({ ic: 'map', title: 'Uitjes in Österlen', sub: outingSeen ? `${OUTINGS.length} plekken, ${outingSeen} woorden al gezien` : `${OUTINGS.length} plekken, van de bakker tot Ales stenar`, act: 'open-sub', attrs: 'data-sub="uitjes"', end: icon('chevron', 20) })}
+            ${row({ ic: 'calendar', title: 'Feestdagen in Zweden', sub: nextFeast ? `${inDaysText(nextFeast.inDays).replace(/^./, c => c.toUpperCase())}: ${esc(svName(nextFeast.holiday))}` : 'Wat er gevierd en gegeten wordt', act: 'open-sub', attrs: 'data-sub="kalender"', end: icon('chevron', 20) })}
         </div>
         <h2 style="margin:8px 0 0;font:600 19px var(--display)">Spelvormen</h2>
         <div class="list">

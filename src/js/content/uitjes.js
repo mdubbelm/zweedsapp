@@ -78,7 +78,7 @@ export const OUTINGS = [
                     preteritum: 'väntade',
                     supinum: 'väntat'
                 },
-                why: 'Vänta eindigt op -a, dus de verleden tijd wordt väntade.',
+                why: 'Vänta krijgt -ar in de tegenwoordige tijd en -ade in de verleden tijd.',
                 accept: []
             },
             {
@@ -119,7 +119,7 @@ export const OUTINGS = [
         type: 'uitje',
         title: 'Bij de bakker',
         sv: 'På bageriet',
-        scene: 'Het bakkertje ruikt naar kaneel en kardemom. Jacob wijst, jij bestelt.',
+        scene: 'Het bakkertje ruikt naar kaneel en kardemom. Even wijzen, dan bestellen.',
         canNow: 'Nu kun je iets lekkers bestellen en vragen wat het kost.',
         note: 'In Zweden is 4 oktober Kanelbullens dag, een themadag die sinds 1999 wordt gevierd. De kanelbulle zoals we hem nu kennen, ontstond na de Eerste Wereldoorlog.',
         source: 'https://en.wikipedia.org/wiki/Kanelbulle',
@@ -188,7 +188,7 @@ export const OUTINGS = [
                     preteritum: 'beställde',
                     supinum: 'beställt'
                 },
-                why: 'Beställa krijgt -er in de tegenwoordige tijd: jag beställer.',
+                why: 'Beställa krijgt -er in de tegenwoordige tijd en -de in de verleden tijd: beställer, beställde.',
                 accept: []
             },
             {
@@ -216,10 +216,49 @@ export const OUTINGS = [
                 kind: 'gap',
                 field: 'beleefdheid',
                 level: 1,
-                nl: 'Twee kaneelbollen en een koffie, alstublieft.',
+                nl: 'Twee kaneelbollen en een koffie, alsjeblieft.',
                 sv: 'Två kanelbullar och ett kaffe, ___.',
                 answer: 'tack',
-                why: 'Tack betekent "dank je" en ook "alstublieft" als je iets bestelt.',
+                why: 'Tack betekent "dank je" en ook "alsjeblieft" als je iets bestelt.',
+                accept: []
+            },
+            {
+                id: 'ut-bageriet-n-09',
+                kind: 'noun',
+                field: 'zoetigheid',
+                level: 1,
+                nl: 'het kardemombroodje',
+                sv: 'kardemummabulle',
+                article: 'en',
+                definite: 'kardemummabullen',
+                plural: 'kardemummabullar',
+                why: 'Een samengesteld woord volgt het laatste deel: bulle is een en-woord, dus en kardemummabulle, kardemummabullar.',
+                accept: []
+            },
+            {
+                id: 'ut-bageriet-n-10',
+                kind: 'noun',
+                field: 'traditie',
+                level: 1,
+                nl: 'het saffraanbroodje (voor Lucia)',
+                sv: 'lussekatt',
+                article: 'en',
+                definite: 'lussekatten',
+                plural: 'lussekatter',
+                why: 'Lussekatt is een en-woord; het meervoud krijgt -er: lussekatter.',
+                accept: []
+            },
+            {
+                id: 'ut-bageriet-n-11',
+                kind: 'noun',
+                field: 'brood',
+                level: 1,
+                nl: 'het zoete tarwebrood',
+                sv: 'vetebröd',
+                article: 'ett',
+                definite: 'vetebrödet',
+                plural: 'vetebröd',
+                why: 'Vetebröd is een ett-woord, net als bröd; het meervoud blijft hetzelfde.',
                 accept: []
             }
         ]
@@ -298,7 +337,7 @@ export const OUTINGS = [
                     preteritum: 'betalade',
                     supinum: 'betalat'
                 },
-                why: 'Betala eindigt op -a, dus de verleden tijd wordt betalade.',
+                why: 'Betala krijgt -ar in de tegenwoordige tijd en -ade in de verleden tijd.',
                 accept: []
             },
             {
@@ -339,7 +378,7 @@ export const OUTINGS = [
         type: 'uitje',
         title: 'Naar de kringloopwinkel',
         sv: 'På loppis',
-        scene: 'Een tafel vol oude spullen, en Jacob heeft alweer een lamp in zijn hand.',
+        scene: 'Een tafel vol oude spullen, en voor je het weet heb je alweer een lamp in je hand.',
         canNow: 'Nu kun je vragen naar de prijs, afdingen en zeggen dat iets een vondst is.',
         note: 'Myrorna is een Zweedse kringloopketen van het Leger des Heils. De eerste echte winkel opende in 1899 in Stockholm. De opbrengst gaat naar sociaal werk.',
         source: 'https://sv.wikipedia.org/wiki/Myrorna',
@@ -408,7 +447,7 @@ export const OUTINGS = [
                     preteritum: 'prutade',
                     supinum: 'prutat'
                 },
-                why: 'Pruta eindigt op -a, dus de verleden tijd wordt prutade.',
+                why: 'Pruta krijgt -ar in de tegenwoordige tijd en -ade in de verleden tijd.',
                 accept: []
             },
             {
@@ -429,7 +468,7 @@ export const OUTINGS = [
                 nl: 'Op het prijskaartje staat vijftig kronen.',
                 sv: 'Det står femtio kronor på prislappen.',
                 why: 'Det står ... på prislappen is "er staat ... op het prijskaartje". Prislappen is de bepaalde vorm; kronor is het meervoud van krona.',
-                accept: []
+                accept: ['På prislappen står det femtio kronor.']
             },
             {
                 id: 'ut-loppis-g-08',
@@ -537,9 +576,9 @@ export const OUTINGS = [
                 field: 'plaats',
                 level: 1,
                 nl: 'We gaan naar de markt in Kivik.',
-                sv: 'Vi går på marknaden i Kivik.',
-                why: 'På marknaden is "op de markt"; i Kivik is "in Kivik". Je kunt ook till marknaden zeggen: "naar de markt".',
-                accept: ['Vi går till marknaden i Kivik.']
+                sv: 'Vi går till marknaden i Kivik.',
+                why: 'Till marknaden is "naar de markt"; i Kivik is "in Kivik". Je kunt ook på marknaden zeggen.',
+                accept: ['Vi går på marknaden i Kivik.']
             },
             {
                 id: 'ut-kivik-g-08',
@@ -669,7 +708,7 @@ export const OUTINGS = [
         type: 'uitje',
         title: 'Wandelen bij Brösarp',
         sv: 'Till Brösarps backar',
-        scene: 'Op en neer door de heuvels bij Brösarp. Jacob loopt voorop, Cleo kijkt mee vanuit de rugzak.',
+        scene: 'Op en neer door de heuvels bij Brösarp. Cleo kijkt mee vanuit de rugzak.',
         canNow: 'Nu kun je vertellen wat je ziet en dat je gaat wandelen.',
         note: 'Brösarps backar zijn heuvels uit de laatste ijstijd, bekend om hun bloemen. Begrazing houdt het landschap open.',
         source: 'https://sv.wikipedia.org/wiki/Brösarps_backar',
@@ -738,7 +777,7 @@ export const OUTINGS = [
                     preteritum: 'vandrade',
                     supinum: 'vandrat'
                 },
-                why: 'Vandra eindigt op -a, dus de verleden tijd wordt vandrade.',
+                why: 'Vandra krijgt -ar in de tegenwoordige tijd en -ade in de verleden tijd.',
                 accept: []
             },
             {

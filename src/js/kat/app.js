@@ -38,6 +38,9 @@ import {
     SprintScreen,
     installTabs
 } from './tabs.js';
+import { renderUitjes, packReward } from './uitjes.js';
+import { renderKalender } from './kalender.js';
+import { vandaagHtml, uitjesChip } from './ui/vandaag.js';
 
 const TABS = [
     { id: 'start', label: 'Start', icon: 'home' },
@@ -46,6 +49,9 @@ const TABS = [
     { id: 'stats', label: 'Stats', icon: 'stats' },
     { id: 'settings', label: 'Instellingen', icon: 'settings' }
 ];
+
+/** Subpagina's die je vanaf Start en Quests opent (#uitjes, #kalender). */
+const SUBS = { uitjes: renderUitjes, kalender: renderKalender };
 
 const STAR = (on, size = 16) =>
     `<svg width="${size}" height="${size}" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z" fill="${on ? '#f6c33b' : '#ffffff'}" stroke="${on ? '#d99a12' : '#cfc7b8'}" stroke-width="1.5" stroke-linejoin="round"/></svg>`;
@@ -58,8 +64,13 @@ export class KatApp {
             tab: window.location.hash.replace('#', '') || 'start',
             viewWorld: null,
             overlay: null,
-            beuken: null
+            beuken: null,
+            sub: null
         };
+        if (SUBS[this.ui.tab]) {
+            this.ui.sub = this.ui.tab;
+            this.ui.tab = 'quests';
+        }
         if (!TABS.some(t => t.id === this.ui.tab)) {
             this.ui.tab = 'start';
         }
@@ -142,7 +153,9 @@ export class KatApp {
         }
         const tab = this.ui.tab;
         let body;
-        if (tab === 'quests') {
+        if (this.ui.sub) {
+            body = SUBS[this.ui.sub](this);
+        } else if (tab === 'quests') {
             body = renderQuests(this);
         } else if (tab === 'rabbla') {
             body = renderBeuken(this);
@@ -209,9 +222,11 @@ export class KatApp {
                 <div class="chips">
                     <span class="chip"><span class="flame">${icon('flame', 20)}</span>${streakDays(s.streak, today)} ${streakDays(s.streak, today) === 1 ? 'dag' : 'dagen'}</span>
                     <span class="chip"><span class="bolt">${icon('bolt', 20)}</span>${s.xp.toLocaleString('nl-NL')} XP</span>
+                    ${uitjesChip()}
                 </div>
                 ${todayCard}
                 <div class="goal">${goal}</div>
+                ${vandaagHtml(this)}
                 ${switcher}
             </div>
             <div class="map">${this.mapHtml(worldId, art, prog, isCurrent)}</div>
@@ -240,7 +255,11 @@ export class KatApp {
                 const stars = isDone
                     ? `<span class="stars">${[0, 1, 2].map(k => STAR(k < prog.stars[idx])).join('')}</span>`
                     : '';
-                const inner = isDone ? icon('check', 34) : isNow ? '' : icon('lock', 26);
+                const inner = isDone
+                    ? icon('check', 34)
+                    : isNow
+                      ? icon('play', 40)
+                      : icon('lock', 26);
                 const label = isNow ? '<span class="play-label">Speel</span>' : '';
                 return `<button class="node ${cls}" style="${left(n.x, n.y)}" data-node="challenge" data-index="${idx}" aria-label="Challenge ${idx + 1}${isDone ? ', gehaald' : isNow ? ', speel nu' : ', nog dicht'}"><span class="dot">${inner}</span>${stars}${label}</button>`;
             }
@@ -286,10 +305,19 @@ export class KatApp {
     }
 
     scrollToNow() {
+        if (this.ui.sub) {
+            window.scrollTo(0, 0);
+            return;
+        }
         window.requestAnimationFrame(() => {
             const el = this.root.querySelector('.node.now, .node.prize-now');
             if (el) {
-                el.scrollIntoView({ block: 'center' });
+                // Midden in het stuk kaart dat onder de vaste kop zichtbaar is.
+                const top = this.root.querySelector('.start-top');
+                const head = top ? top.offsetHeight : 0;
+                const free = window.innerHeight - head - 68;
+                const r = el.getBoundingClientRect();
+                window.scrollTo(0, window.scrollY + r.top + r.height / 2 - head - free / 2);
             } else {
                 window.scrollTo(0, document.body.scrollHeight);
             }
@@ -429,6 +457,7 @@ export class KatApp {
             cracked,
             friendsRound: challenge.kind === 'ontdek' && !challenge.ruleId,
             pack: opts.pack || null,
+            newIds: challenge.newIds || [],
             world: opts.world || worldId
         });
     }
@@ -460,6 +489,8 @@ export class KatApp {
         let body;
         let badge = '';
         let extra = '';
+        let sky = art.sky;
+        let backdrop = art.svg;
         if (r.type === 'chest') {
             pose = 'happy';
             head = 'De kist is open';
@@ -483,13 +514,12 @@ export class KatApp {
                     <p>Zoveel Zweedse woorden heb je nu ontcijferd zonder dat je ze ooit leerde.</p>`;
             }
         } else if (r.type === 'pack') {
-            const pack = packById(r.pack);
+            const pr = packReward(r, STAR);
             pose = 'happy';
             badge = `+${r.result.xp + (r.questXp || 0)} XP`;
-            head = esc(pack.title);
-            body = `<div class="bigstars">${[0, 1, 2].map(k => `<span>${STAR(k < r.result.stars, k === 1 ? 64 : 50)}</span>`).join('')}</div>
-                <p>${esc(pack.canNow)}</p>
-                <p class="muted">De nieuwe woorden komen de komende dagen terug bij Opfrissen.</p>`;
+            ({ head, body, sky } = pr);
+            extra = pr.art;
+            backdrop = '';
         } else if (r.type === 'master' && r.passed) {
             pose = 'happy';
             head = `${esc(world.title)} gehaald`;
@@ -528,12 +558,12 @@ export class KatApp {
         }
         const lvl = levelFor(s.xp);
         this.openOverlay(host => {
-            host.innerHTML = `<section class="reward" style="--world-sky:${art.sky}">
-                <div class="reward-art">${art.svg}</div>
+            host.innerHTML = `<section class="reward${r.type === 'pack' ? ' reward-pack' : ''}" style="--world-sky:${sky}">
+                <div class="reward-art">${backdrop}</div>
                 <div class="modal" role="dialog" aria-labelledby="reward-title">
                     ${badge ? `<span class="xp-badge">${badge}</span>` : ''}
                     ${extra ? `<div>${extra}</div>` : ''}
-                    ${cleo(pose, 150)}
+                    ${r.type === 'pack' ? '' : cleo(pose, 150)}
                     <h2 id="reward-title">${head}</h2>
                     ${body}
                     <div class="chips" style="justify-content:center">
@@ -595,6 +625,7 @@ export class KatApp {
             this.ui.beuken = null;
             this.ui.codekraker = false;
             this.ui.rule = null;
+            this.ui.sub = null;
             window.history.replaceState(null, '', `#${t.dataset.tab}`);
             this.render();
             window.scrollTo(0, 0);
@@ -629,9 +660,29 @@ export class KatApp {
             this.play('challenge', { style: t.dataset.value });
         } else if (act === 'sprint') {
             this.openOverlay(host => new SprintScreen(host, this));
+        } else if (['open-sub', 'close-sub', 'play-pack', 'kal-open'].includes(act)) {
+            this.onSub(act, t);
         } else if (this.tabAction) {
             this.tabAction(act, t, e);
         }
+    }
+
+    /** Uitjes en kalender: openen, sluiten, een rondje starten. */
+    onSub(act, t) {
+        if (act === 'play-pack') {
+            this.play('pack', { pack: t.dataset.pack, returnTab: this.ui.tab });
+            return;
+        }
+        if (act === 'kal-open') {
+            this.ui.kalOpen = this.ui.kalOpen === t.dataset.id ? null : t.dataset.id;
+            this.render();
+            return;
+        }
+        this.ui.sub = act === 'open-sub' ? t.dataset.sub : null;
+        this.ui.kalOpen = act === 'open-sub' ? t.dataset.open || null : null;
+        window.history.replaceState(null, '', `#${this.ui.sub || this.ui.tab}`);
+        this.render();
+        this.scrollToNow();
     }
 
     goNext() {

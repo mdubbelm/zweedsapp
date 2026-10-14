@@ -1,6 +1,8 @@
 /**
  * Het vraagscherm. Kaal: vraag, invoerveld, klaar. Geen Cleo en geen
  * meldingen tijdens een vraag; die komen pas bij de beloning.
+ * Bij een rondje van een uitje of feestdag staat de tekening van de plek
+ * boven elke vraag, zodat je weet waar je bent.
  */
 
 import { escapeHtml as esc } from '../utils/helpers.js';
@@ -10,6 +12,7 @@ import { icon, MODES } from './ui/icons.js';
 import { speak } from './ui/speech.js';
 import { shuffle } from '../engine/challenge.js';
 import { findFriendWord } from '../engine/ontdek.js';
+import { scene, spotScene, hasScene } from '../art/scenes.js';
 
 const PRAISE = ['Goed zo!', 'Precies.', 'Ja, raak!', 'Snyggt!', 'Klopt helemaal.'];
 
@@ -82,6 +85,27 @@ export class RunScreen {
         return this.items.get(this.q.itemId);
     }
 
+    /** Hoort deze vraag bij een uitje of feestdag met een eigen tekening? */
+    isPack() {
+        return Boolean(this.item.pack && hasScene(this.item.pack));
+    }
+
+    /** De plek boven de vraag. Bij een nieuw woord met eigen tekening staat dat ding uitgelicht. */
+    sceneHtml() {
+        const spot = this.q.phase === 'card' ? spotScene(this.item.pack, this.item.sv) : '';
+        const tall = this.mode() === 'card' || this.step === 'feedback' ? '' : ' tall';
+        const art = spot || scene(this.item.pack, { fit: tall ? 'bottom' : 'cover' });
+        return `<div class="run-scene${tall}${spot ? ' spot' : ''}">${art}</div>`;
+    }
+
+    tntHtml() {
+        if (this.mode() === 'guess') {
+            return '';
+        }
+        const tnt = this.store.get().tnt;
+        return `<button class="pill" data-act="tnt" ${tnt > 0 ? '' : 'disabled'} aria-label="Van tafel: Cleo tikt de vraag weg, hij komt later terug">${icon('paw', 18)} Van tafel <small>×${tnt}</small></button>`;
+    }
+
     mode() {
         if (this.q.phase === 'card' && this.q.guess && this.step === 'guess') {
             return 'guess';
@@ -111,12 +135,17 @@ export class RunScreen {
         }
         const m = MODES[this.mode()] || MODES.type;
         const pct = Math.round(progress(this.session) * 100);
-        this.root.innerHTML = `<section class="run" aria-label="Challenge">
+        // Rondje van een uitje of feestdag: de plek staat boven elke vraag, Van tafel in de kopregel.
+        const pack = this.isPack();
+        const topTnt = pack && this.step !== 'feedback' ? this.tntHtml() : '';
+        this.root.innerHTML = `<section class="run${pack ? ' pack-run' : ''}" aria-label="Challenge">
             <div class="run-top">
                 <button class="x" data-act="exit" aria-label="Stoppen">${icon('close')}</button>
                 <div class="bar" role="progressbar" aria-valuenow="${pct}" aria-valuemin="0" aria-valuemax="100"><i style="width:${pct}%"></i></div>
+                ${topTnt}
             </div>
             <div class="run-body tnt-wrap">
+                ${pack ? this.sceneHtml() : ''}
                 <div class="mode">${icon(m.icon, 20)} ${m.label}</div>
                 <div class="tnt-target">${this.bodyHtml()}</div>
             </div>
@@ -162,8 +191,9 @@ export class RunScreen {
         }
         if (mode === 'gap') {
             const field = `<input data-answer autocomplete="off" autocapitalize="off" spellcheck="false" lang="sv" aria-label="Het ontbrekende woord" ${this.step === 'feedback' ? 'disabled' : ''} value="${esc(this.local.value || '')}">`;
+            const line = `<p class="gapline">${esc(it.sv).replace('___', field)}</p>`;
             return `<div class="prompt"><h1>Vul het gat.</h1><p>${esc(it.nl)}</p></div>
-                <p class="gapline">${esc(it.sv).replace('___', field)}</p>${keys}${hint}`;
+                ${this.isPack() ? `<div class="gapcard">${line}${keys}</div>` : line + keys}${hint}`;
         }
         if (mode === 'form') {
             return `<div class="prompt"><h1>${esc(it.prompt)}</h1><p>Welke vorm hoort hierbij?</p></div>
@@ -243,10 +273,9 @@ export class RunScreen {
         }
         const mode = this.mode();
         const noHints = this.q.noHints || this.q.phase === 'card';
-        const tnt = this.store.get().tnt;
         const aids = `<div class="aids">
             ${noHints || mode === 'guess' ? '' : `<button class="pill" data-act="hint" ${this.local.hint ? 'disabled' : ''}>Hint</button>`}
-            ${mode === 'guess' ? '' : `<button class="pill" data-act="tnt" ${tnt > 0 ? '' : 'disabled'} aria-label="Van tafel: Cleo tikt de vraag weg, hij komt later terug">${icon('paw', 18)} Van tafel <small>×${tnt}</small></button>`}
+            ${this.isPack() ? '' : this.tntHtml()}
         </div>`;
         let main;
         if (mode === 'guess') {

@@ -9,7 +9,7 @@ import { dueItems, sits } from '../engine/srs.js';
 import { sprintPool, shuffle, worldIndex } from '../engine/challenge.js';
 import { checkAnswer, expectedAnswer } from '../engine/check.js';
 import { streakDays, levelFor, XP } from '../engine/rewards.js';
-import { addXp } from './store.js';
+import { addXp, backupJson, backupFileName, parseBackup } from './store.js';
 import { WORLDS, CHALLENGES_PER_WORLD, currentWorld } from './worlds.js';
 import { questsFor } from './quests.js';
 import { RULES, FALSE_FRIENDS } from '../content/ontdekken.js';
@@ -17,6 +17,8 @@ import { ruleRound, friendsRound } from '../engine/ontdek.js';
 import { icon } from './ui/icons.js';
 import { speak } from './ui/speech.js';
 import { cleo } from '../art/cleo.js';
+import { OUTINGS } from '../content/uitjes.js';
+import { calendarFor, inDaysText, svName } from './feest.js';
 import { signIn, signOut } from '../services/auth.js';
 import { isSupabaseEnabled } from '../services/supabase.js';
 
@@ -86,6 +88,9 @@ export function renderQuests(app) {
     const counts = s.quests && s.quests.day === today ? s.quests : { counts: {}, done: {} };
     const due = dueItems(s.srs, today).filter(id => ITEMS.some(i => i.id === id)).length;
     const sprintN = sprintPool(ITEMS, s.srs).length;
+    const outingSeen = OUTINGS.flatMap(o => o.items).filter(it => s.srs[it.id]).length;
+    const cal = calendarFor(app.calendarDay());
+    const nextFeast = cal.today[0] || cal.upcoming[0] || null;
 
     const quests = qs
         .map(q => {
@@ -107,6 +112,8 @@ export function renderQuests(app) {
         <div class="list">
             ${row({ ic: 'key', title: 'Codekraker', sub: cracked ? `${cracked} woorden ontcijferd zonder ze te leren` : 'Lees Zweeds dat je nooit hebt geleerd', act: 'open-codekraker', end: icon('chevron', 20) })}
             ${row({ ic: 'mask', title: 'Valse vrienden', sub: seenFriends ? `${seenFriends} van ${FALSE_FRIENDS.length} doorzien` : 'Rolig is niet rustig. Wat dan wel?', act: 'friends' })}
+            ${row({ ic: 'map', title: 'Uitjes in Österlen', sub: outingSeen ? `${OUTINGS.length} plekken, ${outingSeen} woorden al gezien` : `${OUTINGS.length} plekken, van de bakker tot Ales stenar`, act: 'open-sub', attrs: 'data-sub="uitjes"', end: icon('chevron', 20) })}
+            ${row({ ic: 'calendar', title: 'Feestdagen in Zweden', sub: nextFeast ? `${inDaysText(nextFeast.inDays).replace(/^./, c => c.toUpperCase())}: ${esc(svName(nextFeast.holiday))}` : 'Wat er gevierd en gegeten wordt', act: 'open-sub', attrs: 'data-sub="kalender"', end: icon('chevron', 20) })}
         </div>
         <h2 style="margin:8px 0 0;font:600 19px var(--display)">Spelvormen</h2>
         <div class="list">
@@ -311,6 +318,121 @@ export function renderStats(app) {
 
 // ---------- Instellingen ----------
 
+/** Wat je op het startscherm kunt verbergen. */
+export const START_PARTS = [
+    {
+        key: 'vandaag',
+        label: 'Vandaag in Zweden',
+        sub: 'De feestdag van vandaag of de eerstvolgende'
+    },
+    { key: 'spaardoel', label: 'Spaardoel', sub: 'Hoeveel XP nog tot jullie beloning' },
+    { key: 'vormen', label: 'Mix, Luisteren, Pen', sub: 'De keuze blijft staan zoals hij nu is' },
+    { key: 'uitjes', label: 'Knop Uitjes', sub: 'De uitjes blijven bereikbaar via Quests' }
+];
+
+/** Staat een onderdeel van het startscherm aan? Standaard alles aan. */
+export function showsOnStart(state, key) {
+    return !((state.settings && state.settings.hide) || {})[key];
+}
+
+const NL_MONTHS = 'jan feb mrt apr mei jun jul aug sep okt nov dec'.split(' ');
+
+function backupDate(iso) {
+    if (!iso) {
+        return 'onbekende datum';
+    }
+    const d = new Date(iso);
+    return `${d.getDate()} ${NL_MONTHS[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+function renderBackup(app) {
+    const s = app.state;
+    const pending = app.ui.restore;
+    if (pending && pending.ok) {
+        const st = pending.state;
+        const words = Object.keys(st.srs || {}).length;
+        return `<div class="panel">
+            <h2>Back-up terugzetten</h2>
+            <p style="margin:0">Back-up van <b>${esc(backupDate(pending.savedAt))}</b>: ${st.xp.toLocaleString('nl-NL')} XP en ${words} ${words === 1 ? 'woord' : 'woorden'} in het herhaalschema.</p>
+            <p class="empty" style="margin:0">Dit vervangt wat nu op dit apparaat staat.</p>
+            <div class="verdict"><button class="btn soft" data-act="restore-no">Nee, laat staan</button><button class="btn" data-act="restore-yes">Ja, terugzetten</button></div>
+        </div>`;
+    }
+    const last = s.settings.lastBackup;
+    return `<div class="panel">
+        <h2>Back-up</h2>
+        <p class="empty" style="margin:0">Bewaar je voortgang als bestand, bijvoorbeeld in Bestanden, iCloud Drive of Nextcloud. Met dat bestand zet je alles terug, ook op een ander apparaat.${last ? ` Laatste back-up: ${esc(backupDate(last))}.` : ''}</p>
+        ${pending && !pending.ok ? `<p class="backup-note" role="status">${esc(pending.reason)}</p>` : ''}
+        <div class="backup-actions">
+            <button class="btn" data-act="backup">${icon('paper', 18)} Back-up bewaren</button>
+            <label class="btn soft" for="backup-file">${icon('refresh', 18)} Terugzetten</label>
+            <input id="backup-file" class="visually-hidden" type="file" accept="application/json,.json" data-backup="file">
+        </div>
+    </div>`;
+}
+
+function renderStartParts(app) {
+    const s = app.state;
+    const rows = START_PARTS.map(
+        p => `<button class="switch-row" data-act="show-part" data-key="${p.key}" aria-pressed="${showsOnStart(s, p.key)}">
+            <span><b>${esc(p.label)}</b><small>${esc(p.sub)}</small></span>
+            <span class="switch" aria-hidden="true"><i></i></span>
+        </button>`
+    ).join('');
+    return `<div class="panel">
+        <h2>Op het startscherm</h2>
+        <p class="empty" style="margin:0">Zet uit wat je niet nodig hebt. De kaart krijgt dan meer ruimte.</p>
+        <div class="switch-list">${rows}</div>
+    </div>`;
+}
+
+/** Back-up downloaden als bestand. */
+function downloadBackup(text, name) {
+    const url = URL.createObjectURL(new Blob([text], { type: 'application/json' }));
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+/**
+ * Back-up als bestand aanbieden. Op een telefoon via het deelmenu (dan kies
+ * je zelf Bestanden, iCloud Drive of Nextcloud), anders als download.
+ * Lukt delen niet, dan alsnog downloaden.
+ */
+async function saveBackup(app) {
+    const text = backupJson(app.state);
+    const name = backupFileName();
+    const FileCtor = window.File;
+    const file =
+        typeof FileCtor === 'function'
+            ? new FileCtor([text], name, { type: 'application/json' })
+            : null;
+    const touch = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+    let shared = false;
+    if (touch && file && navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+            await navigator.share({ files: [file], title: name });
+            shared = true;
+        } catch (err) {
+            if (err && err.name === 'AbortError') {
+                return;
+            }
+        }
+    }
+    if (!shared) {
+        downloadBackup(text, name);
+    }
+    app.store.update(st => {
+        st.settings.lastBackup = new Date().toISOString();
+        return st;
+    });
+    app.toast('Back-up klaar.');
+}
+
 export function renderSettings(app) {
     const s = app.state;
     const acc = app.account;
@@ -352,6 +474,8 @@ export function renderSettings(app) {
             ${rewards}
             <button class="btn soft small" data-act="rw-add" style="justify-self:start">${icon('plus', 18)} Beloning toevoegen</button>
         </div>
+        ${renderStartParts(app)}
+        ${renderBackup(app)}
         <div class="panel"><h2>Account</h2>${account}</div>
         <div class="panel">
             <h2>Opnieuw beginnen</h2>
@@ -480,6 +604,26 @@ export function installTabs(app) {
                 s.settings.voice = s.settings.voice === false;
                 return s;
             });
+        } else if (act === 'show-part') {
+            const key = t.dataset.key;
+            app.store.update(st => {
+                const hide = { ...(st.settings.hide || {}) };
+                hide[key] = !hide[key];
+                st.settings.hide = hide;
+                return st;
+            });
+        } else if (act === 'backup') {
+            saveBackup(app);
+        } else if (act === 'restore-no') {
+            app.ui.restore = null;
+            app.render();
+        } else if (act === 'restore-yes') {
+            const pending = app.ui.restore;
+            app.ui.restore = null;
+            if (pending && pending.ok) {
+                app.store.restore(pending.state);
+                app.toast('Back-up teruggezet.');
+            }
         } else if (act === 'logout') {
             signOut().then(() => window.location.reload());
         } else if (act === 'reset') {
@@ -496,6 +640,18 @@ export function installTabs(app) {
 
     app.changeAction = e => {
         const el = e.target;
+        if (el.dataset.backup === 'file') {
+            const file = el.files && el.files[0];
+            if (!file) {
+                return;
+            }
+            file.text().then(text => {
+                app.ui.restore = parseBackup(text);
+                el.value = '';
+                app.render();
+            });
+            return;
+        }
         if (el.dataset.set === 'name') {
             app.store.update(s => ({ ...s, name: el.value.trim().slice(0, 40) }));
         } else if (el.dataset.rw) {

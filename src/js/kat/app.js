@@ -5,10 +5,12 @@
 
 import { escapeHtml as esc } from '../utils/helpers.js';
 import { ITEMS } from '../content/items.js';
+import { PACK_ITEMS, packById } from '../content/packs.js';
 import { WORLD_ART } from '../art/worlds.js';
 import { cleo } from '../art/cleo.js';
 import { toDay } from '../engine/dates.js';
 import { buildChallenge, buildMaster, worldIndex } from '../engine/challenge.js';
+import { buildPackRound } from '../engine/packs.js';
 import { dueItems } from '../engine/srs.js';
 import { updateStreak, streakDays, chestLoot, levelFor } from '../engine/rewards.js';
 import { createStore, addXp } from './store.js';
@@ -33,9 +35,13 @@ import {
     renderBeuken,
     renderStats,
     renderSettings,
+    showsOnStart,
     SprintScreen,
     installTabs
 } from './tabs.js';
+import { renderUitjes, packReward } from './uitjes.js';
+import { renderKalender } from './kalender.js';
+import { vandaagHtml, uitjesChip, cleoOutfit, fitBadges } from './ui/vandaag.js';
 
 const TABS = [
     { id: 'start', label: 'Start', icon: 'home' },
@@ -44,6 +50,9 @@ const TABS = [
     { id: 'stats', label: 'Stats', icon: 'stats' },
     { id: 'settings', label: 'Instellingen', icon: 'settings' }
 ];
+
+/** Subpagina's die je vanaf Start en Quests opent (#uitjes, #kalender). */
+const SUBS = { uitjes: renderUitjes, kalender: renderKalender };
 
 const STAR = (on, size = 16) =>
     `<svg width="${size}" height="${size}" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z" fill="${on ? '#f6c33b' : '#ffffff'}" stroke="${on ? '#d99a12' : '#cfc7b8'}" stroke-width="1.5" stroke-linejoin="round"/></svg>`;
@@ -56,8 +65,13 @@ export class KatApp {
             tab: window.location.hash.replace('#', '') || 'start',
             viewWorld: null,
             overlay: null,
-            beuken: null
+            beuken: null,
+            sub: null
         };
+        if (SUBS[this.ui.tab]) {
+            this.ui.sub = this.ui.tab;
+            this.ui.tab = 'quests';
+        }
         if (!TABS.some(t => t.id === this.ui.tab)) {
             this.ui.tab = 'start';
         }
@@ -102,12 +116,24 @@ export class KatApp {
         return toDay();
     }
 
+    /**
+     * De dag voor de feestdagkalender. Met ?datum=2026-12-13 in de adresbalk
+     * kun je een andere dag bekijken; voortgang gebruikt altijd de echte dag.
+     */
+    calendarDay() {
+        const m = /[?&]datum=(\d{4}-\d{2}-\d{2})/.exec(window.location.search);
+        return m ? m[1] : toDay();
+    }
+
     unlockedWorlds() {
         const now = worldIndex(currentWorld(this.state.path));
         return WORLDS.filter((w, i) => i <= now).map(w => w.id);
     }
 
     isCompressed(item) {
+        if (!item.world) {
+            return false;
+        }
         const p = this.state.path[item.world];
         return !p || !p.master;
     }
@@ -128,7 +154,9 @@ export class KatApp {
         }
         const tab = this.ui.tab;
         let body;
-        if (tab === 'quests') {
+        if (this.ui.sub) {
+            body = SUBS[this.ui.sub](this);
+        } else if (tab === 'quests') {
             body = renderQuests(this);
         } else if (tab === 'rabbla') {
             body = renderBeuken(this);
@@ -144,6 +172,7 @@ export class KatApp {
                 t =>
                     `<button data-tab="${t.id}" ${t.id === tab ? 'aria-current="page"' : ''}>${icon(t.icon)}<span>${t.label}</span></button>`
             ).join('')}</nav>`;
+        fitBadges(this.root);
     }
 
     renderStart() {
@@ -172,13 +201,13 @@ export class KatApp {
             `<button data-style="${id}" aria-pressed="${style === id}">${icon(ic, 16)}${label}</button>`;
 
         const todayCard = `<div class="today" style="--world-accent:${art.accent || '#2e7d4f'};--world-sky:${art.sky}">
-            <div class="thumb">${cleo('sit', 60)}</div>
+            <div class="thumb">${cleo('sit', 60, cleoOutfit(this))}</div>
             <div>
                 <h2>${isCurrent ? `Vandaag: ${esc(world.title)}` : esc(world.title)}</h2>
                 <div class="meta"><span>${done} van ${CHALLENGES_PER_WORLD}</span><div class="bar"><i style="width:${(done / CHALLENGES_PER_WORLD) * 100}%"></i></div></div>
             </div>
             ${isCurrent && step.type !== 'done' ? `<button class="btn" data-act="go">Verder</button>` : ''}
-            ${isCurrent ? `<div class="styles" role="group" aria-label="Kies de vorm">${styleBtn('mix', 'Mix', 'pencil')}${styleBtn('luister', 'Luisteren', 'headphones')}${styleBtn('pen', 'Pen', 'paper')}</div>` : ''}
+            ${isCurrent && showsOnStart(s, 'vormen') ? `<div class="styles" role="group" aria-label="Kies de vorm">${styleBtn('mix', 'Mix', 'pencil')}${styleBtn('luister', 'Luisteren', 'headphones')}${styleBtn('pen', 'Pen', 'paper')}</div>` : ''}
         </div>`;
 
         const unlocked = this.unlockedWorlds();
@@ -195,9 +224,11 @@ export class KatApp {
                 <div class="chips">
                     <span class="chip"><span class="flame">${icon('flame', 20)}</span>${streakDays(s.streak, today)} ${streakDays(s.streak, today) === 1 ? 'dag' : 'dagen'}</span>
                     <span class="chip"><span class="bolt">${icon('bolt', 20)}</span>${s.xp.toLocaleString('nl-NL')} XP</span>
+                    ${showsOnStart(s, 'uitjes') ? uitjesChip() : ''}
                 </div>
                 ${todayCard}
-                <div class="goal">${goal}</div>
+                ${showsOnStart(s, 'spaardoel') ? `<div class="goal">${goal}</div>` : ''}
+                ${showsOnStart(s, 'vandaag') ? vandaagHtml(this) : ''}
                 ${switcher}
             </div>
             <div class="map">${this.mapHtml(worldId, art, prog, isCurrent)}</div>
@@ -226,7 +257,11 @@ export class KatApp {
                 const stars = isDone
                     ? `<span class="stars">${[0, 1, 2].map(k => STAR(k < prog.stars[idx])).join('')}</span>`
                     : '';
-                const inner = isDone ? icon('check', 34) : isNow ? '' : icon('lock', 26);
+                const inner = isDone
+                    ? icon('check', 34)
+                    : isNow
+                      ? icon('play', 40)
+                      : icon('lock', 26);
                 const label = isNow ? '<span class="play-label">Speel</span>' : '';
                 return `<button class="node ${cls}" style="${left(n.x, n.y)}" data-node="challenge" data-index="${idx}" aria-label="Challenge ${idx + 1}${isDone ? ', gehaald' : isNow ? ', speel nu' : ', nog dicht'}"><span class="dot">${inner}</span>${stars}${label}</button>`;
             }
@@ -263,23 +298,84 @@ export class KatApp {
         });
 
         const cleoHtml = cleoAt
-            ? `<div class="cleo-on-map" style="left:${((cleoAt.x + (cleoAt.x > 195 ? -88 : 88)) / 390) * 100}%;top:${(cleoAt.y / 1500) * 100}%">${cleo('sit', 92)}</div>`
+            ? `<div class="cleo-on-map" style="left:${((cleoAt.x + (cleoAt.x > 195 ? -88 : 88)) / 390) * 100}%;top:${(cleoAt.y / 1500) * 100}%">${cleo('sit', 92, cleoOutfit(this))}</div>`
             : '';
         const calloutHtml = callout
-            ? `<div class="callout" style="left:${(callout.n.x / 390) * 100}%;top:${((callout.n.y + 50) / 1500) * 100}%">${callout.text}</div>`
+            ? `<div class="callout${this.ui.tuck ? ' tucked' : ''}" style="left:${(callout.n.x / 390) * 100}%;top:${((callout.n.y + 50) / 1500) * 100}%">${callout.text}</div>`
             : '';
         return `<div class="map-art" data-world="${worldId}">${art.svg}${nodes.join('')}${cleoHtml}${calloutHtml}</div>`;
     }
 
     scrollToNow() {
+        if (this.ui.sub) {
+            window.scrollTo(0, 0);
+            return;
+        }
         window.requestAnimationFrame(() => {
             const el = this.root.querySelector('.node.now, .node.prize-now');
             if (el) {
-                el.scrollIntoView({ block: 'center' });
+                // Midden in het stuk kaart dat onder de vaste kop zichtbaar is.
+                const top = this.root.querySelector('.start-top');
+                const head = top ? top.offsetHeight : 0;
+                const fade = top
+                    ? parseFloat(window.getComputedStyle(top).getPropertyValue('--start-fade')) || 0
+                    : 0;
+                const free = window.innerHeight - head - 68;
+                const r = el.getBoundingClientRect();
+                const ideal = window.scrollY + r.top + r.height / 2 - head - free / 2;
+                window.scrollTo(0, this.snapPastHead(ideal, head, fade, el));
             } else {
                 window.scrollTo(0, document.body.scrollHeight);
             }
         });
+    }
+
+    /**
+     * Schuift de scrollpositie zo weinig mogelijk, zodat geen knoop van het
+     * pad half onder de rand van de vaste kop valt: elke knoop staat heel in
+     * beeld of zit helemaal achter de kop, en de huidige blijft zichtbaar.
+     * Past een wolkje ("nog 3 challenges") er dan niet heel bij, dan wacht
+     * het onzichtbaar tot er gescrold wordt.
+     */
+    snapPastHead(ideal, head, fade, now) {
+        const max = document.documentElement.scrollHeight - window.innerHeight;
+        const clamp = y => Math.max(0, Math.min(max, y));
+        const items = [...this.root.querySelectorAll('.map .node, .map .callout')].map(el => {
+            const r = el.getBoundingClientRect();
+            return { el, top: r.top + window.scrollY, bottom: r.bottom + window.scrollY };
+        });
+        const clean = (it, y) =>
+            it.el === now
+                ? it.top - y >= head && it.bottom - y <= window.innerHeight - 68
+                : it.bottom - y <= head - fade || it.top - y >= head + 4;
+        const nodes = items.filter(it => !it.el.classList.contains('callout'));
+        const tries = [ideal, ...items.flatMap(it => [it.top - head - 4, it.bottom - head + fade])]
+            .map(clamp)
+            .sort((a, b) => Math.abs(a - ideal) - Math.abs(b - ideal));
+        const y =
+            tries.find(t => items.every(it => clean(it, t))) ??
+            tries.find(t => nodes.every(it => clean(it, t))) ??
+            clamp(ideal);
+        // Onthouden in ui, zodat het ook na een nieuwe render (sync) zo blijft.
+        this.ui.tuck = items.some(it => it.el.classList.contains('callout') && !clean(it, y));
+        if (!this.ui.tuck) {
+            this.root
+                .querySelectorAll('.callout.tucked')
+                .forEach(c => c.classList.remove('tucked'));
+        } else {
+            this.root.querySelectorAll('.map .callout').forEach(c => c.classList.add('tucked'));
+            const show = () => {
+                this.ui.tuck = false;
+                this.root
+                    .querySelectorAll('.callout.tucked')
+                    .forEach(c => c.classList.remove('tucked'));
+            };
+            setTimeout(
+                () => window.addEventListener('scroll', show, { once: true, passive: true }),
+                200
+            );
+        }
+        return y;
     }
 
     // ---------- spelen ----------
@@ -290,11 +386,14 @@ export class KatApp {
         let challenge;
         if (kind === 'ontdek') {
             challenge = opts.round;
+        } else if (kind === 'pack') {
+            const pack = packById(opts.pack);
+            challenge = { ...buildPackRound(pack, s.srs), items: PACK_ITEMS };
         } else if (kind === 'master') {
             challenge = buildMaster({ items: ITEMS, srs: s.srs, world: opts.world });
         } else if (kind === 'refresh') {
             const ids = dueItems(s.srs, today).slice(0, 10);
-            const byId = new Map(ITEMS.map(i => [i.id, i]));
+            const byId = new Map([...ITEMS, ...PACK_ITEMS].map(i => [i.id, i]));
             challenge = {
                 kind: 'refresh',
                 style: 'mix',
@@ -335,7 +434,7 @@ export class KatApp {
         this.openOverlay(host => {
             const screen = new RunScreen(host, {
                 session,
-                items: challenge.items ? [...ITEMS, ...challenge.items] : ITEMS,
+                items: challenge.items ? [...ITEMS, ...challenge.items] : [...ITEMS, ...PACK_ITEMS],
                 store: this.store,
                 onExit: () => this.closeOverlay(),
                 onFinish: result => this.finishRun(challenge, result, opts)
@@ -411,6 +510,8 @@ export class KatApp {
             questXp,
             cracked,
             friendsRound: challenge.kind === 'ontdek' && !challenge.ruleId,
+            pack: opts.pack || null,
+            newIds: challenge.newIds || [],
             world: opts.world || worldId
         });
     }
@@ -442,6 +543,8 @@ export class KatApp {
         let body;
         let badge = '';
         let extra = '';
+        let sky = art.sky;
+        let backdrop = art.svg;
         if (r.type === 'chest') {
             pose = 'happy';
             head = 'De kist is open';
@@ -464,6 +567,13 @@ export class KatApp {
                 body = `<p class="loot">${r.cracked} ${r.cracked === 1 ? 'woord' : 'woorden'}</p>
                     <p>Zoveel Zweedse woorden heb je nu ontcijferd zonder dat je ze ooit leerde.</p>`;
             }
+        } else if (r.type === 'pack') {
+            const pr = packReward(r, STAR);
+            pose = 'happy';
+            badge = `+${r.result.xp + (r.questXp || 0)} XP`;
+            ({ head, body, sky } = pr);
+            extra = pr.art;
+            backdrop = '';
         } else if (r.type === 'master' && r.passed) {
             pose = 'happy';
             head = `${esc(world.title)} gehaald`;
@@ -502,12 +612,12 @@ export class KatApp {
         }
         const lvl = levelFor(s.xp);
         this.openOverlay(host => {
-            host.innerHTML = `<section class="reward" style="--world-sky:${art.sky}">
-                <div class="reward-art">${art.svg}</div>
+            host.innerHTML = `<section class="reward${r.type === 'pack' ? ' reward-pack' : ''}" style="--world-sky:${sky}">
+                <div class="reward-art">${backdrop}</div>
                 <div class="modal" role="dialog" aria-labelledby="reward-title">
                     ${badge ? `<span class="xp-badge">${badge}</span>` : ''}
                     ${extra ? `<div>${extra}</div>` : ''}
-                    ${cleo(pose, 150)}
+                    ${r.type === 'pack' ? '' : cleo(pose, 150)}
                     <h2 id="reward-title">${head}</h2>
                     ${body}
                     <div class="chips" style="justify-content:center">
@@ -569,6 +679,7 @@ export class KatApp {
             this.ui.beuken = null;
             this.ui.codekraker = false;
             this.ui.rule = null;
+            this.ui.sub = null;
             window.history.replaceState(null, '', `#${t.dataset.tab}`);
             this.render();
             window.scrollTo(0, 0);
@@ -603,9 +714,29 @@ export class KatApp {
             this.play('challenge', { style: t.dataset.value });
         } else if (act === 'sprint') {
             this.openOverlay(host => new SprintScreen(host, this));
+        } else if (['open-sub', 'close-sub', 'play-pack', 'kal-open'].includes(act)) {
+            this.onSub(act, t);
         } else if (this.tabAction) {
             this.tabAction(act, t, e);
         }
+    }
+
+    /** Uitjes en kalender: openen, sluiten, een rondje starten. */
+    onSub(act, t) {
+        if (act === 'play-pack') {
+            this.play('pack', { pack: t.dataset.pack, returnTab: this.ui.tab });
+            return;
+        }
+        if (act === 'kal-open') {
+            this.ui.kalOpen = this.ui.kalOpen === t.dataset.id ? null : t.dataset.id;
+            this.render();
+            return;
+        }
+        this.ui.sub = act === 'open-sub' ? t.dataset.sub : null;
+        this.ui.kalOpen = act === 'open-sub' ? t.dataset.open || null : null;
+        window.history.replaceState(null, '', `#${this.ui.sub || this.ui.tab}`);
+        this.render();
+        this.scrollToNow();
     }
 
     goNext() {

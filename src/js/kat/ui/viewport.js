@@ -24,7 +24,12 @@ export function trackViewport() {
     // staan. Even opnieuw scrollen dwingt een nieuwe layout af.
     document.addEventListener('focusin', e => {
         if (e.target.matches('input')) {
-            setTimeout(() => e.target.scrollIntoView({ block: 'nearest' }), 300);
+            setTimeout(() => {
+                // Het veld kan intussen weg zijn (scherm gewisseld).
+                if (e.target.isConnected && typeof e.target.scrollIntoView === 'function') {
+                    e.target.scrollIntoView({ block: 'nearest' });
+                }
+            }, 300);
         }
     });
     document.addEventListener('focusout', () => {

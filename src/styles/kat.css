@@ -23,6 +23,9 @@
     --gold: #f6c33b;
     --path-done: #2e7d4f;
     --falu: #a3392b;
+    --feest-bg: #fff3e0;
+    --feest-line: #efc993;
+    --feest-ink: #8a3f0c;
     --display: 'Fredoka', 'Nunito', system-ui, sans-serif;
     --body: 'Nunito', system-ui, -apple-system, sans-serif;
     --radius: 18px;
@@ -47,6 +50,9 @@
         --en: #7fb0f0;
         --ett: #f09a60;
         --plural: #b99af0;
+        --feest-bg: #33281c;
+        --feest-line: #6b4a24;
+        --feest-ink: #f5b871;
         color-scheme: dark;
     }
 }
@@ -67,6 +73,9 @@
     --en: #7fb0f0;
     --ett: #f09a60;
     --plural: #b99af0;
+    --feest-bg: #33281c;
+    --feest-line: #6b4a24;
+    --feest-ink: #f5b871;
     color-scheme: dark;
 }
 
@@ -237,16 +246,24 @@ button {
 .start {
     position: relative;
     min-height: 100vh;
+    /* Ruimte voor de tabbalk, zodat ook de eerste knoop van een wereld heel
+     * boven de balk past en scrollToNow geen knoop half hoeft af te snijden. */
+    padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px));
 }
 
 .start-top {
     position: sticky;
     top: 0;
     z-index: 10;
-    padding: 14px 16px 34px;
+    /* Een dichte kop met een strakke rand, geen verloop over de tuin.
+     * scrollToNow leest --start-fade; zonder verloop is dat 0. */
+    --start-fade: 0px;
+    padding: 14px 16px 12px;
     display: grid;
     gap: 12px;
-    background: linear-gradient(var(--paper) 86%, transparent);
+    background: var(--paper);
+    border-bottom: 1px solid var(--line);
+    box-shadow: 0 6px 14px -12px rgb(31 42 51 / 0.35);
 }
 
 .today {
@@ -402,6 +419,13 @@ button {
     animation: breathe 2.4s ease-in-out infinite;
 }
 
+/* Een gevuld speelteken in de huidige stap: dezelfde actie als Verder. */
+.node.now .dot svg {
+    margin-left: 5px;
+    fill: currentColor;
+    stroke-linejoin: round;
+}
+
 .node.locked .dot {
     color: #6f8f73;
     opacity: 0.94;
@@ -426,7 +450,7 @@ button {
     position: absolute;
     transform: translate(-50%, 0);
     pointer-events: none;
-    background: #fff;
+    background: var(--card);
     color: var(--ink);
     padding: 6px 14px;
     border-radius: 99px;
@@ -434,6 +458,12 @@ button {
     font-size: 15px;
     white-space: nowrap;
     box-shadow: 0 3px 10px rgb(0 0 0 / 0.15);
+    transition: opacity 0.2s;
+}
+
+/* Half onder de kop: wacht tot er gescrold wordt (zie snapPastHead). */
+.callout.tucked {
+    opacity: 0;
 }
 
 .cleo-on-map {
@@ -1270,4 +1300,955 @@ mark.friend {
     color: #2a1f00;
     border-radius: 6px;
     padding: 0 4px;
+}
+
+/* ======================================================================
+ * Vandaag in Zweden (startscherm): src/js/kat/ui/vandaag.js
+ * Eén regel onder de kaart van de wereld, nooit een tweede grote knop.
+ * Feestdag: de regel in een zachte kleur. Gewone dag: kaal, naar de kalender.
+ * ====================================================================== */
+
+.chip-link {
+    margin-left: auto;
+    color: var(--ink);
+}
+
+.ut-art svg,
+.run-scene svg,
+.pr-art svg,
+.kal-scene svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* Aantal vragen naast een speelknop (kalender en uitjes). */
+.vd-len {
+    font-size: 13px;
+    font-weight: 700;
+    opacity: 0.75;
+}
+
+/* Eén smalle regel op de vaste kop, nooit over de tuin heen. Links een
+ * rond plaatje dat heel in beeld staat, daarnaast tekst en een pijltje. */
+.vd-line {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 48px;
+    padding: 4px 12px 4px 4px;
+    border: 1.5px solid transparent;
+    border-radius: 26px;
+    background: none;
+    color: var(--ink);
+    text-align: left;
+}
+
+.vd-badge {
+    width: 40px;
+    height: 40px;
+    flex: none;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--card);
+    box-shadow: inset 0 0 0 1.5px var(--line);
+}
+
+/* Breedte 0 met flex: een lange naam maakt de kop nooit breder dan het
+ * scherm, maar loopt door op een volgende regel in plaats van afgekapt. */
+.vd-text {
+    flex: 1 1 0;
+    width: 0;
+    min-width: 0;
+    display: grid;
+    line-height: 1.2;
+}
+
+.vd-text b {
+    font-size: 16px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.vd-kick {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink-soft);
+}
+
+.vd-line > .ico {
+    flex: none;
+    margin-left: -4px;
+}
+
+/* Op een feestdag dezelfde regel, met een zachte kleur van die dag.
+ * Kleuren per dag: lucia (kaarslicht), jul (rood), zomer (groen),
+ * vuur (gloed), warm (de rest, bakdagen en markten). */
+:root {
+    --vd-warm-bg: var(--feest-bg);
+    --vd-warm-glow: #ffe2bd;
+    --vd-warm-line: var(--feest-line);
+    --vd-warm-ink: var(--feest-ink);
+    --vd-lucia-bg: #fff4d4;
+    --vd-lucia-glow: #ffe08a;
+    --vd-lucia-line: #ecc35e;
+    --vd-lucia-ink: #7f5200;
+    --vd-jul-bg: #fdeceb;
+    --vd-jul-glow: #f8c9c2;
+    --vd-jul-line: #e7a39a;
+    --vd-jul-ink: #9c2a21;
+    --vd-zomer-bg: #eff6dc;
+    --vd-zomer-glow: #fbe9a0;
+    --vd-zomer-line: #bcd88a;
+    --vd-zomer-ink: #3d6a14;
+    --vd-vuur-bg: #fff0e2;
+    --vd-vuur-glow: #ffc98f;
+    --vd-vuur-line: #f0ad74;
+    --vd-vuur-ink: #9a3f0c;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) {
+        --vd-warm-glow: #4a3420;
+        --vd-lucia-bg: #2e2716;
+        --vd-lucia-glow: #5a4416;
+        --vd-lucia-line: #6e5520;
+        --vd-lucia-ink: #f6cf6e;
+        --vd-jul-bg: #33201f;
+        --vd-jul-glow: #57302b;
+        --vd-jul-line: #6e3a33;
+        --vd-jul-ink: #f4a39a;
+        --vd-zomer-bg: #212b1a;
+        --vd-zomer-glow: #3b4420;
+        --vd-zomer-line: #4b6430;
+        --vd-zomer-ink: #b9de85;
+        --vd-vuur-bg: #33241a;
+        --vd-vuur-glow: #5a3418;
+        --vd-vuur-line: #74431f;
+        --vd-vuur-ink: #f7ac6e;
+    }
+}
+
+:root[data-theme='dark'] {
+    --vd-warm-glow: #4a3420;
+    --vd-lucia-bg: #2e2716;
+    --vd-lucia-glow: #5a4416;
+    --vd-lucia-line: #6e5520;
+    --vd-lucia-ink: #f6cf6e;
+    --vd-jul-bg: #33201f;
+    --vd-jul-glow: #57302b;
+    --vd-jul-line: #6e3a33;
+    --vd-jul-ink: #f4a39a;
+    --vd-zomer-bg: #212b1a;
+    --vd-zomer-glow: #3b4420;
+    --vd-zomer-line: #4b6430;
+    --vd-zomer-ink: #b9de85;
+    --vd-vuur-bg: #33241a;
+    --vd-vuur-glow: #5a3418;
+    --vd-vuur-line: #74431f;
+    --vd-vuur-ink: #f7ac6e;
+}
+
+.vd-feest {
+    --vd-bg: var(--vd-warm-bg);
+    --vd-glow: var(--vd-warm-glow);
+    --vd-line: var(--vd-warm-line);
+    --vd-ink: var(--vd-warm-ink);
+    border-color: var(--vd-line);
+    background: var(--vd-bg);
+    color: var(--ink);
+    animation: rise 0.3s ease-out;
+}
+
+.vd-feest .vd-badge {
+    background: var(--vd-glow);
+    box-shadow: none;
+}
+
+.vd-feest[data-tint='lucia'] {
+    --vd-bg: var(--vd-lucia-bg);
+    --vd-glow: var(--vd-lucia-glow);
+    --vd-line: var(--vd-lucia-line);
+    --vd-ink: var(--vd-lucia-ink);
+}
+
+.vd-feest[data-tint='jul'] {
+    --vd-bg: var(--vd-jul-bg);
+    --vd-glow: var(--vd-jul-glow);
+    --vd-line: var(--vd-jul-line);
+    --vd-ink: var(--vd-jul-ink);
+}
+
+.vd-feest[data-tint='zomer'] {
+    --vd-bg: var(--vd-zomer-bg);
+    --vd-glow: var(--vd-zomer-glow);
+    --vd-line: var(--vd-zomer-line);
+    --vd-ink: var(--vd-zomer-ink);
+}
+
+.vd-feest[data-tint='vuur'] {
+    --vd-bg: var(--vd-vuur-bg);
+    --vd-glow: var(--vd-vuur-glow);
+    --vd-line: var(--vd-vuur-line);
+    --vd-ink: var(--vd-vuur-ink);
+}
+
+.vd-feest .vd-kick {
+    color: var(--vd-ink);
+}
+
+.vd-feest > .ico,
+.vd-more {
+    color: var(--vd-ink);
+}
+
+.vd-more {
+    flex: none;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+/* ======================================================================
+ * Uitjes in Österlen: src/js/kat/uitjes.js
+ * Babbel-achtige kaarten: tekening, naam, Zweedse naam, voortgang, start.
+ * De bakker bovenaan, met een vitrine van bullar.
+ * ====================================================================== */
+
+.uitjes-grid {
+    display: grid;
+    gap: 12px;
+}
+
+.uitje {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    overflow: hidden;
+    display: grid;
+}
+
+.ut-art {
+    aspect-ratio: 16 / 9;
+}
+
+.uitje:not(.featured) .ut-art {
+    aspect-ratio: 2 / 1;
+}
+
+.ut-body {
+    padding: 12px 14px 14px;
+    display: grid;
+    gap: 6px;
+    min-width: 0;
+}
+
+.uitje h2 {
+    margin: 0;
+    font: 600 20px/1.15 var(--display);
+}
+
+.uitje:not(.featured) h2 {
+    font-size: 18px;
+}
+
+.ut-sv {
+    margin: -4px 0 0;
+    font-weight: 700;
+    color: var(--feest-ink);
+}
+
+.ut-blurb {
+    margin: 0;
+    font-size: 15px;
+    color: var(--ink-soft);
+    text-wrap: pretty;
+}
+
+.uitje:not(.featured) .ut-blurb {
+    font-size: 14px;
+}
+
+.ut-known {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 8px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink-soft);
+}
+
+.ut-dots {
+    display: flex;
+    gap: 3px;
+}
+
+.ut-dots i {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--chip);
+    box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.ut-dots i.seen {
+    background: var(--gold);
+    box-shadow: none;
+}
+
+.ut-dots i.sits {
+    background: var(--good);
+    box-shadow: none;
+}
+
+.ut-go {
+    justify-self: start;
+    margin-top: 4px;
+}
+
+/* Tussenkop tussen de bakker en de andere uitjes, dichter bij de rij eronder. */
+.ut-h {
+    margin: 18px 0 -4px;
+    font: 600 19px/1.2 var(--display);
+}
+
+/*
+ * Vitrine: een strook kaartjes die opzij scrollt. Hint dat er meer is:
+ * de kop "veeg voor meer", een half zichtbaar volgend kaartje en een
+ * vervagende rechterrand. De ruimte achter het laatste kaartje is breder
+ * dan die vervaging, zodat ook dat kaartje helemaal leesbaar wordt.
+ */
+.vitrine {
+    display: grid;
+    gap: 6px;
+    margin-top: 6px;
+    min-width: 0;
+}
+
+.vit-head {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--ink-soft);
+}
+
+.vit-head b {
+    color: var(--ink);
+}
+
+.vit-head span {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-weight: 700;
+}
+
+.bullar {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    margin: 0 -14px;
+    padding: 0 14px 2px;
+    scroll-padding-inline: 14px;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+    overscroll-behavior-x: contain;
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent);
+}
+
+.bullar::-webkit-scrollbar {
+    display: none;
+}
+
+.bullar::after {
+    content: '';
+    flex: 0 0 14px;
+}
+
+.bulle {
+    position: relative;
+    flex: 0 0 204px;
+    display: grid;
+    grid-template-columns: 46px minmax(0, 1fr);
+    grid-template-rows: auto auto 1fr;
+    column-gap: 8px;
+    align-items: start;
+    align-self: start;
+    text-align: left;
+    color: var(--ink);
+    background: var(--feest-bg);
+    border: 1px solid var(--feest-line);
+    border-radius: 14px;
+    padding: 8px 10px 8px 8px;
+    scroll-snap-align: start;
+}
+
+.bulle-art {
+    position: relative;
+    grid-row: 1 / 4;
+    align-self: center;
+    display: grid;
+    place-items: center;
+}
+
+.bulle-sv {
+    font: 600 15px/1.2 var(--display);
+}
+
+.bulle-nl {
+    font-size: 12.5px;
+    line-height: 1.3;
+    color: var(--ink-soft);
+}
+
+.bulle-when {
+    font-size: 12px;
+    line-height: 1.3;
+    font-weight: 700;
+    color: var(--feest-ink);
+}
+
+/* Klein luidsprekertje op het broodje: tik om te horen. */
+.bulle-ear {
+    position: absolute;
+    right: -4px;
+    bottom: -4px;
+    width: 20px;
+    height: 20px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--card);
+    border: 1px solid var(--feest-line);
+    color: var(--feest-ink);
+}
+
+/* ======================================================================
+ * Ronde: scène bij een nieuw woord (src/js/kat/run.js) en de beloning
+ * na een rondje van een uitje of feestdag (packReward in uitjes.js).
+ * In zo'n rondje (.pack-run) staat bij een nieuw woord de plek erboven,
+ * met dat woord erin uitgelicht. Bij het oefenen staat het ding uit de
+ * vraag in hetzelfde brede vak (.run-scene.thing), zodat beide schermen
+ * dezelfde opbouw hebben. Van tafel hangt in de kopregel en Controleer heeft
+ * de warme feestkleur.
+ * Gewone challenges houden het kale vraagscherm.
+ * ====================================================================== */
+
+.run-scene {
+    border-radius: 16px;
+    /* clip en niet hidden: anders krimpt de tekening in een volle run-body en schuift de tekst eroverheen */
+    overflow: clip;
+    aspect-ratio: 16 / 7;
+    border: 1px solid var(--line);
+}
+
+/*
+ * Het ding bij het oefenen: de tekening staat onderin op volle breedte en
+ * de muur of lucht loopt erboven door. Nooit breder dan 16:9, anders komen
+ * de zijkanten van de tekening leeg te staan.
+ */
+.run-scene.thing {
+    aspect-ratio: 16 / 9;
+}
+
+.kb-open .run .run-scene {
+    display: none;
+}
+
+/*
+ * Zonder toetsenbord vult de plek het scherm: de tekening groeit mee tot
+ * ongeveer 4:3 en wat er dan nog over is, verdeelt zich boven en onder.
+ * Zo hangt de opdracht niet bovenin met een leeg vlak tot Controleer.
+ * Auto-marges in plaats van centreren: past het niet, dan blijft de bovenkant staan.
+ */
+:root:not(.kb-open) .pack-run .run-body {
+    --scene-w: calc(min(100vw, 480px) - 32px);
+    display: flex;
+    flex-direction: column;
+}
+
+:root:not(.kb-open) .pack-run .run-scene {
+    flex: 1 1 0;
+    aspect-ratio: auto;
+    min-height: calc(var(--scene-w) * 7 / 16);
+    max-height: calc(var(--scene-w) * 3 / 4);
+    margin-top: auto;
+}
+
+:root:not(.kb-open) .pack-run .run-scene.thing {
+    min-height: calc(var(--scene-w) * 9 / 16);
+    max-height: var(--scene-w);
+}
+
+:root:not(.kb-open) .pack-run .tnt-target {
+    margin-bottom: auto;
+}
+
+/*
+ * Oefenen zonder grote tekening: de vraag staat iets boven het midden, met
+ * rust erboven en eronder. Twee lege vlakken (2 : 3) in plaats van auto-marges,
+ * zodat een lange vraag gewoon bovenaan begint.
+ */
+:root:not(.kb-open) .pack-run .run-body:not(:has(.run-scene))::before,
+:root:not(.kb-open) .pack-run .run-body:not(:has(.run-scene))::after {
+    content: '';
+    flex: 2 1 0;
+    margin-bottom: -16px;
+}
+
+:root:not(.kb-open) .pack-run .run-body:not(:has(.run-scene))::after {
+    flex-grow: 3;
+    margin: -16px 0 0;
+}
+
+.pack-run .run-top .pill {
+    flex: none;
+    min-height: 44px;
+    padding: 8px 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 15px;
+    white-space: nowrap;
+}
+
+/*
+ * De zin als kaartje, het gat als invulvak zo breed als het antwoord, op de
+ * gewone regelhoogte van de zin. Het leesteken erna blijft aan het vak vast.
+ */
+.gapcard {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 16px 18px 14px;
+}
+
+.gapcard .gapline {
+    margin: 0;
+    line-height: 1.55;
+}
+
+.gapcard .gap-slot {
+    white-space: nowrap;
+}
+
+.gapcard .gapline input {
+    box-sizing: border-box;
+    width: calc(var(--gap-ch, 6) * 1ch + 24px);
+    max-width: calc(100% - 1ch);
+    height: 1.45em;
+    padding: 0 8px;
+    line-height: normal;
+    vertical-align: baseline;
+    border: 2px solid var(--line);
+    border-bottom-width: 3px;
+    border-radius: 10px;
+    background: var(--paper);
+}
+
+.gapcard .gapline input:focus {
+    border-color: var(--en);
+}
+
+.gapcard .keys {
+    margin-top: 12px;
+    padding-top: 12px;
+    border-top: 1px solid var(--line);
+    gap: 8px;
+}
+
+.gapcard .keys .pill {
+    min-height: 44px;
+    min-width: 52px;
+    font-size: 18px;
+}
+
+.pack-run .answer + .keys {
+    margin-top: -6px;
+}
+
+.pack-run .run-foot {
+    display: flex;
+    align-items: stretch;
+    gap: 12px;
+}
+
+.pack-run .run-foot .aids:not(:has(button)) {
+    display: none;
+}
+
+/*
+ * Controleer is altijd herkenbaar de hoofdknop: een volle feestkleur. Nog
+ * niets getypt? Dan dezelfde knop gedimd (geen lichte rand die op een
+ * tweede knop lijkt). Zodra er iets staat: volle kleur met een randje eronder.
+ */
+.pack-run .run-foot > .btn {
+    flex: 1;
+    background: var(--feest-ink);
+    color: var(--card);
+    box-shadow: 0 4px 0 color-mix(in srgb, var(--feest-ink) 62%, var(--ink));
+}
+
+.pack-run .run-foot > .btn:active {
+    transform: translateY(3px);
+    box-shadow: 0 1px 0 color-mix(in srgb, var(--feest-ink) 62%, var(--ink));
+}
+
+.pack-run .run-foot > .btn[disabled] {
+    background: color-mix(in srgb, var(--feest-ink) 60%, var(--paper));
+    color: var(--card);
+    box-shadow: none;
+    transform: none;
+}
+
+.reward-pack .pr-art {
+    position: relative;
+    width: min(340px, calc(100vw - 76px));
+    aspect-ratio: 2 / 1;
+    border-radius: 18px;
+    overflow: hidden;
+    margin-top: 8px;
+    box-shadow:
+        0 0 0 3px var(--card),
+        0 6px 16px rgb(0 0 0 / 0.15);
+}
+
+.reward-pack .modal {
+    gap: 10px;
+    padding-top: 18px;
+}
+
+.reward-pack .xp-badge {
+    top: 26px;
+    right: 28px;
+    z-index: 2;
+}
+
+.pr-cleo {
+    position: absolute;
+    right: 4px;
+    bottom: -6px;
+    filter: drop-shadow(0 3px 2px rgb(0 0 0 / 0.2));
+}
+
+.pr-cleo svg {
+    width: 92px;
+    height: auto;
+}
+
+.pr-can {
+    font-weight: 700;
+    color: var(--ink) !important;
+}
+
+.pr-new {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    display: grid;
+    gap: 6px;
+    text-align: left;
+}
+
+.pr-new li {
+    display: grid;
+    background: var(--paper);
+    border-radius: 12px;
+    padding: 5px 12px 6px;
+}
+
+.pr-new b {
+    font: 600 16px/1.2 var(--display);
+}
+
+.pr-new span {
+    font-size: 13px;
+    color: var(--ink-soft);
+}
+
+/* ======================================================================
+ * Feestdagenkalender: src/js/kat/kalender.js
+ * Binnenkort, vandaag en eerder dit jaar. Rij open = op tafel, weetje, knop.
+ * ====================================================================== */
+
+.kal-h {
+    margin: 6px 0 -4px;
+    font: 600 19px/1.2 var(--display);
+}
+
+.kal-hint {
+    margin: -10px 0 -2px;
+    font-size: 14px;
+    color: var(--ink-soft);
+}
+
+.kalender-page .kal-lede {
+    margin-top: -6px;
+}
+
+.kal-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+}
+
+.kal-item {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.kal-item.is-today {
+    background: var(--feest-bg);
+    border-color: var(--feest-line);
+}
+
+/* Elke rij dezelfde opbouw: eigen tekeningetje links, dan drie regels in twee
+ * kleuren (kleine datum, Zweedse naam, Nederlandse naam), pijltje rechts.
+ * Wat er op tafel komt staat pas in de open rij. */
+.kal-row {
+    width: 100%;
+    border: 0;
+    background: none;
+    display: grid;
+    grid-template-columns: 72px minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 14px;
+    min-height: 96px;
+    padding: 12px 14px;
+    text-align: left;
+    color: inherit;
+}
+
+/* Vierkant uit het midden van de eigen scène: eigen lucht, heel motief. */
+.kal-thumb {
+    width: 72px;
+    height: 72px;
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--chip);
+}
+
+.kal-thumb-art {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.kal-text {
+    display: grid;
+    gap: 3px;
+    min-width: 0;
+}
+
+.kal-when {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--ink-soft);
+    font-variant-numeric: tabular-nums;
+}
+
+.kal-when b {
+    font-weight: 800;
+}
+
+.kal-item.is-today .kal-when b {
+    color: var(--feest-ink);
+}
+
+.kal-chev {
+    display: inline-flex;
+    align-self: center;
+    color: var(--ink-soft);
+    transition: transform 0.15s ease;
+}
+
+.kal-item.open .kal-chev {
+    transform: rotate(90deg);
+}
+
+/* Open rij: zelfde maat kop, de keuze zichtbaar aan een warme rand. */
+.kal-item.open {
+    border-color: var(--feest-ink);
+    box-shadow: inset 0 0 0 1px var(--feest-ink);
+}
+
+.kal-title {
+    overflow-wrap: break-word;
+    font: 600 18px/1.2 var(--display);
+}
+
+/* Eén regel; een lange naam krijgt puntjes in plaats van een vierde regel. */
+.kal-nl {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 14px;
+    color: var(--ink-soft);
+}
+
+/* Skåne: alleen het vlaggetje achter de datum. */
+.kal-tag {
+    display: inline-flex;
+    align-items: center;
+}
+
+/* Open rij: wat er op tafel komt, met een klein label ervoor. */
+.kal-detail .kal-food {
+    font-size: 15px;
+}
+
+/* Op tafel en het gerecht op één regel, niet als los kopje erboven. */
+.kal-food span {
+    font-weight: 800;
+    color: var(--feest-ink);
+}
+
+.kal-detail {
+    padding: 0 14px 14px;
+    display: grid;
+    gap: 10px;
+}
+
+.kal-detail p {
+    margin: 0;
+}
+
+/* De knop zegt zelf wat hij doet; geen grijze regel eronder. */
+.kal-go {
+    justify-self: start;
+}
+
+.skane-flag {
+    vertical-align: -2px;
+    border-radius: 2px;
+    flex: none;
+}
+
+/* ---------- Instellingen: startscherm en back-up ---------- */
+
+.switch-list {
+    display: grid;
+    border-top: 1px solid var(--line);
+}
+
+.switch-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 12px 2px;
+    background: none;
+    border: 0;
+    border-bottom: 1px solid var(--line);
+    color: var(--ink);
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
+}
+
+.switch-row > span:first-child {
+    display: grid;
+    gap: 2px;
+    min-width: 0;
+}
+
+.switch-row small {
+    color: var(--ink-soft);
+    font-size: 14px;
+}
+
+.switch {
+    flex: none;
+    width: 46px;
+    height: 28px;
+    border-radius: 99px;
+    background: var(--chip);
+    border: 1.5px solid var(--line);
+    position: relative;
+    transition: background 0.15s ease;
+}
+
+.switch i {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 21px;
+    height: 21px;
+    border-radius: 50%;
+    background: var(--card);
+    box-shadow: 0 1px 3px rgb(0 0 0 / 0.25);
+    transition: transform 0.15s ease;
+}
+
+.switch-row[aria-pressed='true'] .switch {
+    background: var(--good);
+    border-color: var(--good);
+}
+
+.switch-row[aria-pressed='true'] .switch i {
+    transform: translateX(18px);
+}
+
+.switch-row:focus-visible {
+    outline: 3px solid var(--en);
+    outline-offset: 2px;
+    border-radius: 8px;
+}
+
+.backup-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.backup-actions .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.backup-actions label.btn {
+    cursor: pointer;
+}
+
+.backup-actions input:focus-visible + label,
+.backup-actions label:focus-within {
+    outline: 3px solid var(--en);
+    outline-offset: 2px;
+}
+
+.backup-note {
+    margin: 0;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: var(--almost-soft);
+    color: var(--ink);
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .switch,
+    .switch i {
+        transition: none;
+    }
 }

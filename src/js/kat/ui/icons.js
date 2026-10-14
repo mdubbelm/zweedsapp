@@ -37,6 +37,7 @@ const P = {
     stop: '<rect x="6" y="6" width="12" height="12" rx="2"/>',
     gift: '<rect x="3" y="8" width="18" height="5" rx="1"/><path d="M5 13v8h14v-8M12 8v13M12 8c-1.5-3.5-6-4-6-1.5S9 8 12 8zm0 0c1.5-3.5 6-4 6-1.5S15 8 12 8z"/>',
     heart: '<path d="M12 20s-7-4.4-9.2-9A5 5 0 0 1 12 6a5 5 0 0 1 9.2 5c-2.2 4.6-9.2 9-9.2 9z"/>',
+    calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
     map: '<path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/>',
     chevron: '<path d="M9 6l6 6-6 6"/>',
     plus: '<path d="M12 5v14M5 12h14"/>',

@@ -466,7 +466,12 @@ export function renderSettings(app) {
         <h1>Instellingen</h1>
         <div class="panel">
             <div class="field"><label for="set-name">Je naam</label><input id="set-name" data-set="name" value="${esc(s.name)}" placeholder="Bijvoorbeeld Monique" autocomplete="given-name"></div>
-            <button class="toggle" data-act="voice" aria-pressed="${s.settings.voice !== false}">${icon('speaker', 18)} Zweedse uitspraak</button>
+            <div class="switch-list">
+                <button class="switch-row" data-act="voice" aria-pressed="${s.settings.voice !== false}">
+                    <span><b>Zweedse uitspraak</b><small>Woorden en zinnen hardop horen, ook bij luistervragen en het luidsprekertje</small></span>
+                    <span class="switch" aria-hidden="true"><i></i></span>
+                </button>
+            </div>
         </div>
         <div class="panel">
             <h2>Waar sparen jullie voor?</h2>

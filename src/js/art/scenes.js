@@ -8,7 +8,8 @@
  *  - scene(id): landschap 320x180 voor een uitje of een feestdag.
  *  - motif(id): alleen het hoofdmotief van een feestdag, vierkant, voor lijstjes.
  *  - bun(kind): een Zweeds broodje (bulle) voor de vitrine van de bakker.
- *  - spotScene(id, woord): de plek gedimd met het nieuwe woord groot ervoor.
+ *  - spotScene(id, woord): het nieuwe woord als deel van zijn plek, de rest zacht.
+ *  - spotThing(id, tekst): dat ding in zijn plek bij het oefenen, ook voor een hoger vak.
  *  - sceneSky(id): achtergrondkleur die bij de scène hoort.
  */
 
@@ -878,15 +879,19 @@ const OUTINGS = {
         );
     },
     'ales-stenar'() {
+        // Scheepsvorm: puntig aan voor- en achtersteven, en daar de hoogste stenen.
+        // Ruwe, scheve bovenkanten, zodat het geen rij grafstenen wordt.
         const stones = [];
         const n = 16;
+        const rand = rng(59);
         for (let i = 0; i < n; i++) {
             const a = (i / n) * Math.PI * 2;
+            const s = Math.sin(a);
             const x = 168 + Math.cos(a) * 104;
-            const y = 124 + Math.sin(a) * 18;
+            const y = 124 + s * Math.abs(s) * 20;
             const end = Math.abs(Math.cos(a)) > 0.97;
-            const h = end ? 30 : 15 + Math.abs(Math.cos(a)) * 7;
-            stones.push({ x, y, h });
+            const h = end ? 32 : 13 + Math.abs(Math.cos(a)) * 9 + rand() * 4;
+            stones.push({ x, y, h, tilt: (rand() - 0.5) * 6, w: 6 + rand() * 2 });
         }
         stones.sort((p, q) => p.y - q.y);
         return (
@@ -898,8 +903,8 @@ const OUTINGS = {
             `<ellipse cx="168" cy="126" rx="112" ry="26" fill="#93c05a" opacity=".6"/>` +
             stones
                 .map(
-                    ({ x, y, h }) =>
-                        `<g transform="translate(${r1(x)} ${r1(y)})">${shadow(5, 1, 9, 3)}<path d="M-7 0C-8 ${-h * 0.6} -5 ${-h} 0 ${-h}C5 ${-h} 8 ${-h * 0.6} 7 0Z" fill="#9aa3a8" ${st(2)}/><path d="M-4 -3C-5 ${-h * 0.5} -3 ${-h * 0.8} -1 ${-h + 2}" fill="none" stroke="#c9d0d4" stroke-width="2" stroke-linecap="round"/></g>`
+                    ({ x, y, h, tilt, w }) =>
+                        `<g transform="translate(${r1(x)} ${r1(y)})">${shadow(5, 1, 9, 3)}<path d="M${r1(-w)} 0L${r1(-w - 1)} ${r1(-h * 0.7)}L${r1(-w * 0.4)} ${r1(-h - tilt)}L${r1(w * 0.5)} ${r1(-h + tilt)}L${r1(w + 1)} ${r1(-h * 0.55)}L${r1(w)} 0Z" fill="#9aa3a8" ${st(2)}/><path d="M${r1(w * 0.2)} -2L${r1(w * 0.6)} ${r1(-h * 0.55)}L${r1(w - 0.5)} -2Z" fill="#7d878d"/></g>`
                 )
                 .join('') +
             tuft(30, 170) +
@@ -1000,13 +1005,30 @@ export function scene(id, { className = 'scene', fit = 'cover' } = {}) {
 
 /* ---------- uitgelicht: het nieuwe woord in zijn eigen plek ---------- */
 
-/** Woorden met een eigen tekening: een broodje of een feestmotief. */
+/** Dingen voor op de toonbank die geen broodje zijn. Zelfde maat en nulpunt als BUNS. */
+const PROPS = {
+    kaffe: () =>
+        shadow(4, 3, 28, 5) +
+        `<ellipse cx="0" cy="-3" rx="28" ry="6" fill="#fff" ${st(2.2)}/>` +
+        line('M14 -30C28 -30 28 -12 12 -12', 3, '#fff') +
+        `<path d="M-17 -36H17L13 -7H-13Z" fill="#fff" ${st(2.4)}/>` +
+        `<ellipse cx="0" cy="-36" rx="17" ry="4" fill="#6b3f22" ${st(1.8)}/>` +
+        `<path d="M-11 -29V-13" stroke="#e1edf5" stroke-width="3" stroke-linecap="round"/>` +
+        `<path d="M-5 -45q-4 -6 0 -12M6 -47q4 -6 0 -12" fill="none" stroke="#b9a99a" stroke-width="2" stroke-linecap="round"/>`
+};
+
+/**
+ * Woorden met een eigen tekening: een broodje, iets voor op tafel, een
+ * feestmotief, of een plek die zelf een tekening heeft.
+ */
 const WORD_ART = {
+    bageri: { place: 'bageriet' },
     kanelbulle: { bun: 'kanelbulle' },
     kardemummabulle: { bun: 'kardemummabulle' },
     semla: { bun: 'semla' },
     lussekatt: { bun: 'lussekatt' },
     vetebröd: { bun: 'vetebrod' },
+    kaffe: { prop: 'kaffe' },
     kräfta: { motif: 'crayfish' },
     chokladboll: { motif: 'chokladboll' },
     prinsesstårta: { motif: 'prinsesstarta' },
@@ -1018,33 +1040,147 @@ const WORD_ART = {
 };
 
 /**
- * De plek gedimd, met het nieuwe woord groot in een lichte cirkel ervoor:
- * de kaneelbol uit de vitrine gehaald. Leeg als het woord geen eigen
- * tekening heeft, of als de scène al precies dat ding laat zien.
+ * Welk getekend woord staat in deze tekst? Ook verbogen of in een zin:
+ * "Två kanelbullar och ett kaffe" geeft kanelbulle. Leeg als er geen is.
+ */
+export function wordArtKey(text) {
+    const words = String(text || '')
+        .toLowerCase()
+        .split(/[^a-zåäöé]+/);
+    for (const w of words) {
+        for (const key of Object.keys(WORD_ART)) {
+            if (w.startsWith(key.replace(/[ae]$/, '')) && w.length <= key.length + 3) {
+                return key;
+            }
+        }
+    }
+    return '';
+}
+
+/** Binnen bij de bakker: schappen vol broodjes tegen de wand en een lamp boven de toonbank. */
+function bakeryInside() {
+    const shelf = (x, y, kinds) =>
+        `<path d="M${x - 22} ${y}H${x + kinds.length * 34 - 12}" stroke="${O}" stroke-width="3" stroke-linecap="round"/>` +
+        kinds.map((k, i) => at(x + i * 34, y, 0.42, BUNS[k]())).join('');
+    return (
+        `<rect width="320" height="180" fill="#f3e1b6"/>` +
+        `<path d="M24 0V134M72 0V134M248 0V134M296 0V134" stroke="#fff" stroke-width="10" opacity=".25"/>` +
+        shelf(18, 60, ['kanelbulle', 'semla', 'lussekatt']) +
+        shelf(18, 100, ['vetebrod', 'kardemummabulle']) +
+        shelf(234, 60, ['semla', 'kanelbulle', 'kardemummabulle']) +
+        shelf(254, 100, ['lussekatt', 'kanelbulle'])
+    );
+}
+
+/** De lamp boven de toonbank, met zijn lichtbundel. */
+function lamp() {
+    return (
+        `<path d="M146 30L84 140H236L174 30Z" fill="#fff3b0" opacity=".38"/>` +
+        `<path d="M160 -640V16" stroke="${O}" stroke-width="2.2"/>` +
+        `<ellipse cx="160" cy="31" rx="9" ry="4" fill="#fff3b0" ${st(1.4)}/>` +
+        `<path d="M142 31C142 20 150 14 160 14C170 14 178 20 178 31Z" fill="#2f6f5a" ${st(2.2)}/>` +
+        `<path d="M149 25c1 -4 4 -6 8 -7" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".6"/>`
+    );
+}
+
+/** De toonbank of tafel op de voorgrond, met het licht dat erop valt. */
+function counter() {
+    return (
+        `<path d="M-10 134H330V146H-10Z" fill="#e4bb82" ${st()}/>` +
+        `<path d="M-10 146H330V190H-10Z" fill="#b8784a" ${st()}/>` +
+        `<path d="M40 146V180M120 146V180M200 146V180M280 146V180" stroke="${O}" stroke-width="1.2" opacity=".3"/>` +
+        `<path d="M10 139H110" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".45"/>` +
+        `<ellipse cx="160" cy="140" rx="84" ry="6" fill="#fff8dc" opacity=".75"/>`
+    );
+}
+
+/** Een zachte gloed achter het ding, zoals om de zon in sun(). Niet bij nacht: dan wordt het grijs. */
+function glow(id, cx, cy) {
+    if (FEASTS[id] && FEASTS[id].night) {
+        return '';
+    }
+    return `<circle cx="${cx}" cy="${cy}" r="66" fill="#fffaf2" opacity=".35"/><circle cx="${cx}" cy="${cy}" r="46" fill="#fffaf2" opacity=".4"/>`;
+}
+
+/** Plek zonder hoofdmotief: bij een feestdag de lucht en de grond, bij een uitje de tekening zacht. */
+function softPlace(id) {
+    const f = FEASTS[id];
+    if (f) {
+        return backdrop(f, id.length * 97 + id.charCodeAt(0));
+    }
+    return `${sceneBody(id)}<rect x="-480" y="-640" width="1280" height="820" fill="${sceneSky(id)}" opacity=".55"/>`;
+}
+
+/**
+ * Het woord als deel van zijn plek, op 320x180. Een motief staat buiten op
+ * de grond; een broodje of een kop koffie staat altijd bij de bakker op de
+ * toonbank, ook in een rondje van een feestdag (een lussekatt hoort niet in de sneeuw).
+ */
+function spotBody(id, art) {
+    if (art.place) {
+        return sceneBody(art.place);
+    }
+    if (art.motif) {
+        const s = TALL.has(art.motif) ? 0.8 : 0.95;
+        return softPlace(id) + glow(id, 160, 96) + at(160, 152, s, MOTIFS[art.motif]());
+    }
+    return (
+        bakeryInside() +
+        `<rect width="320" height="180" fill="#f3e1b6" opacity=".5"/>` +
+        lamp() +
+        counter() +
+        at(160, 141, 1.45, art.bun ? BUNS[art.bun]() : PROPS[art.prop]())
+    );
+}
+
+/**
+ * Het nieuwe woord als deel van de plek: de kanelbulle op de toonbank in het
+ * licht van de lamp, de rest van de bakkerij zacht erachter. Leeg als het
+ * woord geen eigen tekening heeft, of als de scène al precies dat ding laat zien.
  */
 export function spotScene(id, word, { className = 'scene' } = {}) {
-    const key = String(word || '')
-        .trim()
-        .toLowerCase();
-    const art = WORD_ART[key];
+    const art = WORD_ART[wordArtKey(word)];
     if (!art) {
         return '';
     }
-    const name = art.bun || art.motif;
-    if (FEASTS[id] && FEASTS[id].motif === name) {
+    if (art.place === id || (FEASTS[id] && FEASTS[id].motif === (art.bun || art.motif))) {
         return '';
     }
-    const thing = art.bun
-        ? at(160, 128, 1.7, BUNS[art.bun]())
-        : at(160, 152, TALL.has(art.motif) ? 0.8 : 0.95, MOTIFS[art.motif]());
-    return svgScene(
-        className,
-        sceneBody(id) +
-            `<rect width="320" height="180" fill="${sceneSky(id)}" opacity=".78"/>` +
-            `<circle cx="164" cy="96" r="76" fill="${SH}"/>` +
-            `<circle cx="160" cy="92" r="76" fill="#fffaf2" ${st()}/>` +
-            `<path d="M108 54a68 68 0 0 1 40 -30" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round"/>` +
-            thing
+    return svgScene(className, spotBody(id, art));
+}
+
+/**
+ * Wat er boven de 320x180 doorloopt als het vak hoger is dan 16:9: bij de
+ * bakker de muur met zijn lichte banen (de lamp hangt al aan een lang snoer),
+ * buiten de lucht met wolken of sterren.
+ */
+function spotAbove(id, art) {
+    if (art.bun || art.prop) {
+        return (
+            `<rect x="-480" y="-640" width="1280" height="900" fill="#f3e1b6"/>` +
+            `<path d="M24 -640V0M72 -640V0M248 -640V0M296 -640V0" stroke="#fff" stroke-width="10" opacity=".125"/>`
+        );
+    }
+    const place = art.place || id;
+    return `<rect x="-480" y="-640" width="1280" height="900" fill="${sceneSky(place)}"/>${skyAbove(place)}`;
+}
+
+/**
+ * Beeld bij het oefenen: het ding uit de tekst in zijn plek, zoals bij het
+ * kennismaken. Bij een feestdag anders het motief van die dag; bij een uitje
+ * zonder getekend ding leeg. De hele breedte blijft staan (er valt geen
+ * broodje half van de plank); is het vak hoger, dan loopt de muur of de lucht
+ * erboven door. Het vak hoort dus niet breder te zijn dan 16:9.
+ */
+export function spotThing(id, text, { className = 'scene' } = {}) {
+    // Een feestdag draait om zijn motief; staat er niets getekend in de zin, dan dat.
+    const art = WORD_ART[wordArtKey(text)] || (FEASTS[id] && { motif: FEASTS[id].motif });
+    if (!art) {
+        return '';
+    }
+    return svgScene(className, spotAbove(id, art) + spotBody(id, art)).replace(
+        'xMidYMid slice',
+        'xMidYMax meet'
     );
 }
 

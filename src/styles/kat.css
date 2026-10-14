@@ -246,16 +246,22 @@ button {
 .start {
     position: relative;
     min-height: 100vh;
+    /* Ruimte voor de tabbalk, zodat ook de eerste knoop van een wereld heel
+     * boven de balk past en scrollToNow geen knoop half hoeft af te snijden. */
+    padding-bottom: calc(68px + env(safe-area-inset-bottom, 0px));
 }
 
 .start-top {
     position: sticky;
     top: 0;
     z-index: 10;
-    padding: 14px 16px 34px;
+    /* Vaste rand: alles boven de laatste --start-fade px is dicht, zodat de
+     * kop nooit over de tuin heen schuift (scrollToNow leest dit ook). */
+    --start-fade: 18px;
+    padding: 14px 16px calc(var(--start-fade) + 6px);
     display: grid;
     gap: 12px;
-    background: linear-gradient(var(--paper) 86%, transparent);
+    background: linear-gradient(var(--paper) calc(100% - var(--start-fade)), transparent);
 }
 
 .today {
@@ -442,7 +448,7 @@ button {
     position: absolute;
     transform: translate(-50%, 0);
     pointer-events: none;
-    background: #fff;
+    background: var(--card);
     color: var(--ink);
     padding: 6px 14px;
     border-radius: 99px;
@@ -450,6 +456,12 @@ button {
     font-size: 15px;
     white-space: nowrap;
     box-shadow: 0 3px 10px rgb(0 0 0 / 0.15);
+    transition: opacity 0.2s;
+}
+
+/* Half onder de kop: wacht tot er gescrold wordt (zie snapPastHead). */
+.callout.tucked {
+    opacity: 0;
 }
 
 .cleo-on-map {
@@ -1291,7 +1303,7 @@ mark.friend {
 /* ======================================================================
  * Vandaag in Zweden (startscherm): src/js/kat/ui/vandaag.js
  * Eén regel onder de kaart van de wereld, nooit een tweede grote knop.
- * Feestdag: warme strook. Gewone dag: een rustige regel naar de kalender.
+ * Feestdag: de regel in een zachte kleur. Gewone dag: kaal, naar de kalender.
  * ====================================================================== */
 
 .chip-link {
@@ -1315,77 +1327,184 @@ mark.friend {
     opacity: 0.75;
 }
 
-.vd-next {
+/* Eén smalle regel op de vaste kop, nooit over de tuin heen. Links een
+ * rond plaatje dat heel in beeld staat, daarnaast tekst en een pijltje. */
+.vd-line {
     display: flex;
     align-items: center;
-    gap: 8px;
-    border: 0;
+    gap: 10px;
+    min-height: 48px;
+    padding: 4px 12px 4px 4px;
+    border: 1.5px solid transparent;
+    border-radius: 26px;
     background: none;
-    padding: 0 4px;
-    margin-top: -6px;
-    min-height: 44px;
-    font-size: 15px;
-    color: var(--ink-soft);
+    color: var(--ink);
     text-align: left;
 }
 
-.vd-next b {
-    color: var(--ink);
-}
-
-.vd-next .vd-motif {
-    width: 30px;
-    height: 30px;
+.vd-badge {
+    width: 40px;
+    height: 40px;
+    flex: none;
     display: grid;
     place-items: center;
-    flex: none;
+    border-radius: 50%;
+    background: var(--card);
+    box-shadow: inset 0 0 0 1.5px var(--line);
 }
 
-.vd-next .ico {
-    margin-left: -2px;
-    flex: none;
-}
-
-.vd-next-text {
+/* Breedte 0 met flex: een lange naam maakt de kop nooit breder dan het
+ * scherm, maar loopt door op een volgende regel in plaats van afgekapt. */
+.vd-text {
+    flex: 1 1 0;
+    width: 0;
     min-width: 0;
+    display: grid;
+    line-height: 1.2;
 }
 
-/* Op een feestdag: dezelfde regel, maar warm en met een randje. */
+.vd-text b {
+    font-size: 16px;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+}
+
+.vd-kick {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink-soft);
+}
+
+.vd-line > .ico {
+    flex: none;
+    margin-left: -4px;
+}
+
+/* Op een feestdag dezelfde regel, met een zachte kleur van die dag.
+ * Kleuren per dag: lucia (kaarslicht), jul (rood), zomer (groen),
+ * vuur (gloed), warm (de rest, bakdagen en markten). */
+:root {
+    --vd-warm-bg: var(--feest-bg);
+    --vd-warm-glow: #ffe2bd;
+    --vd-warm-line: var(--feest-line);
+    --vd-warm-ink: var(--feest-ink);
+    --vd-lucia-bg: #fff4d4;
+    --vd-lucia-glow: #ffe08a;
+    --vd-lucia-line: #ecc35e;
+    --vd-lucia-ink: #7f5200;
+    --vd-jul-bg: #fdeceb;
+    --vd-jul-glow: #f8c9c2;
+    --vd-jul-line: #e7a39a;
+    --vd-jul-ink: #9c2a21;
+    --vd-zomer-bg: #eff6dc;
+    --vd-zomer-glow: #fbe9a0;
+    --vd-zomer-line: #bcd88a;
+    --vd-zomer-ink: #3d6a14;
+    --vd-vuur-bg: #fff0e2;
+    --vd-vuur-glow: #ffc98f;
+    --vd-vuur-line: #f0ad74;
+    --vd-vuur-ink: #9a3f0c;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme='light']) {
+        --vd-warm-glow: #4a3420;
+        --vd-lucia-bg: #2e2716;
+        --vd-lucia-glow: #5a4416;
+        --vd-lucia-line: #6e5520;
+        --vd-lucia-ink: #f6cf6e;
+        --vd-jul-bg: #33201f;
+        --vd-jul-glow: #57302b;
+        --vd-jul-line: #6e3a33;
+        --vd-jul-ink: #f4a39a;
+        --vd-zomer-bg: #212b1a;
+        --vd-zomer-glow: #3b4420;
+        --vd-zomer-line: #4b6430;
+        --vd-zomer-ink: #b9de85;
+        --vd-vuur-bg: #33241a;
+        --vd-vuur-glow: #5a3418;
+        --vd-vuur-line: #74431f;
+        --vd-vuur-ink: #f7ac6e;
+    }
+}
+
+:root[data-theme='dark'] {
+    --vd-warm-glow: #4a3420;
+    --vd-lucia-bg: #2e2716;
+    --vd-lucia-glow: #5a4416;
+    --vd-lucia-line: #6e5520;
+    --vd-lucia-ink: #f6cf6e;
+    --vd-jul-bg: #33201f;
+    --vd-jul-glow: #57302b;
+    --vd-jul-line: #6e3a33;
+    --vd-jul-ink: #f4a39a;
+    --vd-zomer-bg: #212b1a;
+    --vd-zomer-glow: #3b4420;
+    --vd-zomer-line: #4b6430;
+    --vd-zomer-ink: #b9de85;
+    --vd-vuur-bg: #33241a;
+    --vd-vuur-glow: #5a3418;
+    --vd-vuur-line: #74431f;
+    --vd-vuur-ink: #f7ac6e;
+}
+
 .vd-feest {
-    margin-top: -4px;
-    padding: 4px 10px 4px 6px;
-    background: var(--feest-bg);
-    border: 1.5px solid var(--feest-line);
-    border-radius: 99px;
+    --vd-bg: var(--vd-warm-bg);
+    --vd-glow: var(--vd-warm-glow);
+    --vd-line: var(--vd-warm-line);
+    --vd-ink: var(--vd-warm-ink);
+    border-color: var(--vd-line);
+    background: var(--vd-bg);
     color: var(--ink);
     animation: rise 0.3s ease-out;
 }
 
-.vd-feest .vd-motif {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: var(--card);
+.vd-feest .vd-badge {
+    background: var(--vd-glow);
+    box-shadow: none;
 }
 
-.vd-feest .vd-next-text {
-    flex: 1;
+.vd-feest[data-tint='lucia'] {
+    --vd-bg: var(--vd-lucia-bg);
+    --vd-glow: var(--vd-lucia-glow);
+    --vd-line: var(--vd-lucia-line);
+    --vd-ink: var(--vd-lucia-ink);
 }
 
-.vd-kick {
-    color: var(--feest-ink);
-    font-weight: 700;
+.vd-feest[data-tint='jul'] {
+    --vd-bg: var(--vd-jul-bg);
+    --vd-glow: var(--vd-jul-glow);
+    --vd-line: var(--vd-jul-line);
+    --vd-ink: var(--vd-jul-ink);
+}
+
+.vd-feest[data-tint='zomer'] {
+    --vd-bg: var(--vd-zomer-bg);
+    --vd-glow: var(--vd-zomer-glow);
+    --vd-line: var(--vd-zomer-line);
+    --vd-ink: var(--vd-zomer-ink);
+}
+
+.vd-feest[data-tint='vuur'] {
+    --vd-bg: var(--vd-vuur-bg);
+    --vd-glow: var(--vd-vuur-glow);
+    --vd-line: var(--vd-vuur-line);
+    --vd-ink: var(--vd-vuur-ink);
+}
+
+.vd-feest .vd-kick {
+    color: var(--vd-ink);
+}
+
+.vd-feest > .ico,
+.vd-more {
+    color: var(--vd-ink);
 }
 
 .vd-more {
-    margin-left: 6px;
+    flex: none;
     font-size: 13px;
     font-weight: 800;
-    color: var(--feest-ink);
-}
-
-.vd-feest .ico {
-    color: var(--feest-ink);
 }
 
 /* ======================================================================
@@ -1441,6 +1560,7 @@ mark.friend {
     margin: 0;
     font-size: 15px;
     color: var(--ink-soft);
+    text-wrap: pretty;
 }
 
 .uitje:not(.featured) .ut-blurb {
@@ -1485,61 +1605,135 @@ mark.friend {
     margin-top: 4px;
 }
 
-.bullar {
+/* Tussenkop tussen de bakker en de andere uitjes, dichter bij de rij eronder. */
+.ut-h {
+    margin: 18px 0 -4px;
+    font: 600 19px/1.2 var(--display);
+}
+
+/*
+ * Vitrine: een strook kaartjes die opzij scrollt. Hint dat er meer is:
+ * de kop "veeg voor meer", een half zichtbaar volgend kaartje en een
+ * vervagende rechterrand. De ruimte achter het laatste kaartje is breder
+ * dan die vervaging, zodat ook dat kaartje helemaal leesbaar wordt.
+ */
+.vitrine {
     display: grid;
-    grid-auto-flow: column;
-    grid-auto-columns: 116px;
+    gap: 6px;
+    margin-top: 6px;
+    min-width: 0;
+}
+
+.vit-head {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--ink-soft);
+}
+
+.vit-head b {
+    color: var(--ink);
+}
+
+.vit-head span {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    font-weight: 700;
+}
+
+.bullar {
+    display: flex;
     gap: 8px;
     overflow-x: auto;
-    margin: 4px -14px 0;
-    padding: 2px 14px 6px;
-    scroll-snap-type: x mandatory;
+    margin: 0 -14px;
+    padding: 0 14px 2px;
+    scroll-padding-inline: 14px;
+    scroll-snap-type: x proximity;
     scrollbar-width: none;
+    overscroll-behavior-x: contain;
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent);
+}
+
+.bullar::-webkit-scrollbar {
+    display: none;
+}
+
+.bullar::after {
+    content: '';
+    flex: 0 0 14px;
 }
 
 .bulle {
+    position: relative;
+    flex: 0 0 204px;
     display: grid;
-    justify-items: center;
-    align-content: start;
-    gap: 2px;
-    text-align: center;
+    grid-template-columns: 46px minmax(0, 1fr);
+    grid-template-rows: auto auto 1fr;
+    column-gap: 8px;
+    align-items: start;
+    align-self: start;
+    text-align: left;
+    color: var(--ink);
     background: var(--feest-bg);
     border: 1px solid var(--feest-line);
-    border-radius: 16px;
-    padding: 8px 6px 10px;
+    border-radius: 14px;
+    padding: 8px 10px 8px 8px;
     scroll-snap-align: start;
 }
 
 .bulle-art {
-    height: 52px;
+    position: relative;
+    grid-row: 1 / 4;
+    align-self: center;
     display: grid;
     place-items: center;
 }
 
 .bulle-sv {
     font: 600 15px/1.2 var(--display);
-    overflow-wrap: anywhere;
 }
 
 .bulle-nl {
-    font-size: 12px;
-    line-height: 1.25;
+    font-size: 12.5px;
+    line-height: 1.3;
     color: var(--ink-soft);
 }
 
 .bulle-when {
-    margin-top: 2px;
-    font-size: 11.5px;
-    line-height: 1.25;
+    font-size: 12px;
+    line-height: 1.3;
     font-weight: 700;
+    color: var(--feest-ink);
+}
+
+/* Klein luidsprekertje op het broodje: tik om te horen. */
+.bulle-ear {
+    position: absolute;
+    right: -4px;
+    bottom: -4px;
+    width: 20px;
+    height: 20px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--card);
+    border: 1px solid var(--feest-line);
     color: var(--feest-ink);
 }
 
 /* ======================================================================
  * Ronde: scène bij een nieuw woord (src/js/kat/run.js) en de beloning
  * na een rondje van een uitje of feestdag (packReward in uitjes.js).
- * In zo'n rondje (.pack-run) staat de plek boven elke vraag, hangt Van tafel
- * in de kopregel en heeft Controleer de warme feestkleur.
+ * In zo'n rondje (.pack-run) staat bij een nieuw woord de plek erboven,
+ * met dat woord erin uitgelicht. Bij het oefenen staat het ding uit de
+ * vraag in hetzelfde brede vak (.run-scene.thing), zodat beide schermen
+ * dezelfde opbouw hebben. Van tafel hangt in de kopregel en Controleer heeft
+ * de warme feestkleur.
  * Gewone challenges houden het kale vraagscherm.
  * ====================================================================== */
 
@@ -1551,8 +1745,12 @@ mark.friend {
     border: 1px solid var(--line);
 }
 
-/* Bij een vraag zonder woordkaart is er ruimte voor de hele tekening (niet tijdens de feedback). */
-.run-scene.tall {
+/*
+ * Het ding bij het oefenen: de tekening staat onderin op volle breedte en
+ * de muur of lucht loopt erboven door. Nooit breder dan 16:9, anders komen
+ * de zijkanten van de tekening leeg te staan.
+ */
+.run-scene.thing {
     aspect-ratio: 16 / 9;
 }
 
@@ -1580,17 +1778,30 @@ mark.friend {
     margin-top: auto;
 }
 
+:root:not(.kb-open) .pack-run .run-scene.thing {
+    min-height: calc(var(--scene-w) * 9 / 16);
+    max-height: var(--scene-w);
+}
+
 :root:not(.kb-open) .pack-run .tnt-target {
     margin-bottom: auto;
 }
 
 /*
- * Bij een vraag zonder woordkaart staat de hele tekening onderin het vak en
- * loopt de lucht erboven door, dus mag het vak hoger worden dan 4:3.
+ * Oefenen zonder grote tekening: de vraag staat iets boven het midden, met
+ * rust erboven en eronder. Twee lege vlakken (2 : 3) in plaats van auto-marges,
+ * zodat een lange vraag gewoon bovenaan begint.
  */
-:root:not(.kb-open) .pack-run .run-scene.tall {
-    min-height: calc(var(--scene-w) * 9 / 16);
-    max-height: var(--scene-w);
+:root:not(.kb-open) .pack-run .run-body:not(:has(.run-scene))::before,
+:root:not(.kb-open) .pack-run .run-body:not(:has(.run-scene))::after {
+    content: '';
+    flex: 2 1 0;
+    margin-bottom: -16px;
+}
+
+:root:not(.kb-open) .pack-run .run-body:not(:has(.run-scene))::after {
+    flex-grow: 3;
+    margin: -16px 0 0;
 }
 
 .pack-run .run-top .pill {
@@ -1604,7 +1815,10 @@ mark.friend {
     white-space: nowrap;
 }
 
-/* De zin als kaartje, het gat als echt invulvak en å ä ö er direct onder. */
+/*
+ * De zin als kaartje, het gat als invulvak zo breed als het antwoord, op de
+ * gewone regelhoogte van de zin. Het leesteken erna blijft aan het vak vast.
+ */
 .gapcard {
     background: var(--card);
     border: 1px solid var(--line);
@@ -1614,17 +1828,24 @@ mark.friend {
 
 .gapcard .gapline {
     margin: 0;
-    line-height: 1.8;
+    line-height: 1.55;
+}
+
+.gapcard .gap-slot {
+    white-space: nowrap;
 }
 
 .gapcard .gapline input {
-    width: 6.5em;
-    min-height: 46px;
-    padding: 4px 10px;
-    line-height: 1.3;
+    box-sizing: border-box;
+    width: calc(var(--gap-ch, 6) * 1ch + 24px);
+    max-width: calc(100% - 1ch);
+    height: 1.45em;
+    padding: 0 8px;
+    line-height: normal;
+    vertical-align: baseline;
     border: 2px solid var(--line);
     border-bottom-width: 3px;
-    border-radius: 12px;
+    border-radius: 10px;
     background: var(--paper);
 }
 
@@ -1751,7 +1972,7 @@ mark.friend {
 
 /* ======================================================================
  * Feestdagenkalender: src/js/kat/kalender.js
- * Binnenkort, vandaag en eerder dit jaar. Rij open = tekening, weetje, rondje.
+ * Binnenkort, vandaag en eerder dit jaar. Rij open = op tafel, weetje, knop.
  * ====================================================================== */
 
 .kal-h {
@@ -1789,8 +2010,9 @@ mark.friend {
     border-color: var(--feest-line);
 }
 
-/* Elke rij dezelfde opbouw: eigen tekeningetje links, datum als rustig label
- * met de titel eronder, pijltje rechts. Zo herken je een dag aan het plaatje. */
+/* Elke rij dezelfde opbouw: eigen tekeningetje links, dan drie regels in twee
+ * kleuren (kleine datum, Zweedse naam, Nederlandse naam), pijltje rechts.
+ * Wat er op tafel komt staat pas in de open rij. */
 .kal-row {
     width: 100%;
     border: 0;
@@ -1798,8 +2020,8 @@ mark.friend {
     display: grid;
     grid-template-columns: 72px minmax(0, 1fr) auto;
     align-items: center;
-    column-gap: 12px;
-    min-height: 108px;
+    column-gap: 14px;
+    min-height: 96px;
     padding: 12px 14px;
     text-align: left;
     color: inherit;
@@ -1822,23 +2044,21 @@ mark.friend {
 
 .kal-text {
     display: grid;
-    gap: 2px;
+    gap: 3px;
     min-width: 0;
 }
 
 .kal-when {
     display: flex;
     align-items: center;
-    gap: 4px;
-    margin-bottom: 2px;
-    font-size: 13px;
+    gap: 6px;
+    font-size: 12px;
     color: var(--ink-soft);
     font-variant-numeric: tabular-nums;
 }
 
 .kal-when b {
     font-weight: 800;
-    color: var(--ink);
 }
 
 .kal-item.is-today .kal-when b {
@@ -1867,35 +2087,30 @@ mark.friend {
     font: 600 18px/1.2 var(--display);
 }
 
+/* Eén regel; een lange naam krijgt puntjes in plaats van een vierde regel. */
 .kal-nl {
-    font-size: 13px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 14px;
     color: var(--ink-soft);
 }
 
-.kal-food {
-    font-size: 13px;
-    font-weight: 700;
-    color: var(--feest-ink);
-}
-
-/* Nederlandse naam met de labels (Skåne, Bakdag) op dezelfde regel. */
-.kal-sub {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 2px 8px;
-}
-
+/* Skåne: alleen het vlaggetje achter de datum. */
 .kal-tag {
     display: inline-flex;
     align-items: center;
-    gap: 5px;
-    font-size: 12px;
+}
+
+/* Open rij: wat er op tafel komt, met een klein label ervoor. */
+.kal-detail .kal-food {
+    font-size: 15px;
+}
+
+/* Op tafel en het gerecht op één regel, niet als los kopje erboven. */
+.kal-food span {
     font-weight: 800;
-    padding: 1px 8px;
-    border-radius: 99px;
-    background: var(--chip);
-    color: var(--ink);
+    color: var(--feest-ink);
 }
 
 .kal-detail {
@@ -1908,16 +2123,9 @@ mark.friend {
     margin: 0;
 }
 
-.kal-play {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 10px;
-}
-
-.kal-seen {
-    font-size: 13px;
-    color: var(--ink-soft);
+/* De knop zegt zelf wat hij doet; geen grijze regel eronder. */
+.kal-go {
+    justify-self: start;
 }
 
 .skane-flag {

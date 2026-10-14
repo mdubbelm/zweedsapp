@@ -7,6 +7,8 @@
  * instanties op een pagina elkaar niet bijten.
  */
 
+import { bun, motif } from './scenes.js';
+
 const OUT = '#33262c';
 const BK = '#2a2731';
 const BKH = '#4b4655';
@@ -21,6 +23,15 @@ const GRND = '#4d9a3a';
 const r1 = n => Math.round(n * 10) / 10;
 let instance = 0;
 const POSES = ['sit', 'wave', 'startle', 'happy', 'sleep'];
+
+/** Waar de kop staat per pose; een hoofddeksel volgt dezelfde transform. */
+const HEAD_AT = {
+    sit: 'translate(120 94)',
+    wave: 'translate(120 94) rotate(-3)',
+    startle: 'translate(120 98)',
+    happy: 'translate(70 128) rotate(-24) scale(.96)',
+    sleep: 'translate(88 176) rotate(-10) scale(.82)'
+};
 
 /* ---------- onderdelen (kop in lokale coordinaten, midden 0,0) ---------- */
 
@@ -187,14 +198,14 @@ function sittingBody(o = {}) {
 function sit(id) {
     return (
         sittingBody() +
-        `<g transform="translate(120 94)">${head(id, { eyes: 'open', mouth: 'smile' })}</g>`
+        `<g transform="${HEAD_AT.sit}">${head(id, { eyes: 'open', mouth: 'smile' })}</g>`
     );
 }
 
 function wave(id) {
     return (
         sittingBody({ raiseRight: true }) +
-        `<g transform="translate(120 94) rotate(-3)">${head(id, { eyes: 'open', mouth: 'grin', blush: true })}</g>`
+        `<g transform="${HEAD_AT.wave}">${head(id, { eyes: 'open', mouth: 'grin', blush: true })}</g>`
     );
 }
 
@@ -207,7 +218,7 @@ function startle(id) {
         sittingBody({ fat: true }) +
         spikes +
         '</g>' +
-        `<g transform="translate(120 98)">${head(id, { eyes: 'wide', mouth: 'o', flat: true })}</g>` +
+        `<g transform="${HEAD_AT.startle}">${head(id, { eyes: 'wide', mouth: 'o', flat: true })}</g>` +
         shock +
         sweat
     );
@@ -240,7 +251,7 @@ function happy(id) {
         upPaw('M112 150C112 130 118 112 124 100', 17, 126, 92, 14, 13, -6) +
         upPaw('M134 154C142 134 152 122 160 112', 16, 164, 104, 13, 12.5, 14) +
         // kop, schuin achterover
-        `<g transform="translate(70 128) rotate(-24) scale(.96)">${head(id, { eyes: 'happy', mouth: 'grin', blush: true })}</g>` +
+        `<g transform="${HEAD_AT.happy}">${head(id, { eyes: 'happy', mouth: 'grin', blush: true })}</g>` +
         heart(26, 62, 1.1, -14) +
         heart(100, 30, 0.8, 10) +
         `<path d="M20 90l-9-5M10 110l-10 1M50 44l-5-8" stroke="#e9a43a" stroke-width="3" stroke-linecap="round" fill="none"/>`
@@ -265,7 +276,7 @@ function sleep(id) {
         strokeLine('M210 214C190 238 128 244 76 238C54 236 40 230 30 220', 14, BK, 2.6) +
         // voorpootjes onder de kin
         `<g transform="rotate(-6 100 218)">${paw(96, 218, 17, 10.5, true)}${paw(128, 220, 17, 10.5, true)}</g>` +
-        `<g transform="translate(88 176) rotate(-10) scale(.82)">${head(id, { eyes: 'sleepy', mouth: 'smile' })}</g>` +
+        `<g transform="${HEAD_AT.sleep}">${head(id, { eyes: 'sleepy', mouth: 'smile' })}</g>` +
         z(168, 84, 1.5) +
         z(190, 58, 1.1) +
         z(206, 38, 0.8)
@@ -274,14 +285,115 @@ function sleep(id) {
 
 const BUILDERS = { sit, wave, startle, happy, sleep };
 
+/* ---------- feestspullen (optionele laag over Cleo) ---------- */
+
+// Hoofddeksels in kop-coordinaten (midden van de kop op 0,0, bovenkant op -46).
+
+function ring(color, w = 8) {
+    return `<ellipse cx="0" cy="-40" rx="41" ry="10" fill="none" stroke="${OUT}" stroke-width="${w + 5}"/><ellipse cx="0" cy="-40" rx="41" ry="10" fill="none" stroke="${color}" stroke-width="${w}"/>`;
+}
+
+function lichtkroon() {
+    const candle = x =>
+        `<circle cx="${x}" cy="-76" r="11" fill="#ffd75e" opacity=".35"/>` +
+        `<rect x="${x - 5}" y="-66" width="10" height="25" rx="3" fill="#fffaf0" stroke="${OUT}" stroke-width="2.2"/>` +
+        `<path d="M${x} -86C${x + 6} -78 ${x + 5} -70 ${x} -69C${x - 5} -70 ${x - 6} -78 ${x} -86Z" fill="#ffb02e" stroke="${OUT}" stroke-width="1.6" stroke-linejoin="round"/>` +
+        `<path d="M${x} -79C${x + 2} -76 ${x + 2} -73 ${x} -72" fill="none" stroke="#fff3b0" stroke-width="2" stroke-linecap="round"/>`;
+    const berry = (x, y) =>
+        `<circle cx="${x}" cy="${y}" r="3.6" fill="#d9302a" stroke="${OUT}" stroke-width="1.2"/>`;
+    return (
+        ring('#3f7f31') +
+        [-27, -9, 9, 27].map(candle).join('') +
+        `<path d="M-40 -36l7 3M-24 -31l7 1M-4 -30l7 0M16 -31l7 -1M32 -34l7 -3" stroke="#7dc356" stroke-width="3.4" stroke-linecap="round"/>` +
+        berry(-31, -33) +
+        berry(-13, -30) +
+        berry(6, -30) +
+        berry(25, -32)
+    );
+}
+
+function krans() {
+    const flower = (x, y, c, r = 5.2) => {
+        const petals = [0, 72, 144, 216, 288]
+            .map(a => {
+                const t = (a * Math.PI) / 180;
+                return `<circle cx="${r1(x + Math.cos(t) * r * 1.1)}" cy="${r1(y + Math.sin(t) * r * 1.1)}" r="${r}" fill="${c}" stroke="${OUT}" stroke-width="1.2"/>`;
+            })
+            .join('');
+        return `${petals}<circle cx="${x}" cy="${y}" r="${r1(r * 0.62)}" fill="#f2a531" stroke="${OUT}" stroke-width="1"/>`;
+    };
+    return (
+        ring('#4f9a3a', 7) +
+        flower(-26, -49, '#ffffff', 4.2) +
+        flower(-2, -51, '#7aa6e0', 4.2) +
+        flower(22, -49, '#f6c33b', 4.2) +
+        `<path d="M-44 -38l-6 -6M44 -38l6 -6M-14 -30l-4 6M14 -30l4 6" stroke="#7dc356" stroke-width="3.4" stroke-linecap="round"/>` +
+        flower(-37, -36, '#f6c33b') +
+        flower(-19, -31, '#f08aa8') +
+        flower(0, -29, '#ffffff') +
+        flower(19, -31, '#b99af0') +
+        flower(37, -36, '#f08aa8')
+    );
+}
+
+function tomteluva() {
+    return (
+        `<path d="M-43 -34C-46 -70 -22 -92 8 -94C34 -95 56 -84 68 -60C58 -64 50 -62 45 -56C43 -48 43 -42 43 -34Z" fill="#d9302a" stroke="${OUT}" stroke-width="2.6" stroke-linejoin="round"/>` +
+        `<path d="M-30 -48C-28 -70 -8 -84 14 -86" fill="none" stroke="#f0675a" stroke-width="4" stroke-linecap="round" opacity=".8"/>` +
+        `<path d="M-50 -38C-50 -46 -46 -48 -40 -47C-36 -51 -30 -51 -26 -48C-22 -52 -14 -52 -10 -48C-6 -52 2 -52 6 -48C10 -52 18 -52 22 -48C26 -51 32 -51 36 -47C42 -48 50 -46 50 -38C50 -30 44 -28 38 -30C34 -26 28 -26 24 -29C20 -25 12 -25 8 -29C4 -25 -4 -25 -8 -29C-12 -25 -20 -25 -24 -29C-28 -26 -34 -26 -38 -30C-44 -28 -50 -30 -50 -38Z" fill="#ffffff" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/>` +
+        `<circle cx="69" cy="-58" r="11" fill="#ffffff" stroke="${OUT}" stroke-width="2.4"/><path d="M63 -62c2 -3 6 -4 9 -3" fill="none" stroke="${WS}" stroke-width="2.4" stroke-linecap="round"/>`
+    );
+}
+
+// Spullen naast of achter Cleo, in de coordinaten van de hele tekening (240 x 250).
+// Het broodje is ruim getekend, anders is het in een klein plaatje een stipje.
+
+const HATS = { lichtkroon, krans, tomteluva };
+const PROPS = {
+    semla: () => `<g transform="translate(-6 166)">${bun('semla', 96)}</g>`,
+    kanelbulle: () => `<g transform="translate(-6 170)">${bun('kanelbulle', 96)}</g>`
+};
+const BEHIND = {
+    vuurtje: () =>
+        `<g transform="translate(-4 104)" opacity=".9">${motif('valborgsmassoafton', 62)}</g>`
+};
+
+function dress(key, wear, body) {
+    if (HATS[wear]) {
+        return `${body}<g transform="${HEAD_AT[key]}">${HATS[wear]()}</g>`;
+    }
+    if (PROPS[wear]) {
+        return body + PROPS[wear]();
+    }
+    if (BEHIND[wear]) {
+        return BEHIND[wear]() + body;
+    }
+    return body;
+}
+
+const WEAR_LABEL = {
+    lichtkroon: 'met een lichtkroon',
+    krans: 'met een bloemenkrans',
+    tomteluva: 'met een kerstmuts',
+    semla: 'met een semla',
+    kanelbulle: 'met een kanelbulle',
+    vuurtje: 'bij een vuurtje'
+};
+
+/** Namen van de feestspullen die Cleo kan dragen of bij zich heeft. */
+export const CLEO_WEAR = [...Object.keys(HATS), ...Object.keys(PROPS), ...Object.keys(BEHIND)];
+
 /**
  * @param {'sit'|'wave'|'startle'|'happy'|'sleep'} pose
  * @param {number} size breedte en hoogte in px
+ * @param {{wear?: string}} [opts] wear: lichtkroon, krans, tomteluva, semla, kanelbulle, vuurtje
  * @returns {string} <svg>-string
  */
-export function cleo(pose = 'sit', size = 120) {
+export function cleo(pose = 'sit', size = 120, opts = {}) {
     const key = POSES.includes(pose) ? pose : 'sit';
     instance += 1;
     const id = `cleo-${key}-${instance}`;
-    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 250" width="${size}" height="${size}" role="img" aria-label="Cleo de kat" focusable="false">${BUILDERS[key](id)}</svg>`;
+    const body = dress(key, opts.wear, BUILDERS[key](id));
+    const label = WEAR_LABEL[opts.wear] ? `Cleo de kat ${WEAR_LABEL[opts.wear]}` : 'Cleo de kat';
+    return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 250" width="${size}" height="${size}" role="img" aria-label="${label}" focusable="false">${body}</svg>`;
 }

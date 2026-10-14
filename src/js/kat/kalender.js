@@ -6,7 +6,7 @@
  */
 
 import { escapeHtml as esc } from '../utils/helpers.js';
-import { holidayDate } from '../engine/holidays.js';
+import { buildPackRound } from '../engine/packs.js';
 import { scene } from '../art/scenes.js';
 import { icon } from './ui/icons.js';
 import {
@@ -25,53 +25,66 @@ export function skaneFlag(size = 16) {
     return `<svg class="skane-flag" viewBox="0 0 16 11" width="${size}" height="${Math.round((size * 11) / 16)}" aria-hidden="true" focusable="false"><rect width="16" height="11" rx="1.5" fill="#d32f2f"/><path d="M5 0V11M0 5.5H16" stroke="#fcd116" stroke-width="2.2"/></svg>`;
 }
 
-function tags(h) {
-    const t = [];
-    if (h.category === 'skane') {
-        t.push(`<span class="kal-tag skane">${skaneFlag(14)} Skåne</span>`);
+/** Skåne-dagen krijgen alleen het vlaggetje in de datumregel, geen extra label. */
+function skaneMark(h) {
+    return h.category === 'skane'
+        ? `<span class="kal-tag skane" role="img" aria-label="Skåne" title="Skåne">${skaneFlag(14)}</span>`
+        : '';
+}
+
+/**
+ * Wat de knop doet, in gewone woorden: hoeveel woorden dit rondje nieuw
+ * brengt. Alles al gezien? Dan herhaal je ze.
+ */
+function playLabel(play, srs) {
+    const fresh = buildPackRound(play.pack, srs).newIds.length;
+    if (!fresh) {
+        return play.questions === 1 ? 'Herhaal 1 woord' : `Herhaal ${play.questions} woorden`;
     }
-    if (h.category === 'bakdag') {
-        t.push('<span class="kal-tag">Bakdag</span>');
-    }
-    return t.join('');
+    return fresh === 1 ? 'Leer 1 nieuw woord' : `Leer ${fresh} nieuwe woorden`;
 }
 
 function detail(app, h) {
-    // De tekening en wat er op tafel komt staan al in de kop van de rij,
-    // dus open komt er alleen het weetje en het rondje bij.
+    // Dicht toont de rij alleen datum, naam en vertaling. Open komen erbij:
+    // wat er op tafel komt, het weetje en de knop. Meer niet, zodat de kern
+    // (wat is dit, en wat kun je ermee) in één blik te zien is.
     const play = playablePack(h.id, app.state.srs);
+    const food = OP_TAFEL[h.id];
     return `<div class="kal-detail" id="kal-d-${esc(h.id)}">
+        ${food ? `<p class="kal-food"><span>Op tafel:</span> ${esc(food)}</p>` : ''}
         <p>${esc(WEETJE[h.id] || '')}</p>
         ${
             play
-                ? `<div class="kal-play"><button class="btn small" data-act="play-pack" data-pack="${esc(h.id)}">${icon('play', 16)} Speel het rondje <span class="vd-len">${play.questions} vragen</span></button>
-                   <span class="kal-seen">${play.seen ? `${play.seen} van ${play.pack.items.length} woorden al gezien` : `${play.pack.items.length} woorden, nog niets gezien`}</span></div>`
+                ? `<button class="btn small kal-go" data-act="play-pack" data-pack="${esc(h.id)}">${icon('play', 16)} ${playLabel(play, app.state.srs || {})}</button>`
                 : ''
         }
     </div>`;
 }
 
+/** Tot zo ver vooruit tel je dagen af; daarna zegt een datum meer. */
+const COUNT_DAYS = 30;
+
 function row(app, e, kind) {
     const h = e.holiday;
     const open = app.ui.kalOpen === h.id;
-    const food = OP_TAFEL[h.id];
+    // Eén ding op de datumregel: vandaag, een aftelling of een datum.
     let when;
     if (kind === 'today') {
-        when = `<b>vandaag</b> · ${esc(shortDate(e.date))}`;
+        when = '<b>vandaag</b>';
     } else if (kind === 'past') {
-        const next = holidayDate(h, Number(e.past.slice(0, 4)) + 1);
-        when = `${esc(shortDate(e.past))}${next ? ` · weer op ${esc(shortDate(next))}` : ''}`;
+        when = esc(shortDate(e.past));
+    } else if (e.inDays <= COUNT_DAYS) {
+        when = esc(inDaysText(e.inDays));
     } else {
-        when = `<b>${esc(inDaysText(e.inDays))}</b> · ${esc(shortDate(e.date))}`;
+        when = esc(shortDate(e.date));
     }
     return `<li class="kal-item${open ? ' open' : ''}${kind === 'today' ? ' is-today' : ''}${h.category === 'skane' ? ' is-skane' : ''}">
         <button class="kal-row" data-act="kal-open" data-id="${esc(h.id)}" aria-expanded="${open}" aria-controls="kal-d-${esc(h.id)}">
             <span class="kal-thumb">${scene(h.id, { className: 'kal-thumb-art' })}</span>
             <span class="kal-text">
-                <span class="kal-when">${when}</span>
+                <span class="kal-when"><span>${when}</span>${skaneMark(h)}</span>
                 <b class="kal-title" lang="sv">${esc(svName(h))}</b>
-                <span class="kal-sub"><small class="kal-nl">${esc(nlName(h))}</small>${tags(h)}</span>
-                ${food ? `<span class="kal-food">${esc(food)}</span>` : ''}
+                <span class="kal-nl">${esc(nlName(h))}</span>
             </span>
             <span class="kal-chev">${icon('chevron', 18)}</span>
         </button>

@@ -1,8 +1,8 @@
 /**
  * Het vraagscherm. Kaal: vraag, invoerveld, klaar. Geen Cleo en geen
  * meldingen tijdens een vraag; die komen pas bij de beloning.
- * Bij een rondje van een uitje of feestdag staat de tekening van de plek
- * boven elke vraag, zodat je weet waar je bent.
+ * Bij een rondje van een uitje of feestdag staat bij een nieuw woord de
+ * tekening van de plek erboven; bij het oefenen het ding uit de vraag, even breed.
  */
 
 import { escapeHtml as esc } from '../utils/helpers.js';
@@ -12,7 +12,10 @@ import { icon, MODES } from './ui/icons.js';
 import { speak } from './ui/speech.js';
 import { shuffle } from '../engine/challenge.js';
 import { findFriendWord } from '../engine/ontdek.js';
-import { scene, spotScene, hasScene } from '../art/scenes.js';
+import { scene, spotScene, spotThing, hasScene } from '../art/scenes.js';
+
+/** Vragen waarbij een plaatje van het ding helpt zonder het antwoord te geven. */
+const THING_MODES = new Set(['type', 'silly', 'gap', 'form', 'builder', 'pen']);
 
 const PRAISE = ['Goed zo!', 'Precies.', 'Ja, raak!', 'Snyggt!', 'Klopt helemaal.'];
 
@@ -90,12 +93,25 @@ export class RunScreen {
         return Boolean(this.item.pack && hasScene(this.item.pack));
     }
 
-    /** De plek boven de vraag. Bij een nieuw woord met eigen tekening staat dat ding uitgelicht. */
+    /**
+     * Beeld boven de vraag. Bij een nieuw woord de plek, met dat woord erin
+     * uitgelicht als het een eigen tekening heeft. Bij het oefenen het ding
+     * uit de vraag in hetzelfde brede vak; heeft de zin geen getekend ding
+     * (een uitje), dan de plek zelf, zodat het scherm niet leeg valt.
+     */
     sceneHtml() {
-        const spot = this.q.phase === 'card' ? spotScene(this.item.pack, this.item.sv) : '';
-        const tall = this.mode() === 'card' || this.step === 'feedback' ? '' : ' tall';
-        const art = spot || scene(this.item.pack, { fit: tall ? 'bottom' : 'cover' });
-        return `<div class="run-scene${tall}${spot ? ' spot' : ''}">${art}</div>`;
+        const it = this.item;
+        if (this.q.phase === 'card') {
+            const spot = spotScene(it.pack, it.sv);
+            return `<div class="run-scene${spot ? ' spot' : ''}">${spot || scene(it.pack)}</div>`;
+        }
+        // Alleen waar de vraag Nederlands of een vorm is; bij luisteren of
+        // ontcijferen zou het plaatje het antwoord verklappen.
+        if (!THING_MODES.has(this.mode())) {
+            return '';
+        }
+        const art = spotThing(it.pack, it.sv) || scene(it.pack, { fit: 'bottom' });
+        return `<div class="run-scene thing">${art}</div>`;
     }
 
     tntHtml() {
@@ -190,8 +206,10 @@ export class RunScreen {
                 ${typeBox()}${keys}${hint}`;
         }
         if (mode === 'gap') {
-            const field = `<input data-answer autocomplete="off" autocapitalize="off" spellcheck="false" lang="sv" aria-label="Het ontbrekende woord" ${this.step === 'feedback' ? 'disabled' : ''} value="${esc(this.local.value || '')}">`;
-            const line = `<p class="gapline">${esc(it.sv).replace('___', field)}</p>`;
+            // Het vak is zo breed als het antwoord en blijft vast aan het leesteken erna.
+            const len = Math.max(3, String(it.answer || '').length);
+            const field = `<input data-answer autocomplete="off" autocapitalize="off" spellcheck="false" lang="sv" aria-label="Het ontbrekende woord" style="--gap-ch:${len}" ${this.step === 'feedback' ? 'disabled' : ''} value="${esc(this.local.value || '')}">`;
+            const line = `<p class="gapline">${esc(it.sv).replace(/___([.,!?;:]*)/, (_, p) => `<span class="gap-slot">${field}${p}</span>`)}</p>`;
             return `<div class="prompt"><h1>Vul het gat.</h1><p>${esc(it.nl)}</p></div>
                 ${this.isPack() ? `<div class="gapcard">${line}${keys}</div>` : line + keys}${hint}`;
         }

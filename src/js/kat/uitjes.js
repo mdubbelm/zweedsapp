@@ -15,13 +15,12 @@ import { expectedAnswer } from '../engine/check.js';
 import { scene, sceneSky, bun } from '../art/scenes.js';
 import { cleo } from '../art/cleo.js';
 import { icon } from './ui/icons.js';
-import { calendarFor, inDaysText, dayMonth } from './feest.js';
+import { calendarFor, inDaysText } from './feest.js';
 
 /** Eigen korte zin per uitje (de scene-teksten in de content zijn voor later). */
 const BLURB = {
     simrishamn: 'Haven, rookvis en een ijsje. Met de bus of de trein erheen.',
-    bageriet:
-        'Het ruikt er naar kaneel en kardemom. Bestellen, afrekenen en de broodjes uit elkaar houden.',
+    bageriet: 'Het ruikt naar kaneel en kardemom. Bestellen, afrekenen en bullar herkennen.',
     plockstalle: 'Zelf aardbeien plukken, wegen en betalen met Swish.',
     loppis: 'Snuffelen tussen lampen en truien, en een beetje afdingen.',
     kivik: 'Appelbomen, most en de markt bij het water.',
@@ -29,24 +28,31 @@ const BLURB = {
     brosarp: 'Wandelen over de heuvels, tussen de schapen en sleutelbloemen.'
 };
 
-/** De vitrine van de bakker. holiday: de dag waarop dit broodje de hoofdrol heeft. */
+/**
+ * De vitrine van de bakker. holiday: de dag van dit broodje.
+ * Teksten kort houden: elk kaartje is één regel Zweeds, één regel Nederlands
+ * en één regel over wanneer je het eet.
+ */
 const BULLAR = [
     { kind: 'kanelbulle', sv: 'kanelbulle', nl: 'met kaneel', holiday: 'kanelbullens-dag' },
     {
         kind: 'kardemummabulle',
         sv: 'kardemummabulle',
-        nl: 'met kardemom, vaak geknoopt',
-        when: 'Het hele jaar bij de fika'
+        nl: 'met kardemom',
+        when: 'Elke dag bij de fika'
     },
-    { kind: 'semla', sv: 'semla', nl: 'met slagroom en amandelspijs', holiday: 'fettisdagen' },
+    { kind: 'semla', sv: 'semla', nl: 'room en amandelspijs', holiday: 'fettisdagen' },
     { kind: 'lussekatt', sv: 'lussekatt', nl: 'met saffraan', holiday: 'lucia' },
-    {
-        kind: 'vetebrod',
-        sv: 'vetebröd',
-        nl: 'het zoete deeg onder de meeste bullar',
-        when: 'Ook als vlecht: vetelängd'
-    }
+    { kind: 'vetebrod', sv: 'vetebröd', nl: 'het zoete basisdeeg', when: 'Ook als vetelängd' }
 ];
+
+const SHORT_MONTHS = 'jan feb mrt apr mei jun jul aug sep okt nov dec'.split(' ');
+
+/** "4 okt": past op één regel in een kaartje. */
+function shortDate(day) {
+    const [, m, d] = day.split('-').map(Number);
+    return `${d} ${SHORT_MONTHS[m - 1]}`;
+}
 
 function knownDots(pack, srs) {
     const dots = pack.items
@@ -64,31 +70,35 @@ function knownDots(pack, srs) {
 
 function vitrine(day) {
     const cal = calendarFor(day);
+    const all = [...cal.today, ...cal.upcoming];
     const when = b => {
         if (b.when) {
             return b.when;
         }
-        const all = [...cal.today, ...cal.upcoming];
         const e = all.find(x => x.holiday.id === b.holiday);
         if (!e) {
             return '';
         }
         if (e.inDays === 0) {
-            return 'Vandaag is het zijn dag';
+            return 'Vandaag zijn eigen dag';
         }
         // Dichtbij: aftellen. Verder weg: gewoon de datum, zonder lange telling.
         return e.inDays <= 45
             ? `Eigen dag ${inDaysText(e.inDays)}`
-            : `Eigen dag: ${dayMonth(e.date)}`;
+            : `Eigen dag ${shortDate(e.date)}`;
     };
-    return `<div class="bullar" aria-label="Zweedse broodjes">${BULLAR.map(
+    const cards = BULLAR.map(
         b => `<button class="bulle" data-act="say" data-text="${esc(b.sv)}" aria-label="${esc(b.sv)}, ${esc(b.nl)}. Tik om te horen.">
-            <span class="bulle-art">${bun(b.kind, 64)}</span>
+            <span class="bulle-art">${bun(b.kind, 46)}<span class="bulle-ear">${icon('speaker', 12)}</span></span>
             <span class="bulle-sv" lang="sv">${esc(b.sv).replace('mumma', 'mumma&shy;')}</span>
             <span class="bulle-nl">${esc(b.nl)}</span>
             <span class="bulle-when">${esc(when(b))}</span>
         </button>`
-    ).join('')}</div>`;
+    ).join('');
+    return `<section class="vitrine" aria-label="In de vitrine">
+        <p class="vit-head"><b>In de vitrine</b><span>veeg voor meer ${icon('chevron', 14)}</span></p>
+        <div class="bullar">${cards}</div>
+    </section>`;
 }
 
 function card(app, outing, featured) {
@@ -118,6 +128,7 @@ export function renderUitjes(app) {
         <h1>Uitjes in Österlen</h1>
         <p class="lede">Plekken om de hoek, elk met een kort rondje. De woorden komen daarna vanzelf terug bij Opfrissen.</p>
         ${card(app, bakery, true)}
+        <h2 class="ut-h">Verder in Österlen</h2>
         <div class="uitjes-grid">${rest.map(o => card(app, o, false)).join('')}</div>
     </main>`;
 }

@@ -188,7 +188,7 @@ export const HOLIDAYS = [
         id: 'tjugondedag-knut',
         type: 'feest',
         category: 'tradition',
-        title: 'Twintigste dag Knut (einde van Kerst)',
+        title: 'Twintigste dag Knut (einde van de kerst)',
         sv: 'Tjugondedag Knut',
         rule: {
             fixed: [1, 13]
@@ -994,7 +994,7 @@ export const HOLIDAYS = [
         id: 'nationaldagen',
         type: 'feest',
         category: 'helgdag',
-        title: 'Nationale feestdag van Zweden',
+        title: 'Nationale feestdag',
         sv: 'Sveriges nationaldag',
         rule: {
             fixed: [6, 6]
@@ -1174,7 +1174,7 @@ export const HOLIDAYS = [
         id: 'olsmassa',
         type: 'feest',
         category: 'skane',
-        title: 'Olsmässa (Sint-Olofsdag)',
+        title: 'Dag van Sankt Olof',
         sv: 'Olsmässa (Sankt Olofs dag)',
         rule: {
             fixed: [7, 29]
@@ -1264,7 +1264,7 @@ export const HOLIDAYS = [
         id: 'kiviks-marknad',
         type: 'feest',
         category: 'skane',
-        title: 'Kiviks markt (Kivik, Österlen)',
+        title: 'Markt van Kivik (Österlen)',
         sv: 'Kiviks marknad',
         rule: {
             dates: {
@@ -1358,7 +1358,7 @@ export const HOLIDAYS = [
         id: 'kraftpremiar',
         type: 'feest',
         category: 'tradition',
-        title: 'Rivierkreeftenpremiere en rivierkreeftenfeest',
+        title: 'Rivierkreeftenfeest',
         sv: 'Kräftpremiär och kräftskiva',
         rule: {
             fixed: [8, 7]
@@ -1449,7 +1449,7 @@ export const HOLIDAYS = [
         id: 'surstromningspremiaren',
         type: 'feest',
         category: 'tradition',
-        title: 'Premiere van de zure haring',
+        title: 'Première van de zure haring',
         sv: 'Surströmmingspremiären',
         rule: {
             nth: [8, 4, 3]
@@ -1810,13 +1810,13 @@ export const HOLIDAYS = [
         id: 'gustav-adolfsdagen',
         type: 'feest',
         category: 'bakdag',
-        title: 'Gustaaf Adolfdag',
+        title: 'Dag van Gustav II Adolf',
         sv: 'Gustav Adolfsdagen',
         rule: {
             fixed: [11, 6]
         },
         food: 'Gustav Adolfsbakelser (gebak), vooral bekend in Göteborg; geen verdere details in de bronnen.',
-        note: 'Gustaaf II Adolf sneuvelde op 6 november (juliaanse kalender) 1632 bij Lützen; in Zweden en Finland is het een officiële vlaggendag. In Uppsala verzamelen studenten zich bij de obelisk, en in Göteborg eert men de stichter met gebak (alleen sv.wikipedia).',
+        note: 'Gustav II Adolf sneuvelde op 6 november (juliaanse kalender) 1632 bij Lützen; in Zweden en Finland is het een officiële vlaggendag. In Uppsala verzamelen studenten zich bij de obelisk, en in Göteborg eert men de stichter met gebak (alleen sv.wikipedia).',
         source: 'https://sv.wikipedia.org/wiki/Gustav_Adolfsdagen',
         items: [
             {
@@ -1850,7 +1850,7 @@ export const HOLIDAYS = [
                 kind: 'builder',
                 field: 'zinnen',
                 level: 1,
-                nl: 'Vandaag is het Gustaaf Adolfdag.',
+                nl: 'Vandaag is het Gustav Adolfsdag.',
                 sv: 'Idag är det Gustav Adolfsdagen.',
                 pieces: ['Idag', 'är', 'det', 'Gustav Adolfsdagen.'],
                 why: 'Het werkwoord staat op de tweede plek: Idag är.',
@@ -1874,7 +1874,7 @@ export const HOLIDAYS = [
                 kind: 'phrase',
                 field: 'zin',
                 level: 2,
-                nl: 'De bakkerij verkoopt Gustaaf Adolf-gebakjes.',
+                nl: 'De bakkerij verkoopt Gustav Adolfsgebakjes.',
                 sv: 'Bageriet säljer Gustav Adolfsbakelser.',
                 why: 'Säljer is "verkoopt" en bageriet is "de bakkerij".',
                 accept: []

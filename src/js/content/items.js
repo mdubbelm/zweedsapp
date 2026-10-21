@@ -2228,7 +2228,7 @@ export const ITEMS = [
         level: 3,
         nl: 'stil',
         sv: 'tyst',
-        why: 'Tyst eindigt al op een t, dus bij een ett-woord blijft het tyst. In het meervoud wordt het tysta.',
+        why: 'Tyst eindigt op -st, dus bij een ett-woord blijft het tyst: ett tyst hus. In het meervoud wordt het tysta.',
         accept: []
     },
     {
@@ -2361,7 +2361,7 @@ export const ITEMS = [
         nl: 'omdat',
         sv: 'eftersom',
         why: 'Na eftersom komt een bijzin. Staat daar inte of annars in, dan komt dat vóór het werkwoord.',
-        accept: []
+        accept: ['därför att', 'för att']
     },
     {
         id: 'vg-p-03',
@@ -2375,7 +2375,10 @@ export const ITEMS = [
         why: 'In een bijzin staat annars vóór het werkwoord: fåglarna annars flyger. Tysta krijgt een -a, want het gaat over vi.',
         accept: [
             'Vi är tysta, eftersom fåglarna annars flyger iväg.',
-            'Vi är tysta eftersom fåglarna annars flyger bort.'
+            'Vi är tysta eftersom fåglarna annars flyger bort.',
+            'Vi är tysta, eftersom fåglarna annars flyger bort.',
+            'Vi är tysta för att fåglarna annars flyger iväg.',
+            'Vi är tysta därför att fåglarna annars flyger iväg.'
         ]
     },
     {
@@ -2402,7 +2405,7 @@ export const ITEMS = [
         sv: 'Storken flyger söderut på våren.',
         isTrue: false,
         correction: 'Storken flyger söderut på hösten.',
-        why: 'Ooievaars uit Skåne vertrekken in augustus en september naar het zuiden. In het voorjaar komen ze terug.',
+        why: 'Ooievaars in Zweden vertrekken in augustus en september naar het zuiden. In het voorjaar komen ze terug.',
         accept: []
     },
     {
@@ -2425,7 +2428,7 @@ export const ITEMS = [
         world: 'vogels',
         slot: 5,
         kind: 'noun',
-        field: 'eten',
+        field: 'drinken',
         level: 3,
         nl: 'de thermosfles',
         sv: 'termos',
@@ -2442,10 +2445,10 @@ export const ITEMS = [
         kind: 'builder',
         field: 'woordvolgorde',
         level: 3,
-        nl: 'Ik zie niets als ik de verrekijker niet heb.',
-        sv: 'Jag ser ingenting om jag inte har kikaren.',
-        pieces: ['Jag', 'ser', 'ingenting', 'om', 'jag', 'inte', 'har', 'kikaren.'],
-        why: 'In de bijzin na om staat inte vóór het werkwoord: om jag inte har. Ingenting betekent "niets".',
+        nl: 'We gaan naar huis als het niet ophoudt met regenen.',
+        sv: 'Vi går hem om det inte slutar regna.',
+        pieces: ['Vi', 'går', 'hem', 'om', 'det', 'inte', 'slutar', 'regna.'],
+        why: 'In de bijzin na om staat inte vóór het werkwoord: om det inte slutar. Sluta regna is ophouden met regenen.',
         accept: []
     },
     {
@@ -2498,11 +2501,13 @@ export const ITEMS = [
         level: 3,
         nl: 'August zegt dat hij de uil nog niet heeft gezien.',
         sv: 'August säger att han inte har sett ugglan än.',
-        why: 'In de bijzin na att staat inte vóór har. Än betekent hier "nog" en staat achteraan.',
+        why: 'In de bijzin na att staat inte vóór har. Inte ... än betekent "nog niet"; än staat achteraan.',
         accept: [
             'August säger att han inte har sett ugglan ännu.',
             'August säger att han inte sett ugglan än.',
-            'August säger att han ännu inte har sett ugglan.'
+            'August säger att han inte sett ugglan ännu.',
+            'August säger att han ännu inte har sett ugglan.',
+            'August säger att han ännu inte sett ugglan.'
         ]
     },
     {
@@ -2571,8 +2576,8 @@ export const ITEMS = [
         nl: 'We wachten tot de kraanvogels landen.',
         sv: 'Vi väntar ___ tranorna landar.',
         answer: 'tills',
-        why: 'Tills betekent "tot" en begint hier een bijzin.',
-        accept: ['till dess att']
+        why: 'Tills betekent "tot" en begint een bijzin. Till zonder s staat voor een plaats of een naam: till Skåne.',
+        accept: ['till dess att', 'tills dess att']
     },
     {
         id: 'vg-n-11',
@@ -2598,7 +2603,7 @@ export const ITEMS = [
         level: 3,
         nl: 'zeldzaam',
         sv: 'sällsynt',
-        why: 'Sällsynt eindigt al op een t, dus bij een ett-woord blijft het hetzelfde. In het meervoud wordt het sällsynta.',
+        why: 'Sällsynt eindigt op -nt, dus bij een ett-woord blijft het sällsynt: ett sällsynt fynd. In het meervoud wordt het sällsynta.',
         accept: []
     },
     {
@@ -2609,12 +2614,16 @@ export const ITEMS = [
         field: 'terugblik',
         level: 3,
         nl: 'Toen we thuiskwamen, schreven we alle vogels op.',
-        sv: 'När vi kom hem skrev vi upp alla fåglarna.',
+        sv: 'När vi kom hem skrev vi upp alla fåglar.',
         why: 'När betekent hier "toen". Na de bijzin komt meteen het werkwoord: skrev vi. Skriva upp is opschrijven.',
         accept: [
+            'När vi kom hem, skrev vi upp alla fåglar.',
+            'När vi kom hem skrev vi upp alla fåglarna.',
             'När vi kom hem, skrev vi upp alla fåglarna.',
-            'När vi kom hem skrev vi upp alla fåglar.',
-            'När vi kom hem, skrev vi upp alla fåglar.'
+            'Vi skrev upp alla fåglar när vi kom hem.',
+            'Vi skrev upp alla fåglarna när vi kom hem.',
+            'När vi kom hem skrev vi ner alla fåglar.',
+            'När vi kom hem skrev vi ner alla fåglarna.'
         ]
     },
     {
@@ -2628,7 +2637,7 @@ export const ITEMS = [
         sv: 'Tranorna kommer till Sverige på våren.',
         isTrue: true,
         correction: null,
-        why: 'De eerste kraanvogels komen half maart. Begin april staan er duizenden bij het meer Hornborgasjön.',
+        why: 'De eerste kraanvogels komen half maart. Begin april staan er duizenden bij het Hornborgameer (Hornborgasjön).',
         accept: []
     }
 ];
@@ -2868,8 +2877,8 @@ export const RIJTJES = [
         world: 'vogels',
         rows: [
             ['att', 'dat'],
-            ['när', 'wanneer, toen'],
-            ['om', 'als, of'],
+            ['när', 'wanneer, toen, als (bij tijd)'],
+            ['om', 'als (voorwaarde), of'],
             ['eftersom', 'omdat'],
             ['medan', 'terwijl'],
             ['innan', 'voordat'],

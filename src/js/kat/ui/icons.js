@@ -39,6 +39,7 @@ const P = {
     heart: '<path d="M12 20s-7-4.4-9.2-9A5 5 0 0 1 12 6a5 5 0 0 1 9.2 5c-2.2 4.6-9.2 9-9.2 9z"/>',
     calendar: '<rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/>',
     map: '<path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/>',
+    book: '<path d="M12 6c-2-1.5-5-2-8-1.5v14c3-.5 6 0 8 1.5 2-1.5 5-2 8-1.5v-14c-3-.5-6 0-8 1.5z"/><path d="M12 6v14"/>',
     chevron: '<path d="M9 6l6 6-6 6"/>',
     plus: '<path d="M12 5v14M5 12h14"/>',
     paw: '<ellipse cx="12" cy="16" rx="5" ry="4.2" fill="currentColor" stroke="none"/><ellipse cx="5.5" cy="10.5" rx="2.2" ry="2.8" fill="currentColor" stroke="none"/><ellipse cx="9.5" cy="6.5" rx="2.2" ry="2.9" fill="currentColor" stroke="none"/><ellipse cx="14.5" cy="6.5" rx="2.2" ry="2.9" fill="currentColor" stroke="none"/><ellipse cx="18.5" cy="10.5" rx="2.2" ry="2.8" fill="currentColor" stroke="none"/>',

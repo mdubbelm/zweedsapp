@@ -1,6 +1,6 @@
 /**
- * Svenska Kat: Cleo reist met August door vijf werelden.
- * Tabbladen: Start, Quests, Beuken, Stats, Instellingen.
+ * Svenska Kat: Cleo reist met August door de werelden.
+ * Tabbladen: Start, Quests, Rabbla, Stats, Instellingen. Subpagina's: Uitjes, Kalender, Lezen.
  */
 
 import { escapeHtml as esc } from '../utils/helpers.js';
@@ -41,7 +41,9 @@ import {
 } from './tabs.js';
 import { renderUitjes, packReward } from './uitjes.js';
 import { renderKalender } from './kalender.js';
-import { vandaagHtml, uitjesChip, cleoOutfit, fitBadges } from './ui/vandaag.js';
+import { vandaagHtml, uitjesChip, lezenChip, cleoOutfit, fitBadges } from './ui/vandaag.js';
+import { renderLezen, lezenAction, lezenSubmit } from './lezen.js';
+import { mineItems } from '../engine/lezen.js';
 
 const TABS = [
     { id: 'start', label: 'Start', icon: 'home' },
@@ -51,8 +53,8 @@ const TABS = [
     { id: 'settings', label: 'Instellingen', icon: 'settings' }
 ];
 
-/** Subpagina's die je vanaf Start en Quests opent (#uitjes, #kalender). */
-const SUBS = { uitjes: renderUitjes, kalender: renderKalender };
+/** Subpagina's die je vanaf Start en Quests opent (#uitjes, #kalender, #lezen). */
+const SUBS = { uitjes: renderUitjes, kalender: renderKalender, lezen: renderLezen };
 
 const STAR = (on, size = 16) =>
     `<svg width="${size}" height="${size}" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z" fill="${on ? '#f6c33b' : '#ffffff'}" stroke="${on ? '#d99a12' : '#cfc7b8'}" stroke-width="1.5" stroke-linejoin="round"/></svg>`;
@@ -210,6 +212,8 @@ export class KatApp {
             ${isCurrent && showsOnStart(s, 'vormen') ? `<div class="styles" role="group" aria-label="Kies de vorm">${styleBtn('mix', 'Mix', 'pencil')}${styleBtn('luister', 'Luisteren', 'headphones')}${styleBtn('pen', 'Pen', 'paper')}</div>` : ''}
         </div>`;
 
+        const links = `${showsOnStart(s, 'uitjes') ? uitjesChip() : ''}${showsOnStart(s, 'lezen') ? lezenChip() : ''}`;
+
         const unlocked = this.unlockedWorlds();
         const switcher =
             unlocked.length > 1
@@ -224,7 +228,7 @@ export class KatApp {
                 <div class="chips">
                     <span class="chip"><span class="flame">${icon('flame', 20)}</span>${streakDays(s.streak, today)} ${streakDays(s.streak, today) === 1 ? 'dag' : 'dagen'}</span>
                     <span class="chip"><span class="bolt">${icon('bolt', 20)}</span>${s.xp.toLocaleString('nl-NL')} XP</span>
-                    ${showsOnStart(s, 'uitjes') ? uitjesChip() : ''}
+                    ${links ? `<span class="chip-links">${links}</span>` : ''}
                 </div>
                 ${todayCard}
                 ${showsOnStart(s, 'spaardoel') ? `<div class="goal">${goal}</div>` : ''}
@@ -393,7 +397,7 @@ export class KatApp {
             challenge = buildMaster({ items: ITEMS, srs: s.srs, world: opts.world });
         } else if (kind === 'refresh') {
             const ids = dueItems(s.srs, today).slice(0, 10);
-            const byId = new Map([...ITEMS, ...PACK_ITEMS].map(i => [i.id, i]));
+            const byId = new Map([...ITEMS, ...PACK_ITEMS, ...mineItems(s)].map(i => [i.id, i]));
             challenge = {
                 kind: 'refresh',
                 style: 'mix',
@@ -434,7 +438,9 @@ export class KatApp {
         this.openOverlay(host => {
             const screen = new RunScreen(host, {
                 session,
-                items: challenge.items ? [...ITEMS, ...challenge.items] : [...ITEMS, ...PACK_ITEMS],
+                items: challenge.items
+                    ? [...ITEMS, ...challenge.items]
+                    : [...ITEMS, ...PACK_ITEMS, ...mineItems(s)],
                 store: this.store,
                 onExit: () => this.closeOverlay(),
                 onFinish: result => this.finishRun(challenge, result, opts)
@@ -585,7 +591,7 @@ export class KatApp {
             pose = 'sit';
             head = 'Bijna gehaald';
             badge = `+${r.result.xp} XP`;
-            body = `<p>Wat nog niet zat, komt de komende dagen vanzelf terug. Daarna nog een keer?</p>`;
+            body = `<p>Wat nog niet bleef hangen, komt de komende dagen vanzelf terug. Daarna nog een keer?</p>`;
         } else {
             head = r.type === 'refresh' ? 'Opgefrist' : 'Challenge klaar';
             badge = `+${r.result.xp + (r.questXp || 0)} XP`;
@@ -716,6 +722,8 @@ export class KatApp {
             this.openOverlay(host => new SprintScreen(host, this));
         } else if (['open-sub', 'close-sub', 'play-pack', 'kal-open'].includes(act)) {
             this.onSub(act, t);
+        } else if (act && act.startsWith('lees-')) {
+            lezenAction(this, act, t);
         } else if (this.tabAction) {
             this.tabAction(act, t, e);
         }
@@ -768,6 +776,10 @@ export class KatApp {
     }
 
     onSubmit(e) {
+        if (e.target.dataset.form === 'lees-bewaar') {
+            lezenSubmit(this, e);
+            return;
+        }
         if (this.formAction) {
             this.formAction(e);
         }

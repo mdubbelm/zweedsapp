@@ -3,6 +3,7 @@
  * Per wereld 8 challenges, 2 kisten en aan het eind de masterchallenge.
  * Een nieuwe wereld komt achteraan, zodat opgeslagen voortgang niet verschuift.
  * Nodig per wereld: een regel hier, 32 items (world + slot 1-8) en een scène in art/worlds.js.
+ * lees: zoekwoord voor 8 Sidor bij Lezen (dagelijks leven en cultuur), met het label voor de knop.
  */
 
 export const WORLDS = [
@@ -11,42 +12,48 @@ export const WORLDS = [
         title: 'De volkstuin',
         sv: 'Kolonilotten',
         story: 'Cleo snuffelt tussen de tomaten. August heeft de gieter.',
-        canNow: 'Je kunt vertellen wat er in jullie tuin groeit en wie er komt kijken.'
+        canNow: 'Je kunt vertellen wat er in jullie tuin groeit en wie er komt kijken.',
+        lees: { q: 'odla', label: 'tuinieren' }
     },
     {
         id: 'camper',
         title: 'De camper',
         sv: 'Husbilen',
         story: 'Cleo ligt op het dashboard. August houdt de kaart vast.',
-        canNow: 'Je kunt de weg vragen en zeggen waar jullie vannacht staan.'
+        canNow: 'Je kunt de weg vragen en zeggen waar jullie vannacht staan.',
+        lees: { q: 'camping', label: 'kamperen' }
     },
     {
         id: 'sanktolof',
         title: 'Sankt Olof',
         sv: 'Sankt Olof',
         story: 'Rode huisjes, appelbomen en koolzaad tot aan de zee.',
-        canNow: 'Je kunt in het dorpswinkeltje bestellen en over het weer praten.'
+        canNow: 'Je kunt in het dorpswinkeltje bestellen en over het weer praten.',
+        lees: { q: 'Skåne', label: 'Skåne' }
     },
     {
         id: 'malmo',
         title: 'Malmö',
         sv: 'Malmö',
         story: 'Cleo kijkt vanaf een bankje naar de Turning Torso.',
-        canNow: 'Je kunt vertellen wat jullie gisteren in de stad hebben gedaan.'
+        canNow: 'Je kunt vertellen wat jullie gisteren in de stad hebben gedaan.',
+        lees: { q: 'Malmö', label: 'Malmö' }
     },
     {
         id: 'amsterdam',
         title: 'Amsterdam',
         sv: 'Amsterdam',
         story: 'Weer thuis aan de gracht, maar nu in het Zweeds.',
-        canNow: 'Je kunt een Zweedse gast rondleiden door jullie eigen stad.'
+        canNow: 'Je kunt een Zweedse gast rondleiden door jullie eigen stad.',
+        lees: { q: 'Nederländerna', label: 'Nederland' }
     },
     {
         id: 'vogels',
         title: 'Vogels kijken',
         sv: 'Fågelskådning',
         story: 'Vroeg op naar de vogeltoren. August heeft de verrekijker, Cleo is muisstil.',
-        canNow: 'Je kunt vertellen wat je ziet en hoort, en uitleggen waarom het stil is in de vogeltoren.'
+        canNow: 'Je kunt vertellen wat je ziet en hoort, en uitleggen waarom het stil is in de vogeltoren.',
+        lees: { q: 'fåglar', label: 'vogels' }
     }
 ];
 

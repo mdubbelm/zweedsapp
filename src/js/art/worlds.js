@@ -2393,12 +2393,265 @@ function amsterdam() {
     };
 }
 
+/* ======================================================================
+ * VOGELS KIJKEN
+ * ====================================================================== */
+
+function vogels() {
+    const id = 'vg';
+    const nodes = makeNodes([200, 110, 190, 285, 220, 120, 175, 280, 220, 120, 195]);
+    const C = makeCtx(id, nodes, { start: [204, 1560], end: [195, 40] });
+    const G = {
+        leaf: '#8cc95a',
+        leafD: '#5a9d40',
+        leafL: '#b2e07a',
+        trunk: '#8f6540',
+        trunkD: '#6a4529'
+    };
+    const BIRCH = {
+        leaf: '#b8d968',
+        leafD: '#7fae45',
+        leafL: '#d6ec8e',
+        trunk: '#f3f0e6',
+        trunkD: '#cfc8b2'
+    };
+    const PINE = { a: '#5cba85', b: '#2f8f60', c: '#1f6e4a', trunk: '#8a5a38' };
+    const WATER = '#6fb8d8';
+    const WATER_L = '#a9daea';
+    const SHORE = '#4f8f9e';
+
+    // grond: natte wei met hier en daar donkerder gras
+    C.add('ground', `<rect width="390" height="1500" fill="#9fcf68"/>`);
+    groundBlobs(C, '#b4da7e', 14, 61, { op: 0.4, y0: 180 });
+    groundBlobs(C, '#83b856', 12, 67, { op: 0.3, y0: 180 });
+
+    // het meer bovenin
+    C.add(
+        'ground',
+        `<defs><linearGradient id="${id}-lake" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fcbe4"/><stop offset="1" stop-color="${WATER}"/></linearGradient></defs>` +
+            `<path d="M0 0H390V150C340 162 300 140 250 150C200 160 160 138 110 150C70 160 30 146 0 154Z" fill="url(#${id}-lake)"/>` +
+            `<path d="M0 154C30 146 70 160 110 150C160 138 200 160 250 150C300 140 340 162 390 150" fill="none" stroke="${SHORE}" stroke-width="4" stroke-linecap="round"/>` +
+            `<path d="M0 166C30 158 70 172 110 162C160 150 200 172 250 162C300 152 340 174 390 162" fill="none" stroke="#7fae4c" stroke-width="5" stroke-linecap="round" opacity=".6"/>` +
+            `<path d="M24 40q22 -6 44 0t44 0M230 70q22 -6 44 0t44 0t44 0M110 110q20 -5 40 0t40 0" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".6"/>`
+    );
+
+    // vijver links in het midden
+    C.block(0, 548, 118, 660, 'vijver');
+    C.add(
+        'ground',
+        `<ellipse cx="56" cy="606" rx="66" ry="48" fill="rgba(40,70,20,.18)" transform="translate(3 5)"/>` +
+            `<ellipse cx="56" cy="604" rx="66" ry="48" fill="${WATER}" stroke="${SHORE}" stroke-width="3.4"/>` +
+            `<ellipse cx="48" cy="596" rx="44" ry="28" fill="${WATER_L}" opacity=".55"/>` +
+            `<path d="M24 590q12 -4 24 0M60 618q12 -4 24 0" stroke="#fff" stroke-width="2.6" fill="none" stroke-linecap="round" opacity=".8"/>`
+    );
+
+    C.sym('tree', symTree(`${id}-t1`, G), 24, [-85, 46]);
+    C.sym(
+        'birch',
+        symTree(`${id}-t2`, BIRCH, {
+            cs: [
+                [0, -80, 28],
+                [-20, -64, 20],
+                [20, -66, 21],
+                [-8, -96, 19],
+                [12, -94, 18]
+            ]
+        }),
+        20,
+        [-80, 36]
+    );
+    C.sym('pine', symPine(PINE), 22, [-72, 40]);
+    C.sym('bush', symBush({ ...G, clip: `${id}-b1` }), 26);
+    C.sym('bushB', symBush({ ...G, clip: `${id}-b2` }, '#d2433a'), 26);
+    C.sym(
+        'rock',
+        symRock(
+            { base: '#b9bcc4', dark: '#9296a0', light: '#d9dce2', moss: '#79b45a' },
+            `${id}-rk`
+        ),
+        24
+    );
+    C.sym('tuft', symTuft('#6aa842', '#8fcb5c'), 8);
+    C.sym('flower', symFlowers('currentColor', '#ffd84a'), 14);
+    C.alias('flowW', 'flower', '#ffffff');
+    C.alias('flowY', 'flower', '#ffd84a');
+    C.alias('flowP', 'flower', '#c58ae8');
+    C.sym('bench', symBench(), 22);
+
+    // riet met lisdoddes
+    C.sym(
+        'reed',
+        `<ellipse cx="3" cy="2" rx="18" ry="4" fill="${SHADOW}"/>` +
+            `<path d="M-10 1C-10 -20 -12 -34 -14 -46M-2 1C-2 -24 -1 -40 0 -54M8 1C9 -18 11 -30 13 -40M-6 1C-10 -14 -16 -22 -24 -28M4 1C10 -12 16 -18 24 -22" fill="none" stroke="${OUT}" stroke-width="4" stroke-linecap="round"/>` +
+            `<path d="M-10 1C-10 -20 -12 -34 -14 -46M-2 1C-2 -24 -1 -40 0 -54M8 1C9 -18 11 -30 13 -40M-6 1C-10 -14 -16 -22 -24 -28M4 1C10 -12 16 -18 24 -22" fill="none" stroke="#7fa84a" stroke-width="2" stroke-linecap="round"/>` +
+            `<rect x="-17.5" y="-58" width="7" height="15" rx="3.5" fill="#8a5a34" stroke="${OUT}" stroke-width="1.6"/>` +
+            `<rect x="-3.5" y="-66" width="7" height="15" rx="3.5" fill="#8a5a34" stroke="${OUT}" stroke-width="1.6"/>` +
+            `<rect x="9.5" y="-51" width="7" height="13" rx="3.5" fill="#8a5a34" stroke="${OUT}" stroke-width="1.6"/>` +
+            `<path d="M-15 -55V-48M-1 -63V-56" stroke="#b07a4a" stroke-width="1.6" stroke-linecap="round"/>`,
+        14
+    );
+
+    // kraanvogel, staand
+    C.sym(
+        'crane',
+        `<ellipse cx="6" cy="2" rx="20" ry="4" fill="${SHADOW}"/>` +
+            `<path d="M-2 1L-3 -22M6 1L5 -22" stroke="${OUT}" stroke-width="4.4" stroke-linecap="round"/><path d="M-2 1L-3 -22M6 1L5 -22" stroke="#4a4550" stroke-width="2" stroke-linecap="round"/>` +
+            `<path d="M-8 -38C-12 -48 -12 -58 -10 -64" fill="none" stroke="${OUT}" stroke-width="7.4" stroke-linecap="round"/><path d="M-8 -38C-12 -48 -12 -58 -10 -64" fill="none" stroke="#3d3f48" stroke-width="4" stroke-linecap="round"/>` +
+            `<path d="M-8 -62C-7 -56 -7 -50 -8 -44" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>` +
+            `<ellipse cx="2" cy="-32" rx="16" ry="11" fill="#b9bec8" stroke="${OUT}" stroke-width="2.6"/><path d="M-10 -36C-4 -42 8 -42 14 -36" fill="none" stroke="#d9dce2" stroke-width="2.4" stroke-linecap="round"/>` +
+            `<path d="M12 -36C24 -42 30 -30 22 -24C17 -21 12 -25 12 -30Z" fill="#3d3f48" stroke="${OUT}" stroke-width="2" stroke-linejoin="round"/>` +
+            `<circle cx="-10" cy="-66" r="5" fill="#3d3f48" stroke="${OUT}" stroke-width="2"/><circle cx="-9" cy="-70" r="2.4" fill="#e0453a"/><circle cx="-11.5" cy="-66.5" r="1.1" fill="#fff"/>` +
+            `<path d="M-14 -67L-25 -63L-14 -64Z" fill="#6b5a44" stroke="${OUT}" stroke-width="1.4" stroke-linejoin="round"/>`,
+        16,
+        [-66, 16]
+    );
+
+    // ooievaar op een nest op een paal
+    C.sym(
+        'stork',
+        `<ellipse cx="8" cy="2" rx="14" ry="4" fill="${SHADOW}"/>` +
+            `<rect x="-3" y="-90" width="6" height="92" fill="#8f6540" stroke="${OUT}" stroke-width="2"/>` +
+            `<ellipse cx="0" cy="-93" rx="23" ry="8" fill="#a57a48" stroke="${OUT}" stroke-width="2.4"/><path d="M-18 -95L-6 -90M-4 -97L10 -91M8 -96L20 -92M-20 -91L-10 -96" stroke="#7a5232" stroke-width="1.8" stroke-linecap="round"/>` +
+            `<path d="M2 -98V-104M-2 -98V-104" stroke="#e5503f" stroke-width="2" stroke-linecap="round"/>` +
+            `<ellipse cx="2" cy="-109" rx="12" ry="8" fill="#fff" stroke="${OUT}" stroke-width="2.2"/><path d="M4 -114C14 -114 18 -107 13 -103L2 -103Z" fill="#2f2f36" stroke="${OUT}" stroke-width="1.6" stroke-linejoin="round"/>` +
+            `<path d="M-6 -112C-8 -120 -8 -126 -6 -131" fill="none" stroke="${OUT}" stroke-width="6" stroke-linecap="round"/><path d="M-6 -112C-8 -120 -8 -126 -6 -131" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/>` +
+            `<circle cx="-6" cy="-132" r="4.2" fill="#fff" stroke="${OUT}" stroke-width="1.8"/><circle cx="-7.5" cy="-133" r="1" fill="${OUT}"/>` +
+            `<path d="M-9 -133L-21 -129L-9 -130Z" fill="#e5503f" stroke="${OUT}" stroke-width="1.2" stroke-linejoin="round"/>`,
+        10,
+        [-130, 24]
+    );
+
+    // zwaan op het water
+    C.sym(
+        'swan',
+        `<ellipse cx="2" cy="4" rx="24" ry="4" fill="rgba(20,80,120,.25)"/>` +
+            `<path d="M-14 -6C-20 -18 -18 -30 -10 -32" fill="none" stroke="${OUT}" stroke-width="6" stroke-linecap="round"/><path d="M-14 -6C-20 -18 -18 -30 -10 -32" fill="none" stroke="#fff" stroke-width="3.2" stroke-linecap="round"/>` +
+            `<path d="M-18 -4C-16 -16 10 -18 22 -10C18 2 -12 4 -18 -4Z" fill="#fff" stroke="${OUT}" stroke-width="2.4" stroke-linejoin="round"/><path d="M-4 -10C4 -14 12 -12 16 -8" fill="none" stroke="#d9dce2" stroke-width="2" stroke-linecap="round"/>` +
+            `<circle cx="-9" cy="-32" r="3.8" fill="#fff" stroke="${OUT}" stroke-width="1.6"/><path d="M-6 -33L3 -30L-6 -29Z" fill="#f08a3a" stroke="${OUT}" stroke-width="1.2" stroke-linejoin="round"/>`,
+        20
+    );
+
+    // vogeltoren van hout
+    C.sym(
+        'tower',
+        `<ellipse cx="10" cy="3" rx="42" ry="8" fill="${SHADOW}"/>` +
+            `<path d="M-26 1L-20 -80M26 1L20 -80M-9 1L-7 -80M9 1L7 -80" stroke="${OUT}" stroke-width="7" stroke-linecap="round"/><path d="M-26 1L-20 -80M26 1L20 -80M-9 1L-7 -80M9 1L7 -80" stroke="#9a6a3f" stroke-width="3.6" stroke-linecap="round"/>` +
+            `<path d="M-24 -10L18 -72M24 -10L-18 -72" stroke="#7a5232" stroke-width="3" stroke-linecap="round"/>` +
+            `<path d="M36 1L26 -80" stroke="${OUT}" stroke-width="5" stroke-linecap="round"/><path d="M36 1L26 -80" stroke="#b5844e" stroke-width="2.4" stroke-linecap="round"/><path d="M27 -10H37M26 -24H35M24 -38H33M23 -52H31M21 -66H29" stroke="${OUT}" stroke-width="2" stroke-linecap="round"/>` +
+            `<rect x="-32" y="-84" width="64" height="6" fill="#8a5a34" stroke="${OUT}" stroke-width="2.2"/>` +
+            `<rect x="-30" y="-114" width="60" height="32" fill="#a8743f" stroke="${OUT}" stroke-width="2.8"/>` +
+            `<path d="M-18 -114V-82M-6 -114V-82M6 -114V-82M18 -114V-82" stroke="${OUT}" stroke-width="1" opacity=".3"/><rect x="-30" y="-114" width="9" height="32" fill="#fff" opacity=".15"/>` +
+            `<rect x="-22" y="-106" width="44" height="9" rx="2" fill="#3a3030" stroke="${OUT}" stroke-width="1.6"/>` +
+            `<path d="M-40 -112L0 -138L40 -112Z" fill="#5a4a3a" stroke="${OUT}" stroke-width="2.8" stroke-linejoin="round"/><path d="M-32 -114L-2 -134" stroke="#fff" stroke-width="2.2" opacity=".25" stroke-linecap="round"/>`,
+        30,
+        [-120, 40]
+    );
+
+    // vogelhuisje op een paaltje
+    C.sym(
+        'nestbox',
+        `<ellipse cx="4" cy="2" rx="10" ry="3" fill="${SHADOW}"/>` +
+            `<rect x="-2" y="-52" width="4" height="54" fill="#8f6540" stroke="${OUT}" stroke-width="1.8"/>` +
+            `<rect x="-10" y="-72" width="20" height="22" fill="#c58a52" stroke="${OUT}" stroke-width="2"/><circle cx="0" cy="-63" r="3.2" fill="#3a3030"/><path d="M-4 -56H4" stroke="${OUT}" stroke-width="2" stroke-linecap="round"/>` +
+            `<path d="M-14 -70L0 -82L14 -70Z" fill="#b5342a" stroke="${OUT}" stroke-width="2" stroke-linejoin="round"/>`,
+        8,
+        [-70, 14]
+    );
+
+    // vliegende vogel (silhouet), kleur via currentColor
+    C.sym(
+        'flyer',
+        `<path d="M-14 0C-9 -8 -4 -8 0 -2C4 -8 9 -8 14 0" fill="none" stroke="${OUT}" stroke-width="4.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M-14 0C-9 -8 -4 -8 0 -2C4 -8 9 -8 14 0" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>`,
+        6
+    );
+    C.alias('flyGrey', 'flyer', '#9aa0ab');
+    C.alias('flyWhite', 'flyer', '#ffffff');
+
+    C.drawPath({ edge: '#b9a174', sand: '#e6d8b4', light: '#f2e9d0', dot: '#fffdf4' });
+    C.stream(812, {
+        edge: SHORE,
+        water: WATER,
+        light: WATER_L,
+        wall: '#a07a50',
+        deck: '#c9a46c'
+    });
+
+    /* --- plaatsing --- */
+    C.block(0, 0, 390, 150, 'meer');
+
+    // onder: het begin van het wandelpad
+    C.use('birch', 52, 1450, 1);
+    C.use('nestbox', 300, 1470, 1);
+    C.use('bench', 330, 1405, 1);
+    C.use('bushB', 120, 1495, 0.9);
+    C.use('pine', 360, 1330, 1);
+    C.use('tree', 30, 1385, 0.95);
+    C.use('flowW', 290, 1300, 0.9);
+    // wei met kraanvogels
+    C.use('crane', 270, 1230, 1);
+    C.use('crane', 320, 1200, 0.9, { flip: true });
+    C.use('crane', 245, 1305, 0.85);
+    C.use('rock', 60, 1185, 0.8);
+    C.use('birch', 40, 1080, 1);
+    C.use('flowP', 120, 1040, 0.9);
+    C.use('stork', 100, 980, 1, { force: true });
+    C.use('bush', 350, 1080, 0.9);
+    // riet langs het beekje
+    C.use('reed', 40, 860, 1);
+    C.use('reed', 330, 790, 1);
+    C.use('reed', 370, 830, 0.9);
+    C.use('reed', 300, 860, 0.85);
+    C.use('pine', 350, 940, 1);
+    C.use('tree', 300, 720, 1);
+    C.use('flowY', 220, 700, 0.9);
+    // vijver links
+    C.use('reed', 120, 560, 0.9, { force: true });
+    C.use('reed', 14, 660, 0.85, { force: true });
+    C.use('swan', 50, 615, 0.9, { force: true });
+    C.use('birch', 30, 520, 1);
+    C.use('bushB', 350, 600, 0.9);
+    C.use('nestbox', 350, 520, 1);
+    C.use('pine', 50, 430, 1);
+    C.use('flowW', 140, 420, 0.9);
+    // vogeltoren bij het meer
+    C.use('tower', 318, 330, 1, { force: true });
+    C.use('bench', 330, 400, 0.9);
+    C.use('birch', 40, 300, 1);
+    C.use('reed', 230, 200, 0.95);
+    C.use('reed', 40, 185, 0.9);
+    C.use('reed', 360, 180, 0.9);
+    C.use('reed', 300, 190, 0.85);
+    C.use('swan', 300, 90, 1, { force: true });
+    C.use('swan', 80, 70, 0.8, { force: true, flip: true });
+    C.use('flyGrey', 150, 46, 1, { force: true });
+    C.use('flyGrey', 170, 34, 0.9, { force: true });
+    C.use('flyGrey', 190, 24, 0.85, { force: true });
+    C.use('flyGrey', 130, 34, 0.9, { force: true });
+    C.use('flyGrey', 110, 24, 0.85, { force: true });
+    C.use('flyWhite', 330, 30, 0.8, { force: true });
+
+    C.scatter(['flowW', 'flowY', 'flowP'], 16, { seed: 5, y0: 220, s: [0.75, 1] });
+    C.scatter(['rock'], 3, { seed: 9, y0: 260, s: [0.55, 0.75] });
+    C.scatter(['tuft'], 55, { seed: 13, y0: 190, s: [0.8, 1.15], spread: 0.35, gap: 6 });
+
+    C.require('tower', 'crane', 'stork', 'swan', 'reed', 'nestbox', 'birch', 'pine');
+    return {
+        name: 'Vogels kijken',
+        sky: '#cfe8ef',
+        svg: C.out(),
+        nodes,
+        warnings: C.warnings,
+        notes: C.notes
+    };
+}
+
 export const WORLD_ART = {
     volkstuin: strip(volkstuin()),
     camper: strip(camper()),
     sanktolof: strip(sanktolof()),
     malmo: strip(malmo()),
-    amsterdam: strip(amsterdam())
+    amsterdam: strip(amsterdam()),
+    vogels: strip(vogels())
 };
 
 function strip(w) {

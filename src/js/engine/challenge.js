@@ -10,6 +10,7 @@
  */
 
 import { dueItems, sits } from './srs.js';
+import { WORLDS } from '../kat/worlds.js';
 
 export const QUESTIONS_NEW = 4;
 export const QUESTIONS_NEW_EASY = 3;
@@ -17,7 +18,7 @@ export const TARGET_SCORE = 0.8;
 export const MASTER_SIZE = 20;
 export const MAX_RETRIES = 3;
 
-const WORLD_ORDER = ['volkstuin', 'camper', 'sanktolof', 'malmo', 'amsterdam'];
+const WORLD_ORDER = WORLDS.map(w => w.id);
 
 export function worldIndex(world) {
     return WORLD_ORDER.indexOf(world);

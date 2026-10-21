@@ -1,6 +1,8 @@
 /**
- * De vijf werelden waar Cleo met August doorheen reist.
+ * De werelden waar Cleo met August doorheen reist, in deze volgorde.
  * Per wereld 8 challenges, 2 kisten en aan het eind de masterchallenge.
+ * Een nieuwe wereld komt achteraan, zodat opgeslagen voortgang niet verschuift.
+ * Nodig per wereld: een regel hier, 32 items (world + slot 1-8) en een scène in art/worlds.js.
  */
 
 export const WORLDS = [
@@ -38,6 +40,13 @@ export const WORLDS = [
         sv: 'Amsterdam',
         story: 'Weer thuis aan de gracht, maar nu in het Zweeds.',
         canNow: 'Je kunt een Zweedse gast rondleiden door jullie eigen stad.'
+    },
+    {
+        id: 'vogels',
+        title: 'Vogels kijken',
+        sv: 'Fågelskådning',
+        story: 'Vroeg op naar de vogeltoren. August heeft de verrekijker, Cleo is muisstil.',
+        canNow: 'Je kunt vertellen wat je ziet en hoort, en uitleggen waarom het stil is in de vogeltoren.'
     }
 ];
 

@@ -2590,13 +2590,12 @@ function vogels() {
     // wei met kraanvogels
     C.use('crane', 270, 1230, 1);
     C.use('crane', 320, 1200, 0.9, { flip: true });
-    C.use('crane', 350, 1250, 0.85);
+    C.use('crane', 245, 1305, 0.85);
     C.use('rock', 60, 1185, 0.8);
     C.use('birch', 40, 1080, 1);
     C.use('flowP', 120, 1040, 0.9);
     C.use('stork', 100, 980, 1, { force: true });
     C.use('bush', 350, 1080, 0.9);
-    C.use('crane', 130, 905, 0.85, { flip: true });
     // riet langs het beekje
     C.use('reed', 40, 860, 1);
     C.use('reed', 330, 790, 1);

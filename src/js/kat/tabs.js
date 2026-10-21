@@ -18,6 +18,8 @@ import { icon } from './ui/icons.js';
 import { speak } from './ui/speech.js';
 import { cleo } from '../art/cleo.js';
 import { OUTINGS } from '../content/uitjes.js';
+import { PACK_ITEMS } from '../content/packs.js';
+import { mineItems, nextMilestone } from '../engine/lezen.js';
 import { calendarFor, inDaysText, svName } from './feest.js';
 import { signIn, signOut } from '../services/auth.js';
 import { isSupabaseEnabled } from '../services/supabase.js';
@@ -86,8 +88,10 @@ export function renderQuests(app) {
     const today = toDay();
     const qs = questsFor(today);
     const counts = s.quests && s.quests.day === today ? s.quests : { counts: {}, done: {} };
-    const due = dueItems(s.srs, today).filter(id => ITEMS.some(i => i.id === id)).length;
-    const sprintN = sprintPool(ITEMS, s.srs).length;
+    const reviewable = new Set([...ITEMS, ...PACK_ITEMS, ...mineItems(s)].map(i => i.id));
+    const due = dueItems(s.srs, today).filter(id => reviewable.has(id)).length;
+    const sprintN = sprintPool([...ITEMS, ...mineItems(s)], s.srs).length;
+    const mineN = mineItems(s).length;
     const outingSeen = OUTINGS.flatMap(o => o.items).filter(it => s.srs[it.id]).length;
     const cal = calendarFor(app.calendarDay());
     const nextFeast = cal.today[0] || cal.upcoming[0] || null;
@@ -112,6 +116,7 @@ export function renderQuests(app) {
         <div class="list">
             ${row({ ic: 'key', title: 'Codekraker', sub: cracked ? `${cracked} woorden ontcijferd zonder ze te leren` : 'Lees Zweeds dat je nooit hebt geleerd', act: 'open-codekraker', end: icon('chevron', 20) })}
             ${row({ ic: 'mask', title: 'Valse vrienden', sub: seenFriends ? `${seenFriends} van ${FALSE_FRIENDS.length} doorzien` : 'Rolig is niet rustig. Wat dan wel?', act: 'friends' })}
+            ${row({ ic: 'book', title: 'Lezen', sub: mineN ? `Nieuws in makkelijk Zweeds. ${mineN} ${mineN === 1 ? 'eigen woord' : 'eigen woorden'} bewaard` : 'Nieuws in makkelijk Zweeds, van 8 Sidor', act: 'open-sub', attrs: 'data-sub="lezen"', end: icon('chevron', 20) })}
             ${row({ ic: 'map', title: 'Uitjes in Österlen', sub: outingSeen ? `${OUTINGS.length} plekken, ${outingSeen} woorden al gezien` : `${OUTINGS.length} plekken, van de bakker tot Ales stenar`, act: 'open-sub', attrs: 'data-sub="uitjes"', end: icon('chevron', 20) })}
             ${row({ ic: 'calendar', title: 'Feestdagen in Zweden', sub: nextFeast ? `${inDaysText(nextFeast.inDays).replace(/^./, c => c.toUpperCase())}: ${esc(svName(nextFeast.holiday))}` : 'Wat er gevierd en gegeten wordt', act: 'open-sub', attrs: 'data-sub="kalender"', end: icon('chevron', 20) })}
         </div>
@@ -120,7 +125,7 @@ export function renderQuests(app) {
             ${row({ ic: 'refresh', title: 'Opfrissen', sub: due ? `${due} ${due === 1 ? 'woord is' : 'woorden zijn'} klaar om op te halen` : 'Niets aan de beurt. Cleo slaapt.', act: 'refresh', disabled: !due })}
             ${row({ ic: 'headphones', title: 'Geheim bericht', sub: 'De volgende challenge, maar dan luisterend', act: 'play-style', attrs: 'data-value="luister"' })}
             ${row({ ic: 'paper', title: 'Pen en papier', sub: 'Schrijf met de hand, kijk zelf na. Dubbele XP.', act: 'play-style', attrs: 'data-value="pen"' })}
-            ${row({ ic: 'stopwatch', title: 'Sprint', sub: sprintN >= 4 ? `60 seconden, ${sprintN} woorden die al zitten. Record: ${s.sprintBest}` : 'Komt vrij als er 4 woorden echt zitten', act: 'sprint', disabled: sprintN < 4 })}
+            ${row({ ic: 'stopwatch', title: 'Sprint', sub: sprintN >= 4 ? `60 seconden, ${sprintN} woorden die je al kent. Record: ${s.sprintBest}` : 'Komt vrij als 4 woorden echt blijven hangen', act: 'sprint', disabled: sprintN < 4 })}
         </div>
     </main>`;
 }
@@ -232,6 +237,21 @@ async function toggleRecording(app) {
 
 // ---------- Stats ----------
 
+/**
+ * Geen eindstreep maar een volgende mijlpaal. Geen niveaulabel: schattingen
+ * per niveau komen uit onderzoek naar andere talen en tellen herkennen, de app
+ * telt alleen woorden die je op drie dagen zelf goed opschreef.
+ */
+function milestone(count) {
+    const m = nextMilestone(count);
+    return `<div class="panel">
+        <h2>Volgende mijlpaal: ${m.next.toLocaleString('nl-NL')} woorden</h2>
+        <div class="bar"><i style="width:${m.pct}%"></i></div>
+        <p style="margin:0">Nog ${m.left.toLocaleString('nl-NL')} ${m.left === 1 ? 'woord' : 'woorden'} die blijven hangen.</p>
+        <p class="empty" style="margin:0">Ter vergelijking: een bekende schatting (Milton en Alexiou, voor Grieks) legt A2 rond 1.500 tot 2.500 woorden die je herkent. Svenska Kat telt strenger: alleen wat je op drie dagen zelf goed opschreef.</p>
+    </div>`;
+}
+
 export function renderStats(app) {
     const s = app.state;
     const today = toDay();
@@ -270,7 +290,7 @@ export function renderStats(app) {
         .filter(([, r]) => r.misses > 0 && !sits(r))
         .sort(([, a], [, b]) => b.misses - a.misses)
         .slice(0, 6)
-        .map(([id]) => ITEMS.find(i => i.id === id))
+        .map(([id]) => [...ITEMS, ...PACK_ITEMS, ...mineItems(s)].find(i => i.id === id))
         .filter(Boolean);
 
     const together = `<div class="panel">
@@ -291,8 +311,9 @@ export function renderStats(app) {
         <div class="tiles">
             <div class="tile"><b>${lvl.level}</b><span>Level · nog ${lvl.need - lvl.into} XP</span></div>
             <div class="tile"><b>${streakDays(s.streak, today)}</b><span>dagen streak</span></div>
-            <div class="tile"><b>${sitting}</b><span>woorden zitten</span></div>
+            <div class="tile"><b>${sitting}</b><span>woorden blijven hangen</span></div>
         </div>
+        ${milestone(sitting)}
         ${together}
         <div class="panel"><h2>Deze week</h2><div class="week" aria-label="XP per dag">${week}</div></div>
         <h2 style="margin:4px 0 0;font:600 19px var(--display)">Werelden</h2>
@@ -311,7 +332,7 @@ export function renderStats(app) {
         <div class="panel"><h2>Bijna raak</h2>${
             almost.length
                 ? `<div class="list">${almost.map(it => `<p style="margin:0"><span class="empty">${esc(it.kind === 'form' ? it.prompt : it.nl)}</span><br><b>${esc(expectedAnswer(it))}</b></p>`).join('')}</div>`
-                : '<p class="empty" style="margin:0">Hier komt wat net nog niet zit. Het komt vanzelf terug.</p>'
+                : '<p class="empty" style="margin:0">Hier komt wat nog niet blijft hangen. Het komt vanzelf terug.</p>'
         }</div>
     </main>`;
 }
@@ -327,7 +348,8 @@ export const START_PARTS = [
     },
     { key: 'spaardoel', label: 'Spaardoel', sub: 'Hoeveel XP nog tot jullie beloning' },
     { key: 'vormen', label: 'Mix, Luisteren, Pen', sub: 'De keuze blijft staan zoals hij nu is' },
-    { key: 'uitjes', label: 'Knop Uitjes', sub: 'De uitjes blijven bereikbaar via Quests' }
+    { key: 'uitjes', label: 'Knop Uitjes', sub: 'De uitjes blijven bereikbaar via Quests' },
+    { key: 'lezen', label: 'Knop Lezen', sub: 'Lezen blijft bereikbaar via Quests' }
 ];
 
 /** Staat een onderdeel van het startscherm aan? Standaard alles aan. */
@@ -578,7 +600,7 @@ export function installTabs(app) {
             app.toast(
                 first
                     ? `Rabblat! +${XP.rijtje} XP`
-                    : 'Rabblat! De XP had je vandaag al, het rijtje zit er wel weer beter in.'
+                    : 'Rabblat! De XP had je vandaag al, het rijtje blijft weer wat beter hangen.'
             );
         } else if (act === 'claim') {
             app.store.update(s => {
@@ -693,7 +715,7 @@ export class SprintScreen {
     constructor(host, app) {
         this.host = host;
         this.app = app;
-        this.pool = shuffle(sprintPool(ITEMS, app.state.srs));
+        this.pool = shuffle(sprintPool([...ITEMS, ...mineItems(app.state)], app.state.srs));
         this.i = 0;
         this.hits = 0;
         this.left = 60;

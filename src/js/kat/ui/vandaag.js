@@ -122,3 +122,7 @@ export function fitBadges(root) {
 export function uitjesChip() {
     return `<button class="chip chip-link" data-act="open-sub" data-sub="uitjes">${icon('map', 18)}Uitjes</button>`;
 }
+
+export function lezenChip() {
+    return `<button class="chip chip-link" data-act="open-sub" data-sub="lezen">${icon('book', 18)}Lezen</button>`;
+}

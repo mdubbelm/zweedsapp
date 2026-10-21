@@ -28,6 +28,7 @@ export function freshState() {
         rijtjes: {},
         sprintBest: 0,
         ontdek: { cracked: {}, friends: {} },
+        mine: {},
         settings: { voice: true, style: 'mix' },
         updatedAt: null
     };

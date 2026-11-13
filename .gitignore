@@ -58,3 +58,6 @@ docs/blog/
 
 # Automatisch checkpoint (lokaal)
 .checkpoint.md
+
+# Lesmateriaal en interne docs (lokaal houden, nooit publiceren)
+docs/
